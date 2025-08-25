@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface HeaderProps {
   currentPage: string;
@@ -25,9 +26,11 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
             onClick={() => onNavigate('home')}
             className="cursor-pointer"
           >
-            <h1 className="text-2xl font-bold text-white tracking-wider">
-              EURO<span className="text-white">DOOR</span>
-            </h1>
+            <ImageWithFallback
+              src="/image/logo1.png"
+              alt="EURODOOR Logo"
+              className="h-12 w-auto"
+            />
           </div>
 
           {/* Desktop Navigation */}

@@ -18,58 +18,103 @@ interface DoorProduct {
 export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   const doors: DoorProduct[] = [
     {
-      id: 'euro-m45',
-      name: 'EURO M-45 Metal Door',
-      image: 'https://images.unsplash.com/photo-1754792480714-f01a690aabd4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZXRhbCUyMGRvb3IlMjBlbnRyYW5jZXxlbnwxfHx8fDE3NTYxMDgyMzR8MA&ixlib=rb-4.1.0&q=80&w=1080',
+      id: 'euro-model1',
+      name: 'EURO Model-1 Metal Door',
+      image: '/image/model1.jpg',
       material: 'Metall + MDF',
       security: 'A+ sinf',
       dimensions: '2000x900mm',
       description: 'Zamonaviy dizaynli metall eshik ichki MDF qoplama bilan'
     },
     {
-      id: 'euro-s32',
-      name: 'EURO S-32 Security Door',
-      image: 'https://images.unsplash.com/photo-1629649933424-42da2426e3ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBkb29yJTIwc3RlZWx8ZW58MXx8fHwxNzU2MTA4MjM0fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      id: 'euro-model2',
+      name: 'EURO Model-2 Security Door',
+      image: '/image/model2.jpg',
       material: 'Po\'lat + MDF',
       security: 'Premium',
       dimensions: '2100x950mm',
       description: 'Yuqori xavfsizlik darajasiga ega premium eshik'
     },
     {
-      id: 'euro-c28',
-      name: 'EURO C-28 Classic Door',
-      image: 'https://images.unsplash.com/photo-1705776919715-fa052f797923?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZWN1cml0eSUyMGRvb3IlMjBtZXRhbHxlbnwxfHx8fDE3NTYxMDgyMzR8MA&ixlib=rb-4.1.0&q=80&w=1080',
+      id: 'euro-model3',
+      name: 'EURO Model-3 Classic Door',
+      image: '/image/model3.jpg',
       material: 'Metall + Shisha',
       security: 'A sinf',
       dimensions: '2000x850mm',
       description: 'Klassik uslubdagi metall eshik shisha elementlar bilan'
     },
     {
-      id: 'euro-d41',
-      name: 'EURO D-41 Design Door',
-      image: 'https://images.unsplash.com/photo-1660492040179-f90d8dc0dfb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbnRyYW5jZSUyMGRvb3IlMjBkZXNpZ258ZW58MXx8fHwxNzU2MTA4MjM0fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      id: 'euro-model4',
+      name: 'EURO Model-4 Design Door',
+      image: '/image/model4.jpg',
       material: 'Metall + Yog\'och',
       security: 'A+ sinf',
       dimensions: '2100x900mm',
       description: 'Designer uslubidagi eshik yog\'och dekor elementlari bilan'
     },
     {
-      id: 'euro-p55',
-      name: 'EURO P-55 Premium Door',
-      image: 'https://images.unsplash.com/photo-1754792480714-f01a690aabd4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZXRhbCUyMGRvb3IlMjBlbnRyYW5jZXxlbnwxfHx8fDE3NTYxMDgyMzR8MA&ixlib=rb-4.1.0&q=80&w=1080',
+      id: 'euro-model5',
+      name: 'EURO Model-5 Premium Door',
+      image: '/image/model5.jpg',
       material: 'Premium po\'lat',
       security: 'Ultra',
       dimensions: '2200x1000mm',
       description: 'Eng yuqori darajadagi xavfsizlik va dizayn'
     },
     {
-      id: 'euro-l33',
-      name: 'EURO L-33 Luxury Door',
-      image: 'https://images.unsplash.com/photo-1629649933424-42da2426e3ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBkb29yJTIwc3RlZWx8ZW58MXx8fHwxNzU2MTA4MjM0fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      id: 'euro-model6',
+      name: 'EURO Model-6 Luxury Door',
+      image: '/image/model6.jpg',
       material: 'Metall + Natutal yog\'och',
       security: 'A+ sinf',
       dimensions: '2100x950mm',
       description: 'Hashamatli dizayn va natural materiallar'
+    },
+    {
+      id: 'euro-model7',
+      name: 'EURO Model-7 Modern Door',
+      image: '/image/model7.jpg',
+      material: 'Metall + Kompozit',
+      security: 'A+ sinf',
+      dimensions: '2000x900mm',
+      description: 'Zamonaviy kompozit materiallar bilan ishlangan eshik'
+    },
+    {
+      id: 'euro-model8',
+      name: 'EURO Model-8 Elite Door',
+      image: '/image/model8.jpg',
+      material: 'Premium po\'lat + MDF',
+      security: 'Ultra Premium',
+      dimensions: '2100x1000mm',
+      description: 'Elite darajadagi xavfsizlik va dizayn'
+    },
+    {
+      id: 'euro-model9',
+      name: 'EURO Model-9 Classic Premium',
+      image: '/image/model9.jpg',
+      material: 'Metall + Yog\'och + Shisha',
+      security: 'A+ sinf',
+      dimensions: '2100x950mm',
+      description: 'Klassik va zamonaviy elementlarni birlashtirgan eshik'
+    },
+    {
+      id: 'euro-model10',
+      name: 'EURO Model-10 Executive Door',
+      image: '/image/model10.jpg',
+      material: 'Premium po\'lat + Natural yog\'och',
+      security: 'Executive',
+      dimensions: '2200x1000mm',
+      description: 'Ijrochi darajadagi xavfsizlik va hashamat'
+    },
+    {
+      id: 'euro-model11',
+      name: 'EURO Model-11 Ultimate Door',
+      image: '/image/model11.jpg',
+      material: 'Ultra Premium po\'lat + MDF',
+      security: 'Ultimate',
+      dimensions: '2200x1000mm',
+      description: 'Eng yuqori darajadagi xavfsizlik va dizayn'
     }
   ];
 
