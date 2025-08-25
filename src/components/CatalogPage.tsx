@@ -74,15 +74,15 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5]">
+    <div className="min-h-screen bg-black">
       {/* Header Section */}
-      <section className="bg-white py-16">
+      <section className="bg-black/50 backdrop-blur-sm py-16">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-[#1A1A1A] mb-4">
+            <h1 className="text-4xl font-bold text-white mb-4">
               Eshiklar katalogi
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
               Yuqori sifatli temir va MDF eshiklarimiz bilan tanishing. 
               Har bir model maxsus texnologiya asosida ishlab chiqarilgan.
             </p>
@@ -95,7 +95,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {doors.map((door) => (
-              <div key={door.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <div key={door.id} className="bg-white/5 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow border border-white/10">
                 {/* Product Image */}
                 <div className="relative h-64 overflow-hidden">
                   <ImageWithFallback
@@ -105,19 +105,19 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                   />
                   
                   {/* Kesim ko'rinishi icon */}
-                  <div className="absolute top-4 right-4 bg-white/90 rounded-full p-2">
-                    <Layers className="h-4 w-4 text-[#D4AF37]" />
+                  <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm rounded-full p-2">
+                    <Layers className="h-4 w-4 text-white" />
                     <span className="sr-only">Kesim ko'rinishi</span>
                   </div>
                 </div>
 
                 {/* Product Info */}
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold text-[#1A1A1A] mb-3">
+                  <h3 className="text-xl font-semibold text-white mb-3">
                     {door.name}
                   </h3>
                   
-                  <div className="space-y-2 mb-4 text-sm text-gray-600">
+                  <div className="space-y-2 mb-4 text-sm text-gray-300">
                     <div>
                       <span className="font-medium">Material:</span> {door.material}
                     </div>
@@ -129,13 +129,13 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                     </div>
                   </div>
 
-                  <p className="text-gray-600 text-sm mb-6">
+                  <p className="text-gray-300 text-sm mb-6">
                     {door.description}
                   </p>
 
                   <button
                     onClick={() => onNavigate('product', door.id)}
-                    className="w-full bg-[#D4AF37] text-black py-3 px-4 rounded-lg font-semibold hover:bg-[#B8941F] transition-colors flex items-center justify-center gap-2"
+                    className="w-full bg-white text-black py-3 px-4 rounded-lg font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 backdrop-blur-sm"
                   >
                     <Eye className="h-4 w-4" />
                     Batafsil ko'rish

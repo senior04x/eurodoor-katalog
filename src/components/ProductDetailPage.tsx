@@ -42,17 +42,17 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   const product = getProductData(productId);
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5]">
+    <div className="min-h-screen bg-black">
       {/* Back Navigation */}
-      <div className="bg-white border-b">
+      <div className="bg-black/80 backdrop-blur-sm border-b border-white/10">
         <div className="container mx-auto px-4 py-4">
-          <button
-            onClick={() => onNavigate('catalog')}
-            className="flex items-center gap-2 text-gray-600 hover:text-[#D4AF37] transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Katalogga qaytish
-          </button>
+                      <button
+              onClick={() => onNavigate('catalog')}
+              className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Katalogga qaytish
+            </button>
         </div>
       </div>
 
@@ -61,7 +61,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Product Image */}
             <div className="space-y-4">
-              <div className="bg-white rounded-lg p-4 shadow-lg">
+              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 shadow-lg border border-white/10">
                 <ImageWithFallback
                   src={product.image}
                   alt={product.name}
@@ -70,13 +70,13 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               </div>
               
               {/* Technical Drawing */}
-              <div className="bg-white rounded-lg p-6 shadow-lg">
-                <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
-                  <Ruler className="h-5 w-5 text-[#D4AF37]" />
+              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Ruler className="h-5 w-5 text-white" />
                   Texnik chizma
                 </h3>
-                <div className="bg-gray-100 rounded-lg h-48 flex items-center justify-center border-2 border-dashed border-gray-300">
-                  <div className="text-center text-gray-500">
+                <div className="bg-black/20 rounded-lg h-48 flex items-center justify-center border-2 border-dashed border-white/20">
+                  <div className="text-center text-gray-300">
                     <Ruler className="h-12 w-12 mx-auto mb-2 opacity-50" />
                     <p>O'rtadan kesilgan ko'rinish</p>
                     <p className="text-sm">Ichki qatlam struktura</p>
@@ -87,29 +87,29 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
             {/* Product Details */}
             <div className="space-y-6">
-              <div className="bg-white rounded-lg p-6 shadow-lg">
-                <h1 className="text-3xl font-bold text-[#1A1A1A] mb-4">
+              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/10">
+                <h1 className="text-3xl font-bold text-white mb-4">
                   {product.name}
                 </h1>
                 
-                <div className="text-2xl font-bold text-[#D4AF37] mb-6">
+                <div className="text-2xl font-bold text-white mb-6">
                   {product.price}
                 </div>
 
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <p className="text-gray-300 mb-6 leading-relaxed">
                   {product.description}
                 </p>
 
                 {/* Key Features */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-[#D4AF37]" />
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-white" />
                     Asosiy xususiyatlar
                   </h3>
                   <ul className="space-y-2">
                     {product.features.map((feature: string, index: number) => (
-                      <li key={index} className="flex items-start gap-2 text-gray-600">
-                        <div className="w-2 h-2 bg-[#D4AF37] rounded-full mt-2 flex-shrink-0"></div>
+                      <li key={index} className="flex items-start gap-2 text-gray-300">
+                        <div className="w-2 h-2 bg-white rounded-full mt-2 flex-shrink-0"></div>
                         {feature}
                       </li>
                     ))}
@@ -117,34 +117,34 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                 </div>
 
                 {/* Order Button */}
-                <button className="w-full bg-[#D4AF37] text-black py-4 px-6 rounded-lg font-semibold hover:bg-[#B8941F] transition-colors flex items-center justify-center gap-2">
+                <button className="w-full bg-white text-black py-4 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 backdrop-blur-sm">
                   <Phone className="h-5 w-5" />
                   Buyurtma berish
                 </button>
               </div>
 
               {/* Specifications */}
-              <div className="bg-white rounded-lg p-6 shadow-lg">
-                <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
-                  <Award className="h-5 w-5 text-[#D4AF37]" />
+              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Award className="h-5 w-5 text-white" />
                   Texnik xususiyatlar
                 </h3>
                 <div className="space-y-3">
                   {product.specifications.map((spec: any, index: number) => (
-                    <div key={index} className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-gray-600">{spec.label}:</span>
-                      <span className="font-medium text-[#1A1A1A]">{spec.value}</span>
+                    <div key={index} className="flex justify-between items-center py-2 border-b border-white/10">
+                      <span className="text-gray-300">{spec.label}:</span>
+                      <span className="font-medium text-white">{spec.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Installation Info */}
-              <div className="bg-[#D4AF37]/10 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-[#1A1A1A] mb-3">
+              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-3">
                   O'rnatish bo'yicha tavsiyalar
                 </h3>
-                <ul className="space-y-2 text-gray-700">
+                <ul className="space-y-2 text-gray-300">
                   <li>• Professional o'rnatish xizmati mavjud</li>
                   <li>• O'rnatish 2-3 soat davom etadi</li>
                   <li>• Barcha kerakli jihozlar ta'minlanadi</li>

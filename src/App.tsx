@@ -42,7 +42,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] font-[Inter]">
+    <div className="min-h-screen bg-black font-[Inter]">
       <Header currentPage={currentPage} onNavigate={handleNavigate} />
       {renderCurrentPage()}
     </div>

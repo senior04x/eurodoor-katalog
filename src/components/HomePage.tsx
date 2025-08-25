@@ -25,7 +25,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5]">
+    <div className="min-h-screen bg-black">
       {/* Hero Section */}
       <section className="relative h-[70vh] overflow-hidden">
         <div className="absolute inset-0">
@@ -41,7 +41,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           <div className="max-w-2xl text-white">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Sizning uyingiz xavfsizligi bizning 
-              <span className="text-[#D4AF37]"> ustuvorligimiz</span>
+              <span className="text-white"> ustuvorligimiz</span>
             </h1>
             <p className="text-xl mb-8 opacity-90">
               Zamonaviy dizayn va yuqori xavfsizlik standartlarini birlashtirgan 
@@ -49,7 +49,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
             </p>
             <button 
               onClick={() => onNavigate('catalog')}
-              className="bg-[#D4AF37] text-black px-8 py-4 font-semibold rounded-lg hover:bg-[#B8941F] transition-colors flex items-center gap-2 group"
+              className="bg-white text-black px-8 py-4 font-semibold rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2 group backdrop-blur-sm"
             >
               Katalogni ko'rish
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -59,27 +59,27 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-black/50 backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-[#1A1A1A] mb-4">
+            <h2 className="text-3xl font-bold text-white mb-4">
               Nima uchun EURODOOR?
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
               Ko'p yillik tajriba va zamonaviy texnologiyalar asosida ishlab chiqarilgan eshiklar
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div key={index} className="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
-                <div className="w-16 h-16 bg-[#D4AF37]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="h-8 w-8 text-[#D4AF37]" />
+              <div key={index} className="text-center p-6 rounded-lg hover:shadow-lg transition-shadow bg-white/5 backdrop-blur-sm border border-white/10">
+                <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <feature.icon className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-[#1A1A1A] mb-3">
+                <h3 className="text-xl font-semibold text-white mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-300">
                   {feature.description}
                 </p>
               </div>
@@ -89,7 +89,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-[#1A1A1A] text-white">
+      <section className="py-16 bg-black/80 backdrop-blur-sm text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">
             Bepul maslahat va o'lchash xizmati
@@ -99,7 +99,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           </p>
           <button 
             onClick={() => onNavigate('contact')}
-            className="bg-[#D4AF37] text-black px-8 py-4 font-semibold rounded-lg hover:bg-[#B8941F] transition-colors"
+            className="bg-white text-black px-8 py-4 font-semibold rounded-lg hover:bg-gray-200 transition-colors backdrop-blur-sm"
           >
             Aloqaga chiqish
           </button>
