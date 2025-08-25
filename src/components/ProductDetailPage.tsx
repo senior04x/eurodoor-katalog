@@ -284,7 +284,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   return (
     <div className="min-h-screen bg-black">
       {/* Back Navigation */}
-      <div className="bg-black/80 backdrop-blur-sm border-b border-white/10">
+      <div className="bg-black/60 backdrop-blur-xl border-b border-white/20 shadow-lg">
         <div className="container mx-auto px-4 py-4">
                       <button
               onClick={() => onNavigate('catalog')}
@@ -301,7 +301,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Product Image */}
             <div className="space-y-4">
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 shadow-lg border border-white/10">
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
                 <ImageWithFallback
                   src={product.image}
                   alt={product.name}
@@ -310,12 +310,12 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               </div>
               
               {/* Technical Drawing */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/10">
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Ruler className="h-5 w-5 text-white" />
                   Texnik chizma
                 </h3>
-                <div className="bg-black/20 rounded-lg h-48 flex items-center justify-center border-2 border-dashed border-white/20 overflow-hidden">
+                <div className="bg-white/5 backdrop-blur-sm rounded-xl h-48 flex items-center justify-center border-2 border-dashed border-white/30 overflow-hidden shadow-lg">
                   <ImageWithFallback
                     src="/image/chizmadoor.jpg"
                     alt="Texnik chizma - O'rtadan kesilgan ko'rinish"
@@ -327,7 +327,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
             {/* Product Details */}
             <div className="space-y-6">
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/10">
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
                 <h1 className="text-3xl font-bold text-white mb-4">
                   {product.name}
                 </h1>
@@ -357,14 +357,14 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                 </div>
 
                 {/* Order Button */}
-                <button className="w-full bg-white text-black py-4 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 backdrop-blur-sm">
+                <button className="w-full bg-white/20 backdrop-blur-md text-white py-4 px-6 rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 flex items-center justify-center gap-2 border border-white/30 shadow-lg hover:shadow-xl">
                   <Phone className="h-5 w-5" />
                   Buyurtma berish
                 </button>
               </div>
 
               {/* Specifications */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/10">
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Award className="h-5 w-5 text-white" />
                   Texnik xususiyatlar
@@ -380,7 +380,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               </div>
 
               {/* Installation Info */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-2xl">
                 <h3 className="text-lg font-semibold text-white mb-3">
                   O'rnatish bo'yicha tavsiyalar
                 </h3>

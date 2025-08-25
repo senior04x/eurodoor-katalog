@@ -18,7 +18,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
   ];
 
   return (
-    <header className="bg-black/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
+    <header className="bg-black/60 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50 shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -27,7 +27,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
             className="cursor-pointer"
           >
             <ImageWithFallback
-              src="/image/logo1.png"
+              src="/figma/logo1.png"
               alt="EURODOOR Logo"
               className="h-12 w-auto"
             />

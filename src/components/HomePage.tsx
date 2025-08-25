@@ -34,11 +34,11 @@ export default function HomePage({ onNavigate }: HomePageProps) {
             alt="Temir eshik"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/50"></div>
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
         </div>
         
         <div className="relative container mx-auto px-4 h-full flex items-center">
-          <div className="max-w-2xl text-white">
+          <div className="max-w-2xl text-white bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Sizning uyingiz xavfsizligi bizning 
               <span className="text-white"> ustuvorligimiz</span>
@@ -49,7 +49,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
             </p>
             <button 
               onClick={() => onNavigate('catalog')}
-              className="bg-white text-black px-8 py-4 font-semibold rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2 group backdrop-blur-sm"
+              className="bg-white/20 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 flex items-center gap-2 group border border-white/30 shadow-lg hover:shadow-xl"
             >
               Katalogni ko'rish
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -59,7 +59,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-black/50 backdrop-blur-sm">
+      <section className="py-20 bg-gradient-to-b from-black/40 to-black/20 backdrop-blur-md">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-white mb-4">
@@ -72,14 +72,14 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div key={index} className="text-center p-6 rounded-lg hover:shadow-lg transition-shadow bg-white/5 backdrop-blur-sm border border-white/10">
-                <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="h-8 w-8 text-white" />
+              <div key={index} className="text-center p-8 rounded-2xl hover:shadow-2xl transition-all duration-300 bg-white/10 backdrop-blur-md border border-white/20 shadow-lg hover:scale-105">
+                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-6 border border-white/30">
+                  <feature.icon className="h-10 w-10 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-3">
+                <h3 className="text-xl font-semibold text-white mb-4">
                   {feature.title}
                 </h3>
-                <p className="text-gray-300">
+                <p className="text-gray-200">
                   {feature.description}
                 </p>
               </div>
@@ -89,7 +89,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-black/80 backdrop-blur-sm text-white">
+      <section className="py-16 bg-gradient-to-r from-black/60 to-black/40 backdrop-blur-md text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">
             Bepul maslahat va o'lchash xizmati
@@ -99,7 +99,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           </p>
           <button 
             onClick={() => onNavigate('contact')}
-            className="bg-white text-black px-8 py-4 font-semibold rounded-lg hover:bg-gray-200 transition-colors backdrop-blur-sm"
+            className="bg-white/20 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 border border-white/30 shadow-lg hover:shadow-xl"
           >
             Aloqaga chiqish
           </button>
