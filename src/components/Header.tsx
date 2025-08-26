@@ -27,7 +27,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
             className="cursor-pointer"
           >
             <ImageWithFallback
-              src="/figma/logo1.png"
+              src="https://iili.io/Fy0g33Q.png"
               alt="EURODOOR Logo"
               className="h-12 w-auto"
             />
