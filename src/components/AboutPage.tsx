@@ -23,12 +23,12 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
 return (
   <div className="relative min-h-screen">
     {/* Fixed background — doimo tagda */}
-    <div
-      className="pointer-events-none fixed inset-0 -z-20 bg-cover bg-center"
-      style={{ backgroundImage: "url('https://iili.io/Kd4L7wv.jpg')" }}
-    />
+   <div
+  className="pointer-events-none fixed inset-0 -z-20 bg-cover bg-center blur-[2px]"
+  style={{ backgroundImage: "url('https://iili.io/Kd4L7wv.jpg')" }}
+/>
     {/* Yengil qoraytiruvchi overlay + mayin blur */}
-    <div className="pointer-events-none fixed inset-0 -z-10 backdrop-blur-[2px]" />
+    <div className="pointer-events-none fixed inset-0 -z-10 bg-white/0 backdrop-blur-[2px]" />
 
     {/* Kontent — fonnning ustida turadi */}
     <div className="relative z-10">
