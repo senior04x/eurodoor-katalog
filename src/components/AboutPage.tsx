@@ -133,7 +133,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {certificates.map((cert, index) => (
-              <div key={index} className="bg-[#422870] rounded-lg p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+              <div key={index} className="bg-black rounded-lg p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
                 <div className="w-16 h-16 bg-[#D4AF37]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Award className="h-8 w-8 text-[#E32C27]" />
                 </div>
@@ -145,7 +145,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
       </section>
 
       {/* Contact CTA */}
-      <section className="py-16 bg-[#1A1A1A] text-white">
+      <section className="py-16 bg-black text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">
             Biz bilan hamkorlik qiling
