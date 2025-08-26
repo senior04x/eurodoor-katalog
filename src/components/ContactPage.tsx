@@ -29,7 +29,7 @@ export default function ContactPage() {
          style={{ backgroundImage: "url('https://iili.io/Kd4L7wv.jpg" }}>
       
       {/* Header */}
-      <section className="bg-white/10 backdrop-blur-xl rounded-2xl p-12 py-16 shadow-2xl border border-white/20">
+      <section className="bg-white/10 backdrop-blur-xl rounded-2xl p-12 shadow-2xl border border-white/20">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-white mb-4">
