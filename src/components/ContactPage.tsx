@@ -29,7 +29,7 @@ export default function ContactPage() {
          style={{ backgroundImage: "url('https://iili.io/Kd4L7wv.jpg" }}>
       
       {/* Header */}
-      <section className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 py-16 shadow-2xl border border-white/20">
+      <section className="bg-white/10 backdrop-blur-xl rounded-2xl p-12 py-16 shadow-2xl border border-white/20">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-white mb-4">
@@ -124,17 +124,22 @@ export default function ContactPage() {
               </div>
 
               {/* Map */}
-              <div className="bg-white rounded-lg p-6 shadow-lg">
-                <h3 className="text-xl font-semibold text-[#1A1A1A] mb-4">
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
+                <h3 className="text-xl font-semibold text-white mb-4">
                   Bizning joylashuvimiz
                 </h3>
-                <div className="bg-gray-200 rounded-lg h-64 flex items-center justify-center">
-                  <div className="text-center text-gray-500">
-                    <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p>Google Maps</p>
-                    <p className="text-sm">Interaktiv xarita joylashadigan joy</p>
-                  </div>
-                </div>
+                <div className="rounded-lg overflow-hidden h-64 flex items-center justify-center">
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d1998.5340553151188!2d69.24062708578978!3d41.36500662946383!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNDHCsDIxJzU0LjIiTiA2OcKwMTQnMzAuNCJF!5e0!3m2!1suz!2s!4v1732125780839!5m2!1suz!2s"
+      width="100%"
+      height="100%"
+      style={{ border: 0 }}
+      allowFullScreen={true}
+      loading="lazy"
+      referrerPolicy="no-referrer-when-downgrade"
+      title="Google Maps"
+    ></iframe>
+  </div>
               </div>
             </div>
 
