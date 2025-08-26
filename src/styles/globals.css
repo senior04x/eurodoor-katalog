@@ -5,7 +5,7 @@
 
 :root {
   --font-size: 14px;
-  --background: #000000;
+  --background: #00000000;
   --foreground: #ffffff;
   --card: rgba(255, 255, 255, 0.1);
   --card-foreground: #ffffff;
