@@ -49,10 +49,10 @@ export default function ContactPage() {
 
     <div className="py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 auto-rows-fr">
           {/* Contact Information */}
           <div className="relative z-10 flex flex-col lg:flex-row items-stretch gap-6 p-6 lg:h-screen">
-            <div className="flex-1 w-full lg:h-full bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
+            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20 h-full">
               <h2 className="text-2xl font-bold text-white mb-6">
                 Bog'lanish ma'lumotlari
               </h2>
@@ -130,7 +130,7 @@ export default function ContactPage() {
             </div>
 
             {/* Map */}
-            <div className="flex-1 w-full lg:h-full bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
+            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20 h-full">
               <h3 className="text-xl font-semibold text-white mb-4">
                 Bizning joylashuvimiz
               </h3>
