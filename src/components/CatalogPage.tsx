@@ -118,7 +118,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="min-h-screen bg-black">
       {/* Header Section */}
       <section className="bg-gradient-to-b from-black/60 to-black/30 backdrop-blur-xl py-16">
         <div className="container mx-auto px-4">
@@ -141,17 +141,17 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
             {doors.map((door) => (
               <div key={door.id} className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden hover:shadow-3xl transition-all duration-300 border border-white/20 hover:scale-105">
                 {/* Product Image */}
-                    <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={door.image}
-                    alt={door.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-xl rounded-full p-3 border border-white/30 shadow-lg">
-                    <Layers className="h-5 w-5 text-white" />
-                    <span className="sr-only">Kesim ko'rinishi</span>
-                  </div>
-                </div>
+                  <div className="relative aspect-square overflow-hidden">
+                     <img
+                       src={door.image}
+                       alt={door.name}
+                       className="w-full h-full object-cover"
+                      />
+                    <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-xl rounded-full p-3 border border-white/30 shadow-lg">
+                      <Layers className="h-5 w-5 text-white" />
+                      <span className="sr-only">Kesim ko'rinishi</span>
+                    </div>
+                   </div>
 
                 {/* Product Info */}
                 <div className="p-6">
