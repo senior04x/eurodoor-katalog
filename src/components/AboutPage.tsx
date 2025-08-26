@@ -55,14 +55,14 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
       </section>
 
       {/* Company Info */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-black">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-[#1A1A1A] mb-6">
+              <h2 className="text-3xl font-bold text-white mb-6">
                 Bizning missiyamiz
               </h2>
-              <div className="space-y-4 text-gray-600">
+              <div className="space-y-4 text-white">
                 <p>
                   EURODOOR kompaniyasi sifatida biz har bir uyning xavfsizligini ta'minlash uchun eng zamonaviy texnologiyalar va yuqori sifatli materiallardan foydalanib eshiklar ishlab chiqaramiz.
                 </p>
@@ -76,31 +76,31 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
 
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex items-start gap-3">
-                  <Shield className="h-6 w-6 text-[#D4AF37] mt-1" />
+                  <Shield className="h-6 w-6 text-[#E32C27] mt-1" />
                   <div>
-                    <h4 className="font-semibold text-[#1A1A1A] mb-1">Xavfsizlik</h4>
-                    <p className="text-sm text-gray-600">Eng yuqori xavfsizlik standartlari</p>
+                    <h4 className="font-semibold text-white mb-1">Xavfsizlik</h4>
+                    <p className="text-sm text-white">Eng yuqori xavfsizlik standartlari</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Award className="h-6 w-6 text-[#D4AF37] mt-1" />
+                  <Award className="h-6 w-6 text-[#E32C27] mt-1" />
                   <div>
-                    <h4 className="font-semibold text-[#1A1A1A] mb-1">Sifat</h4>
-                    <p className="text-sm text-gray-600">Premium materiallar va ishlov</p>
+                    <h4 className="font-semibold text-white mb-1">Sifat</h4>
+                    <p className="text-sm text-white">Premium materiallar va ishlov</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Users className="h-6 w-6 text-[#D4AF37] mt-1" />
+                  <Users className="h-6 w-6 text-[#E32C27] mt-1" />
                   <div>
-                    <h4 className="font-semibold text-[#1A1A1A] mb-1">Xizmat</h4>
-                    <p className="text-sm text-gray-600">Professional yondashuv</p>
+                    <h4 className="font-semibold text-white mb-1">Xizmat</h4>
+                    <p className="text-sm text-white">Professional yondashuv</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <MapPin className="h-6 w-6 text-[#D4AF37] mt-1" />
+                  <MapPin className="h-6 w-6 text-[#E32C27] mt-1" />
                   <div>
-                    <h4 className="font-semibold text-[#1A1A1A] mb-1">Yetkazib berish</h4>
-                    <p className="text-sm text-gray-600">Toshkent bo'ylab bepul yetkazib berish</p>
+                    <h4 className="font-semibold text-white mb-1">Yetkazib berish</h4>
+                    <p className="text-sm text-white">Toshkent bo'ylab bepul yetkazib berish</p>
                   </div>
                 </div>
               </div>
