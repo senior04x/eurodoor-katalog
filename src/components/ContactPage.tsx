@@ -60,8 +60,8 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-white mb-1">Telefon</h3>
-                      <p className="text-white"><a href="tel:+998900000000">+998 90 000 00 00</a></p>
-                      <p className="text-white"><a href="tel:+998900000000">+998 90 000 00 00</a></p>
+                      <p className="text-white">+998 90 000 00 00</p>
+                      <p className="text-white">+998 90 000 00 00</p>
                     </div>
                   </div>
 
