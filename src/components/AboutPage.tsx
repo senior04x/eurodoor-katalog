@@ -26,10 +26,10 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
       <section className="bg-black py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl font-bold text-[#1A1A1A] mb-6">
+            <h1 className="text-4xl font-bold text-white mb-6">
               EURODOOR haqida
             </h1>
-            <p className="text-lg text-gray-600 leading-relaxed">
+            <p className="text-lg text-white leading-relaxed">
               EURODOOR kompaniyasi 2014-yilda tashkil etilgan bo'lib, yuqori sifatli temir va MDF eshiklar ishlab chiqarish sohasida yetakchi o'rinni egallaydi. Bizning asosiy maqsadimiz - mijozlarimizga xavfsizlik va estetikani birlashtirgan zamonaviy eshiklar taqdim etishdir.
             </p>
           </div>
@@ -37,7 +37,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-[#1A1A1A] text-white">
+      <section className="py-16 bg-[#422870] text-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -120,24 +120,24 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
       </section>
 
       {/* Certificates */}
-      <section className="py-16 bg-[#F5F5F5]">
+      <section className="py-16 bg-black">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-[#1A1A1A] mb-4">
+            <h2 className="text-3xl font-bold text-white mb-4">
               Sertifikatlar va standartlar
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-white max-w-2xl mx-auto">
               Bizning barcha mahsulotlarimiz xalqaro standartlarga javob beradi va tegishli sertifikatlarga ega
             </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {certificates.map((cert, index) => (
-              <div key={index} className="bg-white rounded-lg p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+              <div key={index} className="bg-[#422870] rounded-lg p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
                 <div className="w-16 h-16 bg-[#D4AF37]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Award className="h-8 w-8 text-[#D4AF37]" />
+                  <Award className="h-8 w-8 text-[#E32C27]" />
                 </div>
-                <h3 className="font-semibold text-[#1A1A1A]">{cert}</h3>
+                <h3 className="font-semibold text-white">{cert}</h3>
               </div>
             ))}
           </div>
@@ -155,7 +155,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
           </p>
           <button 
             onClick={() => onNavigate('contact')}
-            className="bg-[#D4AF37] text-black px-8 py-4 font-semibold rounded-lg hover:bg-[#B8941F] transition-colors"
+            className="bg-[#E32C27] text-white px-8 py-4 font-semibold rounded-lg hover:bg-[#F43737] transition-colors"
           >
             Aloqa ma'lumotlari
           </button>
