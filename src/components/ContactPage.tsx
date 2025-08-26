@@ -60,8 +60,8 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-white mb-1">Telefon</h3>
-                      <p className="text-white">+998 90 000 00 00</p>
-                      <p className="text-white">+998 90 000 00 00</p>
+                      <p className="text-white">+998 90 123 45 67</p>
+                      <p className="text-white">+998 91 234 56 78</p>
                     </div>
                   </div>
 
@@ -132,7 +132,7 @@ export default function ContactPage() {
                   <div className="text-center text-gray-500">
                     <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
                     <p>Google Maps</p>
-                     <iframe src="https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d1998.5340553151188!2d69.24062708578978!3d41.36500662946383!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNDHCsDIxJzU0LjIiTiA2OcKwMTQnMzAuNCJF!5e0!3m2!1suz!2s!4v1732125780839!5m2!1suz!2s" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <p className="text-sm">Interaktiv xarita joylashadigan joy</p>
                   </div>
                 </div>
               </div>
