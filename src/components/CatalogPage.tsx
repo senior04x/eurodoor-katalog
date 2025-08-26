@@ -19,7 +19,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     {
       id: 'euro-model1',
       name: 'EURO Model-1 Metal Door',
-      image: '/image/model1.jpg',
+      image: 'https://iili.io/2XPGae9.png',
       material: 'Metall + MDF',
       security: 'A+ sinf',
       dimensions: '2000x900mm',
@@ -28,7 +28,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     {
       id: 'euro-model2',
       name: 'EURO Model-2 Security Door',
-      image: '/image/model2.jpg',
+      image: 'https://iili.io/2XiBAMJ.png',
       material: 'Po\'lat + MDF',
       security: 'Premium',
       dimensions: '2100x950mm',
@@ -37,7 +37,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     {
       id: 'euro-model3',
       name: 'EURO Model-3 Classic Door',
-      image: '/image/model3.jpg',
+      image: 'https://iili.io/2XiBwS2.png',
       material: 'Metall + Shisha',
       security: 'A sinf',
       dimensions: '2000x850mm',
@@ -46,7 +46,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     {
       id: 'euro-model4',
       name: 'EURO Model-4 Design Door',
-      image: '/image/model4.jpg',
+      image: 'https://iili.io/2XPGzWG.png',
       material: 'Metall + Yog\'och',
       security: 'A+ sinf',
       dimensions: '2100x900mm',
@@ -55,7 +55,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     {
       id: 'euro-model5',
       name: 'EURO Model-5 Premium Door',
-      image: '/image/model5.jpg',
+      image: 'https://iili.io/2Xige71.jpg',
       material: 'Premium po\'lat',
       security: 'Ultra',
       dimensions: '2200x1000mm',
@@ -64,7 +64,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     {
       id: 'euro-model6',
       name: 'EURO Model-6 Luxury Door',
-      image: '/image/model6.jpg',
+      image: 'https://iili.io/2Xir2Y7.jpg',
       material: 'Metall + Natutal yog\'och',
       security: 'A+ sinf',
       dimensions: '2100x950mm',
