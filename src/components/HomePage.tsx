@@ -25,17 +25,11 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black bg-fixed bg-cover bg-center" 
+     style={{ backgroundImage: "url('https://iili.io/KdgdhYB.jpg')" }}>
       {/* Hero Section */}
       <section className="relative h-[70vh] overflow-hidden">
-        <div className="absolute inset-0">
-          <ImageWithFallback
-            src="https://iili.io/KdgdhYB.jpg"
-            alt="Temir eshik"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
-        </div>
+  
         
         <div className="relative container mx-auto px-4 h-full flex items-center">
           <div className="max-w-2xl text-white bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl">
