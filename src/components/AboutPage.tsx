@@ -31,7 +31,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
       {/* Kontent — fonnning ustida turadi */}
       <div className="relative z-10">
         {/* Hero Section */}
-        <section className="bg-white/10 rounded-2xl p-8 py-16">
+        <section className="bg-white/0 rounded-2xl m-4 p-8 py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-4xl font-bold text-white mb-6">
@@ -49,7 +49,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
         </section>
 
         {/* Stats Section */}
-        <section className="py-16 bg-white/10 rounded-2xl p-8 text-white">
+        <section className="py-16 bg-white/0 rounded-2xl m-4 p-8 text-white">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
@@ -65,7 +65,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
         </section>
 
         {/* Company Info */}
-        <section className="py-16 bg-white/10 rounded-2xl p-8">
+        <section className="py-16 bg-white/0 m-4 rounded-2xl p-8">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
@@ -145,7 +145,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
         </section>
 
         {/* Certificates */}
-        <section className="py-16 bg-white/10 rounded-2xl p-8">
+        <section className="py-16 bg-white/0 m-4 rounded-2xl p-8">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-white mb-4">
@@ -174,7 +174,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
         </section>
 
         {/* Contact CTA */}
-        <section className="py-16 bg-white/10 rounded-2xl p-8 text-white">
+        <section className="py-16 bg-white/0 m-4 rounded-2xl p-8 text-white">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-6">Biz bilan hamkorlik qiling</h2>
             <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
