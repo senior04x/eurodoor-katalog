@@ -29,13 +29,13 @@ export default function ContactPage() {
          style={{ backgroundImage: "url('https://iili.io/Kd4L7wv.jpg" }}>
       
       {/* Header */}
-      <section className="bg-black py-16">
+      <section className="bg-white/10 backdrop-blur-xl rounded-2xl py-16 shadow-2xl border border-white/20">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-white mb-4">
               Aloqa
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-white max-w-2xl mx-auto">
               Sizga kerakli eshikni tanlashda yordam berish uchun biz bilan bog'laning. 
               Mutaxassislarimiz bepul maslahat va o'lchash xizmati taklif qiladi.
             </p>
@@ -48,60 +48,60 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Information */}
             <div className="space-y-8">
-              <div className="bg-white rounded-lg p-6 shadow-lg">
-                <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">
+             <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
+                <h2 className="text-2xl font-bold text-white mb-6">
                   Bog'lanish ma'lumotlari
                 </h2>
 
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Phone className="h-6 w-6 text-[#D4AF37]" />
+                      <Phone className="h-6 w-6 text-[#DE32C27]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#1A1A1A] mb-1">Telefon</h3>
-                      <p className="text-gray-600">+998 90 123 45 67</p>
-                      <p className="text-gray-600">+998 91 234 56 78</p>
+                      <h3 className="font-semibold text-white mb-1">Telefon</h3>
+                      <p className="text-white">+998 90 123 45 67</p>
+                      <p className="text-white">+998 91 234 56 78</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <MessageCircle className="h-6 w-6 text-[#D4AF37]" />
+                      <MessageCircle className="h-6 w-6 text-[#DE32C27]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#1A1A1A] mb-1">Telegram</h3>
-                      <p className="text-gray-600">@eurodoor_uz</p>
+                      <h3 className="font-semibold text-white mb-1">Telegram</h3>
+                      <p className="text-white">@eurodoor_uz</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Instagram className="h-6 w-6 text-[#D4AF37]" />
+                      <Instagram className="h-6 w-6 text-[#DE32C27]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#1A1A1A] mb-1">Instagram</h3>
-                      <p className="text-gray-600">@eurodoor.uz</p>
+                      <h3 className="font-semibold text-white mb-1">Instagram</h3>
+                      <p className="text-white">@eurodoor.uz</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Mail className="h-6 w-6 text-[#D4AF37]" />
+                      <Mail className="h-6 w-6 text-[#DE32C27]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#1A1A1A] mb-1">Email</h3>
-                      <p className="text-gray-600">info@eurodoor.uz</p>
+                      <h3 className="font-semibold text-white mb-1">Email</h3>
+                      <p className="text-white">info@eurodoor.uz</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <MapPin className="h-6 w-6 text-[#D4AF37]" />
+                      <MapPin className="h-6 w-6 text-[#DE32C27]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#1A1A1A] mb-1">Manzil</h3>
-                      <p className="text-gray-600">
+                      <h3 className="font-semibold text-white mb-1">Manzil</h3>
+                      <p className="text-white">
                         Toshkent shahar, Sergeli tumani<br />
                         Buyuk Ipak Yo'li ko'chasi, 12-uy
                       </p>
@@ -110,11 +110,11 @@ export default function ContactPage() {
 
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Clock className="h-6 w-6 text-[#D4AF37]" />
+                      <Clock className="h-6 w-6 text-[#DE32C27]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#1A1A1A] mb-1">Ish vaqti</h3>
-                      <p className="text-gray-600">
+                      <h3 className="font-semibold text-white mb-1">Ish vaqti</h3>
+                      <p className="text-white">
                         Dushanba - Shanba: 9:00 - 19:00<br />
                         Yakshanba: 10:00 - 17:00
                       </p>
