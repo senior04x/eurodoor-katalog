@@ -25,7 +25,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5]"
+    <div className="min-h-screen bg-[#F5F5F5] bg-fixed bg-cover bg-center"
          style={{ backgroundImage: "url('https://iili.io/Kd4L7wv.jpg" }}>
       
       {/* Header */}
