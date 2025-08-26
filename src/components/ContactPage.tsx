@@ -47,7 +47,7 @@ export default function ContactPage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Information */}
-            <div className="space-y-8">
+            <div className="flex flex-col md:flex-row gap-8">
              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
                 <h2 className="text-2xl font-bold text-white mb-6">
                   Bog'lanish ma'lumotlari
@@ -159,8 +159,8 @@ export default function ContactPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4">
-                <Phone className="h-8 w-8 text-black" />
+              <div className="w-16 h-16 bg-[#E32C27] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Phone className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Bepul maslahat</h3>
               <p className="text-gray-300">
@@ -169,8 +169,8 @@ export default function ContactPage() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4">
-                <MapPin className="h-8 w-8 text-black" />
+              <div className="w-16 h-16 bg-[#E32C27] rounded-full flex items-center justify-center mx-auto mb-4">
+                <MapPin className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Bepul o'lchash</h3>
               <p className="text-gray-300">
@@ -179,8 +179,8 @@ export default function ContactPage() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="h-8 w-8 text-black" />
+              <div className="w-16 h-16 bg-[#E32C27] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Clock className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Tez o'rnatish</h3>
               <p className="text-gray-300">
