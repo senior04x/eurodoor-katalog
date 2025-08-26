@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Phone, MessageCircle, Instagram, MapPin, Clock, Mail } from 'lucide-react';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -25,11 +26,19 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5]">
+      <div className="absolute inset-0">
+          <ImageWithFallback
+            src="https://iili.io/KdgdhYB.jpg"
+            alt="Temir eshik"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+        </div>
       {/* Header */}
-      <section className="bg-white py-16">
+      <section className="bg-black py-16">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-[#1A1A1A] mb-4">
+            <h1 className="text-4xl font-bold text-white mb-4">
               Aloqa
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
