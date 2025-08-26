@@ -28,7 +28,7 @@ return (
       style={{ backgroundImage: "url('https://iili.io/Kd4L7wv.jpg')" }}
     />
     {/* Yengil qoraytiruvchi overlay + mayin blur */}
-    <div className="pointer-events-none fixed inset-0 -z-10 bg-transparent backdrop-blur-[2px]" />
+    <div className="pointer-events-none fixed inset-0 -z-10 backdrop-blur-[2px]" />
 
     {/* Kontent — fonnning ustida turadi */}
     <div className="relative z-10">
