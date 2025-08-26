@@ -47,7 +47,7 @@ export default function ContactPage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Information */}
-            <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex flex-row justify-between items-center">
              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
                 <h2 className="text-2xl font-bold text-white mb-6">
                   Bog'lanish ma'lumotlari
