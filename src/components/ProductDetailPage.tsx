@@ -300,14 +300,14 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Product Image */}
-            <div className="space-y-4">
-              <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-xl rounded-full p-3 border border-white/30 shadow-lg">
-                <ImageWithFallback
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-96 object-cover rounded-lg"
-                />
-              </div>
+          <div className="space-y-4">
+  <div className="bg-white/20 backdrop-blur-xl rounded-2xl p-3 border border-white/30 shadow-lg aspect-square flex items-center justify-center">
+    <ImageWithFallback
+      src={product.image}
+      alt={product.name}
+      className="w-full h-full object-cover rounded-lg"
+    />
+  </div>
               
               {/* Technical Drawing */}
               <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
