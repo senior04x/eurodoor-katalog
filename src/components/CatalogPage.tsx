@@ -118,7 +118,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {/* Header Section */}
       <section className="bg-gradient-to-b from-black/60 to-black/30 backdrop-blur-xl py-16">
         <div className="container mx-auto px-4">
