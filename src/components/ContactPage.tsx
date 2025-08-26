@@ -25,15 +25,9 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5]">
-      <div className="absolute inset-0">
-          <ImageWithFallback
-            src="https://iili.io/KdgdhYB.jpg"
-            alt="Temir eshik"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
-        </div>
+    <div className="min-h-screen bg-[#F5F5F5]"
+         style={{ backgroundImage: "url('https://iili.io/Kd4L7wv.jpg" }}>
+      
       {/* Header */}
       <section className="bg-black py-16">
         <div className="container mx-auto px-4">
