@@ -301,7 +301,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Product Image */}
             <div className="space-y-4">
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
+              <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-xl rounded-full p-3 border border-white/30 shadow-lg">
                 <ImageWithFallback
                   src={product.image}
                   alt={product.name}
@@ -315,13 +315,13 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                   <Ruler className="h-5 w-5 text-white" />
                   Texnik chizma
                 </h3>
-                <div className="bg-white/5 backdrop-blur-sm rounded-xl h-48 flex items-center justify-center border-2 border-dashed border-white/30 overflow-hidden shadow-lg">
-                  <ImageWithFallback
-                    src="/image/chizmadoor.jpg"
-                    alt="Texnik chizma - O'rtadan kesilgan ko'rinish"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <div className="bg-white/5 backdrop-blur-sm rounded-xl aspect-square flex items-center justify-center border-2 border-dashed border-white/30 overflow-hidden shadow-lg">
+  <ImageWithFallback
+    src="https://iili.io/Kdgszdb.jpg"
+    alt="Texnik chizma - O'rtadan kesilgan ko'rinish"
+    className="w-full h-full object-cover"
+  />
+</div>
               </div>
             </div>
 
