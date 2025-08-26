@@ -22,17 +22,18 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
 
 return (
   <div className="relative min-h-screen">
-    {/* Fixed background — har doim tagda */}
+    {/* Fixed background — doimo tagda */}
     <div
-      className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center"
+      className="pointer-events-none fixed inset-0 -z-20 bg-cover bg-center"
       style={{ backgroundImage: "url('https://iili.io/Kd4L7wv.jpg')" }}
     />
-    <div className="pointer-events-none fixed inset-0 -z-10 bg-black/30" />
+    {/* Yengil qoraytiruvchi overlay + mayin blur */}
+    <div className="pointer-events-none fixed inset-0 -z-10 bg-black/20 backdrop-blur-[2px]" />
 
     {/* Kontent — fonnning ustida turadi */}
     <div className="relative z-10">
       {/* Hero Section */}
-      <section className="bg-transparent backdrop-blur-md rounded-2xl p-8 py-16">
+      <section className="bg-white/10 backdrop-blur-md rounded-2xl p-8 py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl font-bold text-white mb-6">
@@ -50,7 +51,7 @@ return (
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-transparent backdrop-blur-md rounded-2xl p-8 text-white">
+      <section className="py-16 bg-white/10 backdrop-blur-md rounded-2xl p-8 text-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -58,7 +59,7 @@ return (
                 <div className="text-3xl md:text-4xl font-bold text-[#E32C27] mb-2">
                   {stat.number}
                 </div>
-                <div className="text-sm text-gray-300">{stat.label}</div>
+                <div className="text-sm text-gray-200">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -66,7 +67,7 @@ return (
       </section>
 
       {/* Company Info */}
-      <section className="py-16 bg-transparent backdrop-blur-md rounded-2xl p-8">
+      <section className="py-16 bg-white/10 backdrop-blur-md rounded-2xl p-8">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -133,7 +134,7 @@ return (
             </div>
 
             <div className="space-y-6">
-              <div className="bg-gray-100 rounded-lg h-64 flex items-center justify-center">
+              <div className="bg-white/10 backdrop-blur-md rounded-lg h-64 flex items-center justify-center">
                 <ImageWithFallback
                   src="https://images.unsplash.com/photo-1629649933424-42da2426e3ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBkb29yJTIwc3RlZWx8ZW58MXx8fHwxNzU2MTA4MjM0fDA&ixlib=rb-4.1.0&q=80&w=1080"
                   alt="EURODOOR zavodi"
@@ -146,7 +147,7 @@ return (
       </section>
 
       {/* Certificates */}
-      <section className="py-16 bg-transparent backdrop-blur-md rounded-2xl p-8">
+      <section className="py-16 bg-white/10 backdrop-blur-md rounded-2xl p-8">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-4">
@@ -162,9 +163,9 @@ return (
             {certificates.map((cert, index) => (
               <div
                 key={index}
-                className="bg-black rounded-lg p-6 text-center shadow-lg hover:shadow-xl transition-shadow"
+                className="bg-white/10 backdrop-blur-md rounded-lg p-6 text-center shadow-lg hover:shadow-xl transition-shadow"
               >
-                <div className="w-16 h-16 bg[#D4AF37]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-[#D4AF37]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Award className="h-8 w-8 text-[#E32C27]" />
                 </div>
                 <h3 className="font-semibold text-white">{cert}</h3>
@@ -175,7 +176,7 @@ return (
       </section>
 
       {/* Contact CTA */}
-      <section className="py-16 bg-transparent backdrop-blur-md rounded-2xl p-8 text-white">
+      <section className="py-16 bg-white/10 backdrop-blur-md rounded-2xl p-8 text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Biz bilan hamkorlik qiling</h2>
           <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
@@ -193,6 +194,7 @@ return (
     </div>
   </div>
 );
+
 
 
 }
