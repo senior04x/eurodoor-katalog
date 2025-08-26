@@ -23,7 +23,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
   return (
     <div className="min-h-screen bg-[#F5F5F5]">
       {/* Hero Section */}
-      <section className="bg-white py-16">
+      <section className="bg-black py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl font-bold text-[#1A1A1A] mb-6">
@@ -42,7 +42,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-[#D4AF37] mb-2">
+                <div className="text-3xl md:text-4xl font-bold text-[#E32C27] mb-2">
                   {stat.number}
                 </div>
                 <div className="text-sm text-gray-300">
