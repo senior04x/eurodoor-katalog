@@ -149,7 +149,7 @@ export default function ContactPage() {
       </div>
 
       {/* Service Info */}
-      <section className="py-16 bg-[#1A1A1A] text-white">
+      <section className="py-16 bg-white/10 backdrop-blur-xl rounded-2xl mx-4 text-white border border-white/20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">
