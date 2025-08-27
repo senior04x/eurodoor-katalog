@@ -29,7 +29,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
             <ImageWithFallback
               src="https://iili.io/K2WCLJV.png"
               alt="EURODOOR Logo"
-              className="h-20 w-auto"
+              className="h-10 w-auto"
             />
           </div>
 
