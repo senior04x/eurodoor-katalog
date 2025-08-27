@@ -361,11 +361,11 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                   </ul>
                 </div>
 
-                {/* Order Button */}
+                {/* Order Button
                 <button className="w-full bg-white/0 backdrop-blur-sm text-white py-4 px-6 rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2 border border-white/30 shadow-lg hover:shadow-xl">
                   <Phone className="h-5 w-5" />
                   Buyurtma berish
-                </button>
+                </button> */}
               </div>
 
               {/* Specifications */}
