@@ -20,7 +20,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
   return (
     <header className="bg-white/5 backdrop-blur-sm border-b border-none sticky top-0 z-50 shadow-lg m-4 rounded">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-30">
+        <div className="flex items-center justify-between h-10">
           {/* Logo */}
           <div 
             onClick={() => onNavigate('home')}
