@@ -25,7 +25,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
       {/* Fixed background — rasmga blur beramiz */}
       <div
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center blur-[2px]"
-        style={{ backgroundImage: "url('https://iili.io/Kd4L7wv.jpg')" }}
+        style={{ backgroundImage: "url('https://iili.io/K2Em0Cu.png')" }}
       />
 
       {/* Kontent — fonnning ustida turadi */}
@@ -174,7 +174,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
         </section>
 
         {/* Contact CTA */}
-        <section className="py-16 bg-white/0 m-4 rounded-2xl p-8 text-white">
+        <section className="py-16 bg-white/0qwwqwqqwwq m-4 rounded-2xl p-8 text-white">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-6">Biz bilan hamkorlik qiling</h2>
             <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">

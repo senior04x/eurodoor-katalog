@@ -47,7 +47,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       </p>
       <button 
         onClick={() => onNavigate('catalog')}
-        className="bg-white/10 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center gap-2 group border border-white/30 shadow-lg hover:shadow-xl mx-auto"
+        className="bg-white/5 backdrop-blur-sm text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/10 transition-all duration-300 flex items-center gap-2 group border border-white/30 shadow-lg hover:shadow-xl mx-auto"
       >
         Katalogni ko'rish
         <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -58,7 +58,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
 
     {/* Features Section */}
-    <section className="py-20 bg-gradient-to-b from-black/40 to-black/20 backdrop-blur-md">
+    <section className="py-20 bg-gradient-to-b from-white/20 to-white/10 backdrop-blur-md">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold text-white mb-4">
@@ -89,7 +89,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     </section>
 
     {/* CTA Section */}
-    <section className="py-16 bg-gradient-to-r from-black/60 to-black/40 backdrop-blur-md text-white">
+    <section className="py-16 bg-gradient-to-r from-black/30 to-black/15 backdrop-blur-md text-white">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold mb-6">
           Bepul maslahat va o'lchash xizmati
