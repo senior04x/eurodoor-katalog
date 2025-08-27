@@ -1,5 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@font-face {
+  font-family: 'TT Firs Neue';
+  src: url('/src/styles/font/TT Firs Neue Trial Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TT Firs Neue';
+  src: url('/src/styles/font/TT Firs Neue Trial Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
 
 /* Removed Tailwind-specific @custom-variant; not needed for plain CSS */
 
@@ -11,7 +22,7 @@
   --card-foreground: #ffffff;
   --popover: rgba(255, 255, 255, 0.1);
   --popover-foreground: #ffffff;
-  --primary: #000000;
+  --primary: #00000000;
   --primary-foreground: #ffffff;
   --secondary: rgba(255, 255, 255, 0.1);
   --secondary-foreground: #ffffff;
@@ -45,11 +56,11 @@
 }
 
 .dark {
-  --background: #0a0a0a;
+  --background: #0a0a0a00;
   --foreground: oklch(0.985 0 0);
-  --card: #111111;
+  --card: #11111100;
   --card-foreground: oklch(0.985 0 0);
-  --popover: #111111;
+  --popover: #11111100;
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.205 0 0);
@@ -152,3 +163,6 @@ body {
 html {
   font-size: var(--font-size);
 }
+
+
+

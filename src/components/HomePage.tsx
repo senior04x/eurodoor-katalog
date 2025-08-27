@@ -36,7 +36,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     {/* Hero Section */}
   <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
   <div className="relative container mx-auto px-4 h-full flex items-center justify-center">
-    <div className="max-w-2xl text-white bg-none backdrop-blur-md rounded-2xl p-8 border border-none text-center">
+    <div className="max-w-2xl text-white bg-none rounded-2xl p-8 border border-none text-center">
       <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
         Sizning uyingiz xavfsizligi bizning 
         <span className="text-white"> ustuvorligimiz</span>
@@ -47,7 +47,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       </p>
       <button 
         onClick={() => onNavigate('catalog')}
-        className="bg-white/20 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 flex items-center gap-2 group border border-white/30 shadow-lg hover:shadow-xl mx-auto"
+        className="bg-white/10 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center gap-2 group border border-white/30 shadow-lg hover:shadow-xl mx-auto"
       >
         Katalogni ko'rish
         <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
