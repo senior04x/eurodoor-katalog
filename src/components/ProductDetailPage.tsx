@@ -282,7 +282,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   const product = getProductData(productId);
 
   return (
-    <div className="relative min-h-screen bg-black">
+    <div className="relative min-h-screen">
         {/* Fixed background — rasmga blur beramiz */}
       <div
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center blur-[2px]"
