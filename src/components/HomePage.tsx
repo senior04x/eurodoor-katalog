@@ -34,27 +34,28 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     <div className="fixed inset-0 bg-black/30" />
 
     {/* Hero Section */}
-    <section className="relative h-[70vh] overflow-hidden justify-center itemes-center">
-      <div className="relative container mx-auto px-4 h-full flex items-center">
-        <div className="max-w-2xl text-white bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl justify-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-center">
-            Sizning uyingiz xavfsizligi bizning 
-            <span className="text-white"> ustuvorligimiz</span>
-          </h1>
-          <p className="text-xl mb-8 opacity-90 text-center">
-            Zamonaviy dizayn va yuqori xavfsizlik standartlarini birlashtirgan 
-            premium temir va MDF eshiklar
-          </p>
-          <button 
-            onClick={() => onNavigate('catalog')}
-            className="bg-white/20 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 flex items-center gap-2 group border border-white/30 shadow-lg hover:shadow-xl"
-          >
-            Katalogni ko'rish
-            <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
-      </div>
-    </section>
+  <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
+  <div className="relative container mx-auto px-4 h-full flex items-center justify-center">
+    <div className="max-w-2xl text-white bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl text-center">
+      <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+        Sizning uyingiz xavfsizligi bizning 
+        <span className="text-white"> ustuvorligimiz</span>
+      </h1>
+      <p className="text-xl mb-8 opacity-90">
+        Zamonaviy dizayn va yuqori xavfsizlik standartlarini birlashtirgan 
+        premium temir va MDF eshiklar
+      </p>
+      <button 
+        onClick={() => onNavigate('catalog')}
+        className="bg-white/20 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 flex items-center gap-2 group border border-white/30 shadow-lg hover:shadow-xl mx-auto"
+      >
+        Katalogni ko'rish
+        <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+      </button>
+    </div>
+  </div>
+</section>
+
 
     {/* Features Section */}
     <section className="py-20 bg-gradient-to-b from-black/40 to-black/20 backdrop-blur-md">
