@@ -29,7 +29,7 @@ return (
     {/* Fixed background */}
     <div
       className="fixed inset-0 bg-cover bg-center"
-      style={{ backgroundImage: "url('https://iili.io/Kd4L7wv.jpg')" }}
+      style={{ backgroundImage: "url('https://iili.io/K2Em0Cu.png')" }}
     />
     <div className="fixed inset-0 bg-black/30" />
 
