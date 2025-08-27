@@ -118,7 +118,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   ];
 
   return (
-    <div className="relativ min-h-screen bg-black">
+    <div className="relative min-h-screen bg-black">
        {/* Fixed background */}
     <div
       className="fixed inset-0 bg-cover bg-center"

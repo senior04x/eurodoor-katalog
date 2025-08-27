@@ -282,7 +282,12 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   const product = getProductData(productId);
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="relative min-h-screen bg-black">
+        {/* Fixed background — rasmga blur beramiz */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center blur-[2px]"
+        style={{ backgroundImage: "url('https://iili.io/K2Em0Cu.png')" }}
+      />
       {/* Back Navigation */}
       <div className="bg-black/60 backdrop-blur-xl border-b border-white/20 shadow-lg">
         <div className="container mx-auto px-4 py-4">
