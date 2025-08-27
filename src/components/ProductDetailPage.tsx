@@ -306,7 +306,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Product Image */}
           <div className="space-y-4">
-  <div className="bg-white/20 backdrop-blur-xl rounded-2xl p-3 border border-white/30 shadow-lg aspect-square flex items-center justify-center">
+  <div className="bg-white/0 backdrop-blur-sm rounded-2xl p-3 border border-white/0 shadow-lg aspect-square flex items-center justify-center">
     <ImageWithFallback
       src={product.image}
       alt={product.name}
@@ -315,12 +315,12 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   </div>
               
               {/* Technical Drawing */}
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
+              <div className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Ruler className="h-5 w-5 text-white" />
                   Texnik chizma
                 </h3>
-                <div className="bg-white/5 backdrop-blur-sm rounded-xl aspect-square flex items-center justify-center border-2 border-dashed border-white/30 overflow-hidden shadow-lg">
+                <div className="bg-white/0 backdrop-blur-sm rounded-xl aspect-square flex items-center justify-center border-2 border-dashed border-white/0 overflow-hidden shadow-lg">
   <ImageWithFallback
     src="https://iili.io/Kdgszdb.jpg"
     alt="Texnik chizma - O'rtadan kesilgan ko'rinish"
