@@ -34,14 +34,14 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     <div className="fixed inset-0 bg-black/30" />
 
     {/* Hero Section */}
-    <section className="relative h-[70vh] overflow-hidden">
+    <section className="relative h-[70vh] overflow-hidden justify-center itemes-center">
       <div className="relative container mx-auto px-4 h-full flex items-center">
-        <div className="max-w-2xl text-white bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+        <div className="max-w-2xl text-white bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl justify-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-center">
             Sizning uyingiz xavfsizligi bizning 
             <span className="text-white"> ustuvorligimiz</span>
           </h1>
-          <p className="text-xl mb-8 opacity-90">
+          <p className="text-xl mb-8 opacity-90 text-center">
             Zamonaviy dizayn va yuqori xavfsizlik standartlarini birlashtirgan 
             premium temir va MDF eshiklar
           </p>
