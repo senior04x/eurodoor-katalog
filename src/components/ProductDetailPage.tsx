@@ -289,7 +289,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
         style={{ backgroundImage: "url('https://iili.io/K2Em0Cu.png')" }}
       />
       {/* Back Navigation */}
-      <div className="bg-black/60 backdrop-blur-xl border-b border-white/20 shadow-lg">
+      <div className="shadow-lg">
         <div className="container mx-auto px-4 py-4">
                       <button
               onClick={() => onNavigate('catalog')}
