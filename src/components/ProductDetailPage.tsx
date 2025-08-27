@@ -332,7 +332,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
             {/* Product Details */}
             <div className="space-y-6">
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
+              <div className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0">
                 <h1 className="text-3xl font-bold text-white mb-4">
                   {product.name}
                 </h1>
@@ -362,14 +362,14 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                 </div>
 
                 {/* Order Button */}
-                <button className="w-full bg-white/20 backdrop-blur-md text-white py-4 px-6 rounded-xl font-semibold hover:bg-white/30 transition-all duration-300 flex items-center justify-center gap-2 border border-white/30 shadow-lg hover:shadow-xl">
+                <button className="w-full bg-white/0 backdrop-blur-sm text-white py-4 px-6 rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2 border border-white/30 shadow-lg hover:shadow-xl">
                   <Phone className="h-5 w-5" />
                   Buyurtma berish
                 </button>
               </div>
 
               {/* Specifications */}
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-white/20">
+              <div className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Award className="h-5 w-5 text-white" />
                   Texnik xususiyatlar
@@ -385,7 +385,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               </div>
 
               {/* Installation Info */}
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-2xl">
+              <div className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 border border-white/0 shadow-2xl">
                 <h3 className="text-lg font-semibold text-white mb-3">
                   O'rnatish bo'yicha tavsiyalar
                 </h3>
