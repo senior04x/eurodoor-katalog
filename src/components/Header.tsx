@@ -27,7 +27,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
             className="cursor-pointer"
           >
             <ImageWithFallback
-              src="https://iili.io/Fy0g33Q.png"
+              src="https://iili.io/2XPEgR9.png"
               alt="EURODOOR Logo"
               className="h-20 w-auto"
             />
