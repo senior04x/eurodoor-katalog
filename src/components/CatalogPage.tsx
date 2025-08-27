@@ -126,7 +126,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     />
     <div className="fixed inset-0 bg-black/30" />
       {/* Header Section */}
-      <section className="py-16">
+      <section className="bg-none backdrop-blur-xl py-16">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-white mb-4">
