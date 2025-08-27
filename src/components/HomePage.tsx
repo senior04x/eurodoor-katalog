@@ -36,7 +36,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     {/* Hero Section */}
   <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
   <div className="relative container mx-auto px-4 h-full flex items-center justify-center">
-    <div className="max-w-2xl text-white bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl text-center">
+    <div className="max-w-2xl text-white bg-none backdrop-blur-md rounded-2xl p-8 border border-none text-center">
       <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
         Sizning uyingiz xavfsizligi bizning 
         <span className="text-white"> ustuvorligimiz</span>
