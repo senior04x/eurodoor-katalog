@@ -11,7 +11,7 @@ interface DoorProduct {
   image: string;
   material: string;
   security: string;
-  dimensions: string; // format: "2000x900mm"
+  dimensions: string; // "2000x900mm"
   description: string;
 }
 
@@ -32,7 +32,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     { id: 'euro-model11', name: 'EURO Model-11 Ultimate Door', image: '/image/model11.jpg',          material: "Ultra Premium po'lat + MDF",            security: 'Ultimate', dimensions: '2200x1000mm', description: 'Eng yuqori darajadagi xavfsizlik va dizayn' }
   ];
 
-  // ---------- Helperlar ----------
+  // --- Helperlar ---
   const norm = (s: string) =>
     s.toLowerCase()
       .replace(/’/g, "'")
@@ -55,7 +55,6 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   };
 
   const parseHeight = (d: string) => {
-    // "2100x950mm" -> 2100
     const m = d.match(/(\d+)\s*x\s*\d+/i);
     return m ? parseInt(m[1], 10) : NaN;
   };
@@ -70,6 +69,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
 
   const [mode, setMode] = useState<GroupMode>('material');
   const [openKey, setOpenKey] = useState<string | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false); // one-click
 
   const grouped = useMemo(() => {
     const map = new Map<string, DoorProduct[]>();
@@ -78,22 +78,20 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(d);
     }
-    // Tartib: foydali bo‘limlar yuqorida
     const order =
       mode === 'material'
         ? ['Temir + MDF', 'MDF + MDF', 'Temir + Temir', "Temir + Yog'och", 'Temir + Shisha', 'Temir + Kompozit', 'Boshqa']
         : ['2000 mm seriya', '2100 mm seriya', '2200 mm seriya', 'Boshqa o‘lcham'];
 
-    const sortedEntries = Array.from(map.entries()).sort((a, b) => {
+    return Array.from(map.entries()).sort((a, b) => {
       const ai = order.indexOf(a[0]);
       const bi = order.indexOf(b[0]);
       return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
     });
-    return sortedEntries;
   }, [doors, mode]);
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen [overflow-anchor:none]">
       {/* Fixed background */}
       <div
         className="fixed inset-0 bg-cover bg-center"
@@ -107,21 +105,26 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
           <div className="text-center">
             <h1 className="text-4xl font-bold text-white mb-4">Eshiklar katalogi</h1>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Yuqori sifatli temir va MDF eshiklarimiz bilan tanishing. Har bir model maxsus
-              texnologiya asosida ishlab chiqarilgan.
+              Yuqori sifatli temir va MDF eshiklarimiz bilan tanishing. Har bir model maxsus texnologiya asosida ishlab chiqarilgan.
             </p>
 
-            {/* Rejim tanlash: Material / O'lcham */}
+            {/* Rejim tanlash */}
             <div className="mt-6 inline-flex rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl overflow-hidden">
               <button
+                type="button"
                 onClick={() => { setMode('material'); setOpenKey(null); }}
-                className={`px-4 py-2 text-sm font-semibold transition ${mode === 'material' ? 'bg-white/25 text-white' : 'text-gray-200 hover:bg-white/10'}`}
+                className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 border-transparent pb-1 ${
+                  mode === 'material' ? 'bg-white/25 text-white' : 'text-gray-200 hover:bg-white/10'
+                }`}
               >
                 Material bo‘yicha
               </button>
               <button
+                type="button"
                 onClick={() => { setMode('size'); setOpenKey(null); }}
-                className={`px-4 py-2 text-sm font-semibold transition ${mode === 'size' ? 'bg-white/25 text-white' : 'text-gray-200 hover:bg-white/10'}`}
+                className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 border-transparent pb-1 ${
+                  mode === 'size' ? 'bg-white/25 text-white' : 'text-gray-200 hover:bg-white/10'
+                }`}
               >
                 O‘lcham bo‘yicha
               </button>
@@ -132,7 +135,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
 
       {/* Accordion Bo‘limlar */}
       <section className="py-12">
-        <div className="container mx-auto px-4 space-y-6">
+        <div className="container mx-auto px-4 space-y-6 [overflow-anchor:none]">
           {grouped.map(([key, list]) => {
             const isOpen = openKey === key;
             return (
@@ -142,6 +145,8 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
               >
                 {/* Sarlavha */}
                 <button
+                  type="button"
+                  aria-expanded={isOpen}
                   onClick={() => setOpenKey(isOpen ? null : key)}
                   className="w-full flex items-center justify-between px-6 py-4 text-left"
                 >
@@ -164,15 +169,20 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
 
                 {/* Kontent */}
                 {isOpen && (
-                  <div className="px-6 pb-6">
+                  <div className="px-6 pb-6 [overflow-anchor:none]">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {list.map((door) => (
                         <div
                           key={door.id}
-                          className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/20 hover:scale-[1.02] transition"
+                          className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-white/20 transition-transform"
                         >
                           <div className="relative aspect-square overflow-hidden">
-                            <img src={door.image} alt={door.name} className="w-full h-full object-cover" />
+                            <img
+                              src={door.image}
+                              alt={door.name}
+                              loading="lazy"
+                              className="w-full h-full object-cover"
+                            />
                             <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-xl rounded-full p-3 border border-white/30 shadow-lg">
                               <Layers className="h-5 w-5 text-white" />
                               <span className="sr-only">Kesim ko‘rinishi</span>
@@ -186,12 +196,21 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                               <div><span className="font-medium">O‘lcham:</span> {door.dimensions}</div>
                             </div>
                             <p className="text-gray-300 text-sm mb-4">{door.description}</p>
+
+                            {/* ONE-CLICK: double-clickdan himoya */}
                             <button
-                              onClick={() => onNavigate('product', door.id)}
-                              className="w-full bg-white/20 backdrop-blur-md text-white py-3 px-4 rounded-xl font-semibold hover:bg-white/30 transition flex items-center justify-center gap-2 border border-white/30 shadow-lg"
+                              type="button"
+                              disabled={isNavigating}
+                              onClick={() => {
+                                if (isNavigating) return;
+                                setIsNavigating(true);
+                                onNavigate('product', door.id);
+                                // Eslatma: bu yerda ataylab scroll QILMADIK
+                              }}
+                              className="w-full bg-white/20 backdrop-blur-md text-white py-3 px-4 rounded-xl font-semibold hover:bg-white/30 disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 border border-white/30 shadow-lg"
                             >
                               <Eye className="h-4 w-4" />
-                              Batafsil ko‘rish
+                              {isNavigating ? 'Ochilmoqda…' : "Batafsil ko‘rish"}
                             </button>
                           </div>
                         </div>
