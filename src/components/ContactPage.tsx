@@ -158,7 +158,7 @@ return (
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="text-center">
-            <div className="w-16 h-16 bg-transparent rounded-full flex items-center justify-center mx-auto mb-4 border-white/10">
+            <div className="w-16 h-16 bg-transparent rounded-full flex items-center justify-center mx-auto mb-4 w-40 h-40 border border-white/10 rounded-full">
               <Phone className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Bepul maslahat</h3>
@@ -168,7 +168,7 @@ return (
           </div>
 
           <div className="text-center">
-            <div className="w-16 h-16 bg-bg-transparent rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10 rounded-md">
+            <div className="w-16 h-16 bg-bg-transparent rounded-full flex items-center justify-center mx-auto mb-4 w-40 h-40 border border-white/10 rounded-full">
               <MapPin className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Bepul o'lchash</h3>
@@ -178,7 +178,7 @@ return (
           </div>
 
           <div className="text-center">
-            <div className="w-16 h-16 bg-transparent rounded-full flex items-center justify-center mx-auto mb-4 border-white/10">
+            <div className="w-16 h-16 bg-transparent rounded-full flex items-center justify-center mx-auto mb-4 w-40 h-40 border border-white/10 rounded-full">
               <Clock className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Tez o'rnatish</h3>
