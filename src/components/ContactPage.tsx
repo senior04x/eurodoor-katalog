@@ -52,7 +52,7 @@ return (
         {/* Asosiy grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Information */}
-          <div className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl mx-4 py-16 shadow-2xl border border-white/20">
+          <div className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 mx-4 py-16 shadow-2xl border border-white/20">
             <h2 className="text-2xl font-bold text-white mb-6">
               Bog'lanish ma'lumotlari
             </h2>
@@ -60,7 +60,7 @@ return (
             <div className="space-y-6">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Phone className="h-6 w-6 text-[#E32C27]" />
+                  <Phone className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white mb-1">Telefon</h3>
@@ -71,7 +71,7 @@ return (
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <MessageCircle className="h-6 w-6 text-[#E32C27]" />
+                  <MessageCircle className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white mb-1">Telegram</h3>
@@ -81,7 +81,7 @@ return (
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Instagram className="h-6 w-6 text-[#E32C27]" />
+                  <Instagram className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white mb-1">Instagram</h3>
@@ -91,7 +91,7 @@ return (
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Mail className="h-6 w-6 text-[#E32C27]" />
+                  <Mail className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white mb-1">Email</h3>
@@ -101,7 +101,7 @@ return (
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <MapPin className="h-6 w-6 text-[#E32C27]" />
+                  <MapPin className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white mb-1">Manzil</h3>
@@ -128,7 +128,7 @@ return (
           </div>
 
           {/* Map */}
-          <div className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl mx-4 py-16 shadow-2xl border border-white/20">
+          <div className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 mx-4 py-16 shadow-2xl border border-white/20">
             <h3 className="text-xl font-semibold text-white mb-4">
               Bizning joylashuvimiz
             </h3>
@@ -150,7 +150,7 @@ return (
     </div>
 
     {/* Service Info */}
-    <section className="py-16 bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl mx-4 py-16 shadow-2xl border border-white/20">
+    <section className="py-16 bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 mx-4 py-16 shadow-2xl border border-white/20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Bizning xizmatlarimiz</h2>
@@ -158,7 +158,7 @@ return (
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="text-center">
-            <div className="w-16 h-16 bg-[#E32C27] rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-transparent rounded-full flex items-center justify-center mx-auto mb-4 border-white/10">
               <Phone className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Bepul maslahat</h3>
@@ -168,7 +168,7 @@ return (
           </div>
 
           <div className="text-center">
-            <div className="w-16 h-16 bg-[#E32C27] rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-bg-transparent rounded-full flex items-center justify-center mx-auto mb-4 border-white/10">
               <MapPin className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Bepul o'lchash</h3>
@@ -178,7 +178,7 @@ return (
           </div>
 
           <div className="text-center">
-            <div className="w-16 h-16 bg-[#E32C27] rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-transparent rounded-full flex items-center justify-center mx-auto mb-4 border-white/10">
               <Clock className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Tez o'rnatish</h3>
