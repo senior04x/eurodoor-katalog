@@ -128,7 +128,7 @@ return (
           </div>
 
           {/* Map */}
-          <div className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 mx-4 py-16 shadow-2xl border border-white/20">
+          <div className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 py-16 shadow-2xl border border-white/20">
             <h3 className="text-xl font-semibold text-white mb-4">
               Bizning joylashuvimiz
             </h3>
