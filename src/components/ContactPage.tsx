@@ -34,7 +34,7 @@ return (
     <div className="fixed inset-0 bg-black/30" />
 
     {/* Header */}
-    <section className="bg-white/10 backdrop-blur-sm rounded-2xl mx-4 py-16 shadow-2xl border border-white/20">
+    <section className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl mx-4 py-16 shadow-2xl border border-white/20">
       <div className="container mx-auto px-4">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Aloqa</h1>
@@ -52,7 +52,7 @@ return (
         {/* Asosiy grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Information */}
-          <div className="w-full bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/20">
+          <div className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl mx-4 py-16 shadow-2xl border border-white/20">
             <h2 className="text-2xl font-bold text-white mb-6">
               Bog'lanish ma'lumotlari
             </h2>
@@ -128,7 +128,7 @@ return (
           </div>
 
           {/* Map */}
-          <div className="w-full bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/20">
+          <div className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl mx-4 py-16 shadow-2xl border border-white/20">
             <h3 className="text-xl font-semibold text-white mb-4">
               Bizning joylashuvimiz
             </h3>
@@ -150,7 +150,7 @@ return (
     </div>
 
     {/* Service Info */}
-    <section className="py-16 bg-white/10 backdrop-blur-sm rounded-2xl mx-4 text-white border border-white/20">
+    <section className="py-16 bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl mx-4 py-16 shadow-2xl border border-white/20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Bizning xizmatlarimiz</h2>
