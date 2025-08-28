@@ -34,7 +34,7 @@ return (
     <div className="fixed inset-0 bg-black/30" />
 
     {/* Header */}
-    <section className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl mx-4 py-16 shadow-2xl border border-white/20">
+    <section className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl mx-4 py-16 shadow-2xl border border-white/20 mb-0">
       <div className="container mx-auto px-4">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Aloqa</h1>
@@ -47,7 +47,7 @@ return (
       </div>
     </section>
 
-    <div className="py-12">
+    <div className="py-12 mt-0">
       <div className="container mx-auto px-4">
         {/* Asosiy grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
