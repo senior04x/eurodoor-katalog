@@ -52,7 +52,7 @@ return (
         {/* Asosiy grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Information */}
-          <div className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 mx-4 py-16 shadow-2xl border border-white/20">
+          <div className="w-full bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 py-16 shadow-2xl border border-white/20">
             <h2 className="text-2xl font-bold text-white mb-6">
               Bog'lanish ma'lumotlari
             </h2>
