@@ -14,7 +14,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
     { name: 'Katalog', id: 'catalog' },
     { name: 'Biz haqimizda', id: 'about' },
     { name: 'Aloqa', id: 'contact' },
-    { name: 'Blog', id: 'blog' }
+    { name: 'Aksiyalar', id: 'blog' }
   ];
 
   return (
@@ -34,21 +34,34 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            {navigation.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => onNavigate(item.id)}
-                className={`text-sm font-medium transition-colors hover:text-white ${
-                  currentPage === item.id 
-                    ? 'text-white border-b-2 border-white pb-1' 
-                    : 'text-gray-300'
-                }`}
-              >
-                {item.name}
-              </button>
-            ))}
-          </nav>
+        <nav className="hidden md:flex space-x-8">
+  {navigation.map((item) => {
+    const active = currentPage === item.id;
+    return (
+      <button
+        key={item.id}
+        onClick={() => {
+          onNavigate(item.id);
+          // sahifa almashganda tepaga olish
+          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+          // ixtiyoriy: focus qolmasin
+          // (e.currentTarget as HTMLButtonElement).blur();
+        }}
+        aria-current={active ? "page" : undefined}
+        className={[
+          "text-sm font-medium transition-colors hover:text-white",
+          // layout siljishini oldini olish:
+          // doimiy 2px border va padding
+          "border-b-2 border-transparent pb-1",
+          active ? "text-white border-white" : "text-gray-300"
+        ].join(" ")}
+      >
+        {item.name}
+      </button>
+    );
+  })}
+</nav>
+
 
           {/* Mobile menu button */}
           <button
