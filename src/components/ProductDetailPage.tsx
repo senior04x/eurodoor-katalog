@@ -296,7 +296,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              Katalogga qaytish
+              Katalogga qaytish      
             </button>
         </div>
       </div>
