@@ -150,7 +150,7 @@ return (
     </div>
 
     {/* Service Info */}
-    <section className="py-16 bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 mx-4 py-16 shadow-2xl border border-white/20">
+    <section className="py-16 bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 mx-4 py-16 shadow-2xl border border-white/20 mb-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Bizning xizmatlarimiz</h2>
