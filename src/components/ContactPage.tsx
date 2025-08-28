@@ -114,7 +114,7 @@ return (
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Clock className="h-6 w-6 text-[#E32C27]" />
+                  <Clock className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white mb-1">Ish vaqti</h3>
@@ -168,7 +168,7 @@ return (
           </div>
 
           <div className="text-center">
-            <div className="w-16 h-16 bg-bg-transparent rounded-full flex items-center justify-center mx-auto mb-4 border-white/10">
+            <div className="w-16 h-16 bg-bg-transparent rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10 rounded-md">
               <MapPin className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold mb-2">Bepul o'lchash</h3>
