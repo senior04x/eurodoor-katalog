@@ -39,14 +39,14 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
         stiffness: 420,
         damping: 34,
         mass: 0.7,
-        staggerChildren: 0.08,
+        staggerChildren: 0.05,
         when: 'beforeChildren'
       }
     },
     exit: {
       opacity: 0,
       x: 16,
-      transition: { duration: 0.02 }
+      transition: { duration: 0.01 }
     }
   };
 
