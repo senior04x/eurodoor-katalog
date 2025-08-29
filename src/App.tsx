@@ -12,9 +12,7 @@ export default function App() {
 
   const handleNavigate = (page: string, productId?: string) => {
     setCurrentPage(page);
-    if (productId) {
-      setSelectedProductId(productId);
-    }
+    if (productId) setSelectedProductId(productId);
   };
 
   const renderCurrentPage = () => {
@@ -29,10 +27,10 @@ export default function App() {
         return <ContactPage />;
       case 'blog':
         return (
-          <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
+          <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
-              <h1 className="text-4xl font-bold text-[#1A1A1A] mb-4">Blog</h1>
-              <p className="text-gray-600">Tez orada...</p>
+              <h1 className="text-4xl font-bold text-white mb-4">Chegirma Mahsulotlar</h1>
+              <p className="text-gray-300">Tez orada...</p>
             </div>
           </div>
         );
@@ -42,9 +40,20 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-black font-[Inter]">
-      <Header currentPage={currentPage} onNavigate={handleNavigate} />
-      {renderCurrentPage()}
+    <div className="relative min-h-screen font-[Inter] overflow-x-hidden">
+      {/* ===== Fixed Background (past qatlam) ===== */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('https://iili.io/K2Em0Cu.png')" }}
+      />
+      {/* Yengil qoraytirish (o‘chirmoqchi bo‘lsangiz, pastdagi divni olib tashlang) */}
+      <div className="pointer-events-none fixed inset-0 z-0 bg-black/30" />
+
+      {/* ===== Kontent (ustki qatlam) ===== */}
+      <div className="relative z-10">
+        <Header currentPage={currentPage} onNavigate={handleNavigate} />
+        {renderCurrentPage()}
+      </div>
     </div>
   );
 }
