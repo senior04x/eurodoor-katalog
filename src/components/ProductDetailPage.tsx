@@ -281,102 +281,154 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   const product = getProductData(productId);
 
-  return (
+   return (
     <div className="relative min-h-screen">
-        {/* Fixed background — rasmga blur beramiz */}
+      {/* ===== Local CSS: sekin animatsiyalar + stagger ===== */}
+      <style>{`
+        @keyframes fadeSlideUpSlow {
+          0% { opacity: 0; transform: translateY(18px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .anim-base {
+          animation: fadeSlideUpSlow 0.55s ease-out both;
+        }
+        .anim-slower {
+          animation: fadeSlideUpSlow 0.7s ease-out both;
+        }
+        .anim-card {
+          animation: fadeSlideUpSlow 0.6s ease-out both;
+        }
+        .anim-stagger {
+          animation: fadeSlideUpSlow 0.5s ease-out both;
+        }
+        /* Reduced motion foydalanuvchilar uchun animatsiyalarni o‘chirib qo‘yamiz */
+        @media (prefers-reduced-motion: reduce) {
+          .anim-base,
+          .anim-slower,
+          .anim-card,
+          .anim-stagger {
+            animation: none !important;
+          }
+        }
+      `}</style>
+
+      {/* Fixed background — rasmga blur beramiz */}
       <div
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center blur-[2px]"
         style={{ backgroundImage: "url('https://iili.io/K2Em0Cu.png')" }}
       />
-      {/* Back Navigation */}
-      <div className="bg-none backdrop-blur border-b border-none shadow-lg">
+
+      {/* Back Navigation (sekinsiz emas, lekin ozgina yumshoq anim beramiz) */}
+      <div className="bg-none backdrop-blur border-b border-none shadow-lg anim-base" style={{ animationDelay: '40ms' }}>
         <div className="container mx-auto px-4 py-4">
-                      <button
-              onClick={() => onNavigate('catalog')}
-              className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Katalogga qaytish      
-            </button>
+          <button
+            onClick={() => onNavigate('catalog')}
+            className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Katalogga qaytish
+          </button>
         </div>
       </div>
 
       <div className="py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Product Image */}
-          <div className="space-y-4">
-  <div className="bg-white/0 backdrop-blur-sm rounded-2xl p-3 border border-white/0 shadow-lg aspect-square flex items-center justify-center">
-    <ImageWithFallback
-      src={product.image}
-      alt={product.name}
-      className="w-full h-full object-cover rounded-lg"
-    />
-  </div>
-              
+            {/* ========== Chap: rasmlar ========== */}
+            <div className="space-y-4">
+              {/* Product Image */}
+              <div
+                className="bg-white/0 backdrop-blur-sm rounded-2xl p-3 border border-white/0 shadow-lg aspect-square flex items-center justify-center anim-slower"
+                style={{ animationDelay: '100ms' }}
+              >
+                <ImageWithFallback
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+
               {/* Technical Drawing */}
-              <div className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0">
+              <div
+                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0 anim-base"
+                style={{ animationDelay: '160ms' }}
+              >
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Ruler className="h-5 w-5 text-white" />
                   Texnik chizma
                 </h3>
                 <div className="bg-white/0 backdrop-blur-sm rounded-xl aspect-square flex items-center justify-center border-2 border-dashed border-white/0 overflow-hidden shadow-lg">
-  <ImageWithFallback
-    src="https://iili.io/Kdgszdb.jpg"
-    alt="Texnik chizma - O'rtadan kesilgan ko'rinish"
-    className="w-full h-full object-cover"
-  />
-</div>
+                  <ImageWithFallback
+                    src="https://iili.io/Kdgszdb.jpg"
+                    alt="Texnik chizma - O'rtadan kesilgan ko'rinish"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Product Details */}
+            {/* ========== O'ng: detallar ========== */}
             <div className="space-y-6">
-              <div className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0">
+              {/* Product Details */}
+              <div
+                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0 anim-base"
+                style={{ animationDelay: '120ms' }}
+              >
                 <h1 className="text-3xl font-bold text-white mb-4">
                   {product.name}
                 </h1>
-                
-                <div className="text-2xl font-bold text-white mb-6">
+
+                <div className="text-2xl font-bold text-white mb-6 anim-stagger" style={{ animationDelay: '180ms' }}>
                   {product.price}
                 </div>
 
-                <p className="text-gray-300 mb-6 leading-relaxed">
+                <p className="text-gray-300 mb-6 leading-relaxed anim-stagger" style={{ animationDelay: '220ms' }}>
                   {product.description}
                 </p>
 
                 {/* Key Features */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2 anim-stagger" style={{ animationDelay: '240ms' }}>
                     <Shield className="h-5 w-5 text-white" />
                     Asosiy xususiyatlar
                   </h3>
                   <ul className="space-y-2">
                     {product.features.map((feature: string, index: number) => (
-                      <li key={index} className="flex items-start gap-2 text-gray-300">
-                        <div className="w-2 h-2 bg-white rounded-full mt-2 flex-shrink-0"></div>
+                      <li
+                        key={index}
+                        className="flex items-start gap-2 text-gray-300 anim-stagger"
+                        style={{ animationDelay: `${260 + index * 60}ms` }} // ketma-ket sekin
+                      >
+                        <div className="w-2 h-2 bg-white rounded-full mt-2 flex-shrink-0" />
                         {feature}
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                {/* Order Button
-                <button className="w-full bg-white/0 backdrop-blur-sm text-white py-4 px-6 rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2 border border-white/30 shadow-lg hover:shadow-xl">
+                {/* Order Button (agar kerak bo'lsa) */}
+                {/* <button className="w-full bg-white/0 backdrop-blur-sm text-white py-4 px-6 rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2 border border-white/30 shadow-lg hover:shadow-xl">
                   <Phone className="h-5 w-5" />
                   Buyurtma berish
                 </button> */}
               </div>
 
               {/* Specifications */}
-              <div className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <div
+                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0 anim-base"
+                style={{ animationDelay: '180ms' }}
+              >
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2 anim-stagger" style={{ animationDelay: '220ms' }}>
                   <Award className="h-5 w-5 text-white" />
                   Texnik xususiyatlar
                 </h3>
                 <div className="space-y-3">
                   {product.specifications.map((spec: any, index: number) => (
-                    <div key={index} className="flex justify-between items-center py-2 border-b border-white/10">
+                    <div
+                      key={index}
+                      className="flex justify-between items-center py-2 border-b border-white/10 anim-stagger"
+                      style={{ animationDelay: `${240 + index * 60}ms` }} // ketma-ket
+                    >
                       <span className="text-gray-300">{spec.label}:</span>
                       <span className="font-medium text-white">{spec.value}</span>
                     </div>
@@ -385,21 +437,36 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               </div>
 
               {/* Installation Info */}
-              <div className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 border border-white/0 shadow-2xl">
-                <h3 className="text-lg font-semibold text-white mb-3">
+              <div
+                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 border border-white/0 shadow-2xl anim-base"
+                style={{ animationDelay: '220ms' }}
+              >
+                <h3 className="text-lg font-semibold text-white mb-3 anim-stagger" style={{ animationDelay: '260ms' }}>
                   O'rnatish bo'yicha tavsiyalar
                 </h3>
                 <ul className="space-y-2 text-gray-300">
-                  <li>• Professional o'rnatish xizmati mavjud</li>
-                  <li>• O'rnatish 2-3 soat davom etadi</li>
-                  <li>• Barcha kerakli jihozlar ta'minlanadi</li>
-                  <li>• 1 yillik o'rnatish kafolati</li>
+                  {[
+                    "• Professional o'rnatish xizmati mavjud",
+                    '• O\'rnatish 2-3 soat davom etadi',
+                    "• Barcha kerakli jihozlar ta'minlanadi",
+                    "• 1 yillik o'rnatish kafolati",
+                  ].map((tip, i) => (
+                    <li
+                      key={i}
+                      className="anim-stagger"
+                      style={{ animationDelay: `${280 + i * 60}ms` }}
+                    >
+                      {tip}
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
+            {/* ========== /O'ng ========== */}
           </div>
         </div>
       </div>
     </div>
   );
+
 }

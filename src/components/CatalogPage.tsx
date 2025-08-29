@@ -1,5 +1,6 @@
 import { Eye, Layers } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 
 interface CatalogPageProps {
   onNavigate: (page: string, productId?: string) => void;
@@ -69,8 +70,15 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
 
   const [mode, setMode] = useState<GroupMode>('material');
   const [openKey, setOpenKey] = useState<string | null>(null);
-  const [isNavigating, setIsNavigating] = useState(false); // one-click
+  const [isNavigating, setIsNavigating] = useState(false);
 
+  // Ref: har bo‘lim uchun (scrollga)
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Animatsiya uchun: foydalanuvchi "reduced motion" yoqganmi?
+  const prefersReduced = useReducedMotion();
+
+  // Guruhlash
   const grouped = useMemo(() => {
     const map = new Map<string, DoorProduct[]>();
     for (const d of doors) {
@@ -78,6 +86,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(d);
     }
+
     const order =
       mode === 'material'
         ? ['Temir + MDF', 'MDF + MDF', 'Temir + Temir', "Temir + Yog'och", 'Temir + Shisha', 'Temir + Kompozit', 'Boshqa']
@@ -90,8 +99,61 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     });
   }, [doors, mode]);
 
+  // Yangi bo‘lim ochilganda shu bo‘lim tepaga kelsin
+  useEffect(() => {
+    if (openKey && sectionRefs.current[openKey]) {
+      sectionRefs.current[openKey]!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [openKey]);
+
+  // ---- ANIMATSIYA VARIANTLAR ----
+  // Sahifa ochilganda bo‘lim sarlavhalarining ketma-ket (stagger) chiqishi
+  const containerVariants = {
+    hidden: {},
+    show: {
+      transition: {
+        staggerChildren: prefersReduced ? 0 : 0.2,
+      },
+    },
+  };
+
+  // Har bir bo‘lim sarlavhasi (option) uchun “pastdan urilib to‘xtash” effekti
+  const sectionHeaderVariants = {
+    hidden: { opacity: 0, y: 40 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: prefersReduced
+        ? { duration: 0 }
+        : { type: 'spring', stiffness: 600, damping: 28, mass: 0.5 },
+    },
+  };
+
+  // Bo‘lim ichidagi kartalar ketma-ket “bounce” bilan chiqishi
+  const cardsContainerVariants = {
+    hidden: {},
+    show: {
+      transition: {
+        staggerChildren: prefersReduced ? 0 : 0.1,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 36, scale: 0.98 },
+    show: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: prefersReduced
+        ? { duration: 0 }
+        : { type: 'spring', stiffness: 550, damping: 26, mass: 0.6 },
+    },
+    exit: { opacity: 0, y: 10, scale: 0.98, transition: { duration: 0.15 } },
+  };
+
   return (
-    <div className="relative min-h-screen [overflow-anchor:none]">
+    <div className="relative min-h-screen">
       {/* Fixed background */}
       <div
         className="fixed inset-0 bg-cover bg-center"
@@ -135,12 +197,19 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
 
       {/* Accordion Bo‘limlar */}
       <section className="py-12">
-        <div className="container mx-auto px-4 space-y-6 [overflow-anchor:none]">
-          {grouped.map(([key, list]) => {
+        <motion.div
+          className="container mx-auto px-4 space-y-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {grouped.map(([key, list], idx) => {
             const isOpen = openKey === key;
             return (
-              <div
+              <motion.div
                 key={key}
+                ref={(el) => { sectionRefs.current[key] = el; }}
+                variants={sectionHeaderVariants}
                 className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl overflow-hidden"
               >
                 {/* Sarlavha */}
@@ -169,12 +238,18 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
 
                 {/* Kontent */}
                 {isOpen && (
-                  <div className="px-6 pb-6 [overflow-anchor:none]">
+                  <motion.div
+                    className="px-6 pb-6"
+                    variants={cardsContainerVariants}
+                    initial="hidden"
+                    animate="show"
+                  >
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {list.map((door) => (
-                        <div
+                        <motion.div
                           key={door.id}
-                          className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-white/20 transition-transform"
+                          variants={cardVariants}
+                          className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-white/20"
                         >
                           <div className="relative aspect-square overflow-hidden">
                             <img
@@ -183,10 +258,6 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                               loading="lazy"
                               className="w-full h-full object-cover"
                             />
-                            <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-xl rounded-full p-3 border border-white/30 shadow-lg">
-                              <Layers className="h-5 w-5 text-white" />
-                              <span className="sr-only">Kesim ko‘rinishi</span>
-                            </div>
                           </div>
                           <div className="p-5">
                             <h3 className="text-lg font-semibold text-white mb-2">{door.name}</h3>
@@ -197,31 +268,40 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                             </div>
                             <p className="text-gray-300 text-sm mb-4">{door.description}</p>
 
-                            {/* ONE-CLICK: double-clickdan himoya */}
-                            <button
-                              type="button"
-                              disabled={isNavigating}
-                              onClick={() => {
-                                if (isNavigating) return;
-                                setIsNavigating(true);
-                                onNavigate('product', door.id);
-                                // Eslatma: bu yerda ataylab scroll QILMADIK
-                              }}
-                              className="w-full bg-white/20 backdrop-blur-md text-white py-3 px-4 rounded-xl font-semibold hover:bg-white/30 disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 border border-white/30 shadow-lg"
-                            >
-                              <Eye className="h-4 w-4" />
-                              {isNavigating ? 'Ochilmoqda…' : "Batafsil ko‘rish"}
-                            </button>
+                          <button
+  type="button"
+  disabled={isNavigating}
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isNavigating) return;
+    setIsNavigating(true);
+    onNavigate('product', door.id);
+
+    // Scrollni doimiy tepada qoldirish
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant" // "smooth" emas, chunki sekin tushib ketadi
+    });
+  }}
+  className="w-full bg-white/20 backdrop-blur-md text-white py-3 px-4 rounded-xl font-semibold hover:bg-white/30 disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 border border-white/30 shadow-lg"
+>
+  <Eye className="h-4 w-4" />
+  {isNavigating ? 'Ochilmoqda…' : "Batafsil ko‘rish"}
+</button>
+
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
-                  </div>
+                  </motion.div>
                 )}
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </section>
     </div>
   );
