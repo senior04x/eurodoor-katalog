@@ -104,8 +104,13 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-white mb-1">Telefon</h3>
-                      <p className="text-white">+998 90 123 45 67</p>
-                      <p className="text-white">+998 91 234 56 78</p>
+                          <a href="tel:+998901234567" className="text-white hover:underline">
+                              +998 90 123 45 67
+                            </a> <br />
+                          <a href="tel:+998912345678" className="text-white hover:underline">
+                              +998 91 234 56 78
+                            </a>
+
                     </div>
                   </div>
 
@@ -115,7 +120,15 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-white mb-1">Telegram</h3>
-                      <p className="text-white">@eurodoor_uz</p>
+                     <a
+                       href="https://t.me/eurodoor_uz"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       className="text-white hover:underline"
+                     >
+                       @eurodoor_uz
+                     </a>
+
                     </div>
                   </div>
 
@@ -125,7 +138,15 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-white mb-1">Instagram</h3>
-                      <p className="text-white">@eurodoor.uz</p>
+                       <a
+                         href="https://instagram.com/eurodoor.uz"
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="text-white hover:underline"
+                       >
+                             @eurodoor.uz
+                       </a>
+
                     </div>
                   </div>
 
@@ -146,8 +167,8 @@ export default function ContactPage() {
                     <div>
                       <h3 className="font-semibold text-white mb-1">Manzil</h3>
                       <p className="text-white">
-                        Toshkent shahar, Sergeli tumani <br />
-                        Buyuk Ipak Yo'li ko'chasi, 12-uy
+                         Chilonzor tumani, Toshkent <br />
+                       Tirsakobod mahalla fuqarolar yigʻini
                       </p>
                     </div>
                   </div>
@@ -169,20 +190,50 @@ export default function ContactPage() {
 
               {/* Map */}
               <motion.div variants={fadeUp} className={cardClass}>
-                <h3 className="text-xl font-semibold text-white mb-4">Bizning joylashuvimiz</h3>
-                <div className="rounded-lg overflow-hidden h-64 lg:h-[500px] flex items-center justify-center">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d1998.5340553151188!2d69.24062708578978!3d41.36500662946383!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNDHCsDIxJzU0LjIiTiA2OcKwMTQnMzAuNCJF!5e0!3m2!1suz!2s!4v1732125780839!5m2!1suz!2s"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen={true}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Google Maps"
-                  />
-                </div>
-              </motion.div>
+  <h3 className="text-xl font-semibold text-white mb-4">Bizning joylashuvimiz</h3>
+  <div className="rounded-lg overflow-hidden h-64 lg:h-[500px] flex items-center justify-center">
+    <div style={{ position: "relative", overflow: "hidden", width: "100%", height: "100%" }}>
+      <a
+        href="https://yandex.uz/maps/org/204432436811/?utm_medium=mapframe&utm_source=maps"
+        style={{
+          color: "#eee",
+          fontSize: "12px",
+          position: "absolute",
+          top: 0,
+          left: 0,
+        }}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Eurodoor.Uz
+      </a>
+      <a
+        href="https://yandex.uz/maps/10335/tashkent/category/doors/184107677/?utm_medium=mapframe&utm_source=maps"
+        style={{
+          color: "#eee",
+          fontSize: "12px",
+          position: "absolute",
+          top: "14px",
+          left: 0,
+        }}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Eshiklar Toshkentda
+      </a>
+      <iframe
+        src="https://yandex.uz/map-widget/v1/?ll=69.194934%2C41.250800&mode=search&oid=204432436811&ol=biz&z=17.75"
+        width="100%"
+        height="100%"
+        style={{ position: "relative", border: 0 }}
+        frameBorder={1}
+        allowFullScreen
+        title="Yandex Maps"
+      />
+    </div>
+  </div>
+</motion.div>
+
             </div>
           </div>
         </motion.div>
