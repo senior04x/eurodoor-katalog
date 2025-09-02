@@ -29,7 +29,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     {/* Fixed background (hamma qurilmalarda ishlaydi) */}
     <div
       className="fixed inset-0 bg-cover bg-center"
-      style={{ backgroundImage: "url('https://iili.io/K2Em0Cu.png')" }}
+      style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }}
     />
     <div className="fixed inset-0 bg-black/30" />
 
@@ -97,12 +97,16 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         <p className="text-lg mb-8 opacity-90">
           Mutaxassislarimiz sizga eng mos keluvchi eshikni tanlashda yordam beradi
         </p>
-        <button
-          onClick={() => onNavigate('contact')}
-          className="bg-white/20 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 border border-white/30 shadow-lg hover:shadow-xl"
-        >
-          Aloqaga chiqish
-        </button>
+       <button
+  onClick={() => {
+    onNavigate('contact');
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }}
+  className="bg-white/20 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 border border-white/30 shadow-lg hover:shadow-xl"
+>
+  Aloqaga chiqish
+</button>
+
       </div>
     </section>
   </div>
