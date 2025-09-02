@@ -11,13 +11,13 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   const getProductData = (id: string) => {
     const products: { [key: string]: any } = {
       'euro-model1': {
-        name: 'EURO Model-1 Metal Door',
-        image: 'https://iili.io/2XPGae9.png',
+        name: 'EURO Model-558 Metal Door',
+        image: 'https://iili.io/KqcGK21.jpg',
         material: 'Metall + MDF',
         security: 'A+ sinf',
-        dimensions: '2000x900x80mm',
+        dimensions: '2050x860mm + 2050x960mm + 100mm',
         price: '2,500,000 so\'m',
-        description: 'EURO Model-1 - zamonaviy dizaynli metall eshik bo\'lib, ichki qismida yuqori sifatli MDF qoplama mavjud. Bu model kuchli xavfsizlik va estetik ko\'rinishni birlashtiradi.',
+        description: 'EURO Model-558 - zamonaviy dizaynli metall eshik bo\'lib, ichki qismida yuqori sifatli MDF qoplama mavjud. Bu model kuchli xavfsizlik va estetik ko\'rinishni birlashtiradi.',
         features: [
           'Galvanizlangan po\'latdan yasalgan tashqi qism',
           'Ichki qismida 16mm MDF qoplama',
@@ -27,15 +27,15 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
         ],
         specifications: [
           { label: 'Material', value: 'Galvanizlangan po\'lat + MDF' },
-          { label: 'Qalinligi', value: '80mm' },
+          { label: 'MDF qalinligi', value: '100mm' },
           { label: 'Qulf', value: '3-nuqtali Mottura' },
-          { label: 'Ilgak', value: '3ta mustahkam ilgak' },
+          { label: 'Ilgak', value: '4ta mustahkam ilgak' },
           { label: 'Izolyatsiya', value: 'Mineral paxta' },
           { label: 'Kafolat', value: '5 yil' }
         ]
       },
       'euro-model2': {
-        name: 'EURO Model-2 Security Door',
+        name: 'EURO Model-556 Security Door',
         image: 'https://iili.io/2XiBAMJ.png',
         material: 'Po\'lat + MDF',
         security: 'Premium',
