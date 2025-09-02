@@ -157,7 +157,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
       {/* Fixed background */}
       <div
         className="fixed inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('https://iili.io/K2Em0Cu.png')" }}
+        style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }}
       />
       <div className="fixed inset-0 bg-black/30" />
 

@@ -25,7 +25,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
       {/* Fixed background — rasmga blur beramiz */}
       <div
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center blur-[2px]"
-        style={{ backgroundImage: "url('https://iili.io/K2Em0Cu.png')" }}
+        style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }}
       />
 
       {/* Kontent — fonnning ustida turadi */}

@@ -44,7 +44,7 @@ export default function App() {
       {/* ===== Fixed Background (past qatlam) ===== */}
       <div
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('https://iili.io/K2Em0Cu.png')" }}
+        style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }}
       />
       {/* Yengil qoraytirish (o‘chirmoqchi bo‘lsangiz, pastdagi divni olib tashlang) */}
       <div className="pointer-events-none fixed inset-0 z-0 bg-black/30" />
