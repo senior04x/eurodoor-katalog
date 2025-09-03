@@ -9,272 +9,501 @@ interface ProductDetailPageProps {
 export default function ProductDetailPage({ productId, onNavigate }: ProductDetailPageProps) {
   // Mock product data - in a real app this would come from an API
   const getProductData = (id: string) => {
-    const products: { [key: string]: any } = {
-      'euro-model1': {
-        name: 'EURO Model-558 Metal Door',
-        image: 'https://iili.io/KqcGK21.jpg',
-        material: 'Metall + MDF',
-        security: 'A+ sinf',
-        dimensions: '2050x860mm + 2050x960mm + 100mm',
-        price: '2,500,000 so\'m',
-        description: 'EURO Model-558 - zamonaviy dizaynli metall eshik bo\'lib, ichki qismida yuqori sifatli MDF qoplama mavjud. Bu model kuchli xavfsizlik va estetik ko\'rinishni birlashtiradi.',
-        features: [
-          'Galvanizlangan po\'latdan yasalgan tashqi qism',
-          'Ichki qismida 16mm MDF qoplama',
-          '3-nuqtali qulflash tizimi',
-          'Termal izolyatsiya',
-          'UV nurlariga chidamli bo\'yoq qoplama'
-        ],
-        specifications: [
-          { label: 'Material', value: 'Galvanizlangan po\'lat + MDF' },
-          { label: 'MDF qalinligi', value: '100mm' },
-          { label: 'Qulf', value: '3-nuqtali Mottura' },
-          { label: 'Ilgak', value: '4ta mustahkam ilgak' },
-          { label: 'Izolyatsiya', value: 'Mineral paxta' },
-          { label: 'Kafolat', value: '5 yil' }
-        ]
-      },
-      'euro-model2': {
-        name: 'EURO Model-556 Security Door',
-        image: 'https://iili.io/2XiBAMJ.png',
-        material: 'Po\'lat + MDF',
-        security: 'Premium',
-        dimensions: '2100x950x85mm',
-        price: '3,200,000 so\'m',
-        description: 'EURO Model-2 - yuqori xavfsizlik darajasiga ega premium eshik. Maxsus po\'lat qatlamlari va ilg\'or qulflash tizimi bilan jihozlangan.',
-        features: [
-          'Maxsus po\'lat qatlamlari',
-          '5-nuqtali qulflash tizimi',
-          'Antivandal qoplama',
-          'Yuqori darajadagi izolyatsiya',
-          'Professional o\'rnatish'
-        ],
-        specifications: [
-          { label: 'Material', value: 'Maxsus po\'lat + MDF' },
-          { label: 'Qalinligi', value: '85mm' },
-          { label: 'Qulf', value: '5-nuqtali Premium' },
-          { label: 'Ilgak', value: '5ta mustahkam ilgak' },
-          { label: 'Izolyatsiya', value: 'Premium mineral paxta' },
-          { label: 'Kafolat', value: '7 yil' }
-        ]
-      },
-      'euro-model3': {
-        name: 'EURO Model-3 Classic Door',
-        image: 'https://iili.io/2XiBwS2.png',
-        material: 'Metall + Shisha',
-        security: 'A sinf',
-        dimensions: '2000x850x75mm',
-        price: '2,800,000 so\'m',
-        description: 'EURO Model-3 - klassik uslubdagi metall eshik shisha elementlar bilan. Zamonaviy xavfsizlik va klassik dizaynni birlashtiradi.',
-        features: [
-          'Klassik dizayn elementlari',
-          'Shisha dekor elementlari',
-          '3-nuqtali qulflash tizimi',
-          'Yorug\'lik o\'tkazish',
-          'Estetik ko\'rinish'
-        ],
-        specifications: [
-          { label: 'Material', value: 'Metall + Shisha' },
-          { label: 'Qalinligi', value: '75mm' },
-          { label: 'Qulf', value: '3-nuqtali Classic' },
-          { label: 'Ilgak', value: '3ta mustahkam ilgak' },
-          { label: 'Shisha', value: 'Temirli shisha' },
-          { label: 'Kafolat', value: '5 yil' }
-        ]
-      },
-      'euro-model4': {
-        name: 'EURO Model-4 Design Door',
-        image: 'https://iili.io/2XPGzWG.png',
-        material: 'Metall + Yog\'och',
-        security: 'A+ sinf',
-        dimensions: '2100x900x80mm',
-        price: '3,500,000 so\'m',
-        description: 'EURO Model-4 - designer uslubidagi eshik yog\'och dekor elementlari bilan. Hashamatli ko\'rinish va yuqori xavfsizlik.',
-        features: [
-          'Yog\'och dekor elementlari',
-          'Designer uslub',
-          '4-nuqtali qulflash tizimi',
-          'Natural materiallar',
-          'Hashamatli ko\'rinish'
-        ],
-        specifications: [
-          { label: 'Material', value: 'Metall + Yog\'och' },
-          { label: 'Qalinligi', value: '80mm' },
-          { label: 'Qulf', value: '4-nuqtali Design' },
-          { label: 'Ilgak', value: '4ta mustahkam ilgak' },
-          { label: 'Yog\'och', value: 'Natural yog\'och' },
-          { label: 'Kafolat', value: '6 yil' }
-        ]
-      },
-      'euro-model5': {
-        name: 'EURO Model-5 Premium Door',
-        image: 'https://iili.io/2Xige71.jpg',
-        material: 'Premium po\'lat',
-        security: 'Ultra',
-        dimensions: '2200x1000x90mm',
-        price: '4,500,000 so\'m',
-        description: 'EURO Model-5 - eng yuqori darajadagi xavfsizlik va dizayn. Premium po\'lat materiallari va ilg\'or texnologiyalar.',
-        features: [
-          'Premium po\'lat materiallari',
-          '6-nuqtali qulflash tizimi',
-          'Ultra xavfsizlik',
-          'Premium izolyatsiya',
-          'Professional montaj'
-        ],
-        specifications: [
-          { label: 'Material', value: 'Premium po\'lat' },
-          { label: 'Qalinligi', value: '90mm' },
-          { label: 'Qulf', value: '6-nuqtali Ultra' },
-          { label: 'Ilgak', value: '6ta mustahkam ilgak' },
-          { label: 'Izolyatsiya', value: 'Ultra premium' },
-          { label: 'Kafolat', value: '10 yil' }
-        ]
-      },
-      'euro-model6': {
-        name: 'EURO Model-6 Luxury Door',
-        image: 'https://iili.io/2Xir2Y7.jpg',
-        material: 'Metall + Natutal yog\'och',
-        security: 'A+ sinf',
-        dimensions: '2100x950x85mm',
-        price: '5,200,000 so\'m',
-        description: 'EURO Model-6 - hashamatli dizayn va natural materiallar. Eng yuqori sifatli yog\'och va metall kombinatsiyasi.',
-        features: [
-          'Natural yog\'och elementlari',
-          'Luxury dizayn',
-          '5-nuqtali qulflash tizimi',
-          'Hashamatli ko\'rinish',
-          'Premium materiallar'
-        ],
-        specifications: [
-          { label: 'Material', value: 'Metall + Natural yog\'och' },
-          { label: 'Qalinligi', value: '85mm' },
-          { label: 'Qulf', value: '5-nuqtali Luxury' },
-          { label: 'Ilgak', value: '5ta mustahkam ilgak' },
-          { label: 'Yog\'och', value: 'Premium natural yog\'och' },
-          { label: 'Kafolat', value: '8 yil' }
-        ]
-      },
-      'euro-model7': {
-        name: 'EURO Model-7 Modern Door',
-        image: '/image/model7.jpg',
-        material: 'Metall + Kompozit',
-        security: 'A+ sinf',
-        dimensions: '2000x900x80mm',
-        price: '3,800,000 so\'m',
-        description: 'EURO Model-7 - zamonaviy kompozit materiallar bilan ishlangan eshik. Yangi texnologiyalar va zamonaviy dizayn.',
-        features: [
-          'Kompozit materiallar',
-          'Zamonaviy dizayn',
-          '4-nuqtali qulflash tizimi',
-          'Yengil va mustahkam',
-          'Zamonaviy texnologiya'
-        ],
-        specifications: [
-          { label: 'Material', value: 'Metall + Kompozit' },
-          { label: 'Qalinligi', value: '80mm' },
-          { label: 'Qulf', value: '4-nuqtali Modern' },
-          { label: 'Ilgak', value: '4ta mustahkam ilgak' },
-          { label: 'Kompozit', value: 'Yuqori sifatli' },
-          { label: 'Kafolat', value: '6 yil' }
-        ]
-      },
-      'euro-model8': {
-        name: 'EURO Model-8 Elite Door',
-        image: '/image/model8.jpg',
-        material: 'Premium po\'lat + MDF',
-        security: 'Ultra Premium',
-        dimensions: '2100x1000x90mm',
-        price: '6,500,000 so\'m',
-        description: 'EURO Model-8 - elite darajadagi xavfsizlik va dizayn. Eng yuqori sifatli materiallar va texnologiyalar.',
-        features: [
-          'Elite darajadagi xavfsizlik',
-          'Premium materiallar',
-          '7-nuqtali qulflash tizimi',
-          'Ultra premium izolyatsiya',
-          'Elite dizayn'
-        ],
-        specifications: [
-          { label: 'Material', value: 'Premium po\'lat + MDF' },
-          { label: 'Qalinligi', value: '90mm' },
-          { label: 'Qulf', value: '7-nuqtali Elite' },
-          { label: 'Ilgak', value: '7ta mustahkam ilgak' },
-          { label: 'Izolyatsiya', value: 'Ultra premium' },
-          { label: 'Kafolat', value: '12 yil' }
-        ]
-      },
-      'euro-model9': {
-        name: 'EURO Model-9 Classic Premium',
-        image: '/image/model9.jpg',
-        material: 'Metall + Yog\'och + Shisha',
-        security: 'A+ sinf',
-        dimensions: '2100x950x85mm',
-        price: '4,800,000 so\'m',
-        description: 'EURO Model-9 - klassik va zamonaviy elementlarni birlashtirgan eshik. Hashamatli dizayn va yuqori xavfsizlik.',
-        features: [
-          'Klassik va zamonaviy elementlar',
-          'Yog\'och va shisha kombinatsiyasi',
-          '5-nuqtali qulflash tizimi',
-          'Hashamatli ko\'rinish',
-          'Premium sifat'
-        ],
-        specifications: [
-          { label: 'Material', value: 'Metall + Yog\'och + Shisha' },
-          { label: 'Qalinligi', value: '85mm' },
-          { label: 'Qulf', value: '5-nuqtali Premium' },
-          { label: 'Ilgak', value: '5ta mustahkam ilgak' },
-          { label: 'Shisha', value: 'Temirli shisha' },
-          { label: 'Kafolat', value: '7 yil' }
-        ]
-      },
-      'euro-model10': {
-        name: 'EURO Model-10 Executive Door',
-        image: '/image/model10.jpg',
-        material: 'Premium po\'lat + Natural yog\'och',
-        security: 'Executive',
-        dimensions: '2200x1000x90mm',
-        price: '7,500,000 so\'m',
-        description: 'EURO Model-10 - ijrochi darajadagi xavfsizlik va hashamat. Eng yuqori sifatli materiallar va texnologiyalar.',
-        features: [
-          'Ijrochi darajadagi xavfsizlik',
-          'Natural yog\'och elementlari',
-          '8-nuqtali qulflash tizimi',
-          'Ultra premium izolyatsiya',
-          'Executive dizayn'
-        ],
-        specifications: [
-          { label: 'Material', value: 'Premium po\'lat + Natural yog\'och' },
-          { label: 'Qalinligi', value: '90mm' },
-          { label: 'Qulf', value: '8-nuqtali Executive' },
-          { label: 'Ilgak', value: '8ta mustahkam ilgak' },
-          { label: 'Yog\'och', value: 'Elite natural yog\'och' },
-          { label: 'Kafolat', value: '15 yil' }
-        ]
-      },
-      'euro-model11': {
-        name: 'EURO Model-11 Ultimate Door',
-        image: '/image/model11.jpg',
-        material: 'Ultra Premium po\'lat + MDF',
-        security: 'Ultimate',
-        dimensions: '2200x1000x95mm',
-        price: '9,500,000 so\'m',
-        description: 'EURO Model-11 - eng yuqori darajadagi xavfsizlik va dizayn. Ultimate texnologiya va premium materiallar.',
-        features: [
-          'Ultimate xavfsizlik darajasi',
-          'Ultra premium materiallar',
-          '10-nuqtali qulflash tizimi',
-          'Ultimate izolyatsiya',
-          'Ultimate dizayn'
-        ],
-        specifications: [
-          { label: 'Material', value: 'Ultra Premium po\'lat + MDF' },
-          { label: 'Qalinligi', value: '95mm' },
-          { label: 'Qulf', value: '10-nuqtali Ultimate' },
-          { label: 'Ilgak', value: '10ta mustahkam ilgak' },
-          { label: 'Izolyatsiya', value: 'Ultimate premium' },
-          { label: 'Kafolat', value: '20 yil' }
-        ]
-      }
-    };
+   const products: { [key: string]: any } = {
+  'euro-model1': {
+    name: 'EURO Model-558 Metal Door',
+    image: 'https://iili.io/KqcGK21.jpg',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 100mm',
+    price: "Narx so'rang",
+    description: "Zamonaviy dizaynli metall eshik, ichki qismi yuqori sifatli MDF qoplama bilan.",
+    features: [
+      "Galvanizatsiyalangan metall korpus",
+      "Ichki MDF panel",
+      "3-nuqtali qulflash tizimi",
+      "Issiqlik va shovqin izolyatsiyasi",
+      "UVga chidamli bo'yoq"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈100mm" },
+      { label: "Qulf", value: "3-nuqtali" },
+      { label: "Ilgaklar", value: "4 ta" },
+      { label: "Izolyatsiya", value: "Mineral paxta" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model2': {
+    name: 'EURO Model-556 Metal Door',
+    image: 'https://iili.io/KqcGqkg.jpg',
+    material: 'Metall + MDF + Oyna',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 100mm',
+    price: "Narx so'rang",
+    description: "Metall korpus, MDF va oyna dekor bilan uyg‘unlashgan model.",
+    features: [
+      "MDF + oyna dekor panellari",
+      "3-nuqtali qulflash",
+      "Yaxshilangan izolyatsiya",
+      "Chizilishga chidamli qoplama",
+      "Professional montaj imkoniyati"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF + Oyna" },
+      { label: "Qalinlik", value: "≈100mm" },
+      { label: "Qulf", value: "3-nuqtali" },
+      { label: "Shisha", value: "Temirlangan (tempered)" },
+      { label: "Izolyatsiya", value: "Mineral paxta" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model3': {
+    name: 'EURO Model-555 Metal Door',
+    image: 'https://iili.io/KqcGBpa.jpg',
+    material: 'Metall + MDF + Oyna',
+    security: 'A sinf',
+    dimensions: '2050x860mm + 2050x960mm + 100mm',
+    price: "Narx so'rang",
+    description: "Klassik uslubdagi metall eshik, oyna elementlari bilan bezatilgan.",
+    features: [
+      "Klassik panelli dizayn",
+      "Oyna dekor",
+      "3-nuqtali qulflash",
+      "Yorug'lik tushirish imkoniyati",
+      "Estetik ko‘rinish"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF + Oyna" },
+      { label: "Qalinlik", value: "≈100mm" },
+      { label: "Qulf", value: "3-nuqtali" },
+      { label: "Shisha", value: "Temirlangan" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model4': {
+    name: 'EURO Model-557 Metal Door',
+    image: 'https://iili.io/KqcGnTJ.jpg',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 100mm',
+    price: "Narx so'rang",
+    description: "Designer uslubidagi eshik, MDF dekor elementlari bilan.",
+    features: [
+      "Yuqori mustahkam metall plita",
+      "MDF dekor panellari",
+      "3-nuqtali qulflash",
+      "Issiqlik va tovush izolyatsiyasi",
+      "Korroziv muhitga chidamli qoplama"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈100mm" },
+      { label: "Qulf", value: "3-nuqtali" },
+      { label: "Ilgaklar", value: "4 ta" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model5': {
+    name: 'EURO Model-516 Metal Door',
+    image: 'https://iili.io/KqcGu4I.jpg',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 90mm',
+    price: "Narx so'rang",
+    description: "Eng yuqori darajadagi xavfsizlik va dizayn uyg‘unligi.",
+    features: [
+      "Qalin metall qatlam",
+      "MDF ichki qoplama",
+      "3–4 nuqtali qulflash tizimi",
+      "Tovushni yutuvchi qatlam",
+      "Katta o‘lcham varianti"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈90–100mm" },
+      { label: "Qulf", value: "3–4 nuqtali" },
+      { label: "Izolyatsiya", value: "Mineral paxta/PU to'ldiruvchi" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model6': {
+    name: 'EURO Model-020 MDF Door',
+    image: 'https://iili.io/KqcGR2t.jpg',
+    material: 'MDF + MDF',
+    security: 'Premium',
+    dimensions: '2300x860mm',
+    price: "Narx so'rang",
+    description: "Hashamatli dizayn va MDF materiallar, elektron quluf bilan mos.",
+    features: [
+      "Premium MDF yuzalar",
+      "Elektron quluf o‘rnatish imkoniyati",
+      "Tovush va issiqlik izolyatsiyasi",
+      "Silliq laklangan qoplama",
+      "Yuqori balandlik (2300mm)"
+    ],
+    specifications: [
+      { label: "Material", value: "MDF + MDF" },
+      { label: "Bal. x En", value: "2300x860mm" },
+      { label: "Qulf", value: "Elektron/3-nuqtali (variant)" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model7': {
+    name: 'EURO Model-513 Metal Door',
+    image: 'https://iili.io/KqcG5YX.jpg',
+    material: 'Metall + MDF + Oyna',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 90mm',
+    price: "Narx so'rang",
+    description: "Zamonaviy kompozit yechim: metall, MDF va oyna uyg‘unligi.",
+    features: [
+      "Oyna dekor bilan zamonaviy ko‘rinish",
+      "3–4 nuqtali qulflash tizimi",
+      "Yaxshi izolyatsiya",
+      "Chidamli tashqi qoplama",
+      "Ko‘p o‘lcham varianti"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF + Oyna" },
+      { label: "Qalinlik", value: "≈90mm" },
+      { label: "Qulf", value: "3–4 nuqtali" },
+      { label: "Shisha", value: "Temirlangan" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model8': {
+    name: 'EURO Model-588 Metal Door',
+    image: 'https://iili.io/KqcG7vn.jpg',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 80mm',
+    price: "Narx so'rang",
+    description: "Elite darajadagi xavfsizlik va dizayn, ixcham qalinlik bilan.",
+    features: [
+      "Metall ramka va MDF panel",
+      "3-nuqtali qulflash",
+      "Yengil, lekin mustahkam tuzilma",
+      "Estetik tashqi ko‘rinish",
+      "UVga chidamli qoplama"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈80mm" },
+      { label: "Qulf", value: "3-nuqtali" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model9': {
+    name: 'EURO Model-514 Metal Door',
+    image: 'https://iili.io/KqcGljf.jpg',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 90mm',
+    price: "Narx so'rang",
+    description: "Klassik va zamonaviy elementlar uyg‘unlashgan model.",
+    features: [
+      "Klassik panel kompozitsiyasi",
+      "3–4 nuqtali qulflash",
+      "Tovush/issiqlik izolyatsiyasi",
+      "Chidamli bo‘yoq",
+      "O‘lcham varianti mavjud"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈90mm" },
+      { label: "Qulf", value: "3–4 nuqtali" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model10': {
+    name: 'EURO Model-111 Metal Door',
+    image: 'https://iili.io/KqcGECl.jpg',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 90mm',
+    price: "Narx so'rang",
+    description: "Ijrochi darajadagi ko‘rinish va yuqori xavfsizlik.",
+    features: [
+      "Qalin metall plita",
+      "MDF bezak panellari",
+      "4 nuqtali qulflash",
+      "Premium izolyatsiya",
+      "Korrozivga chidamli qoplama"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈90mm" },
+      { label: "Qulf", value: "4-nuqtali" },
+      { label: "Kafolat", value: "6 yil" }
+    ]
+  },
+
+  'euro-model11': {
+    name: 'EURO Model-512 Metal Door',
+    image: 'https://iili.io/KqcGM4S.jpg',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 90mm',
+    price: "Narx so'rang",
+    description: "Mustahkamlik va dizayn uyg‘unligi, ko‘p nuqtali qulflash bilan.",
+    features: [
+      "Metall+MDF kombinatsiyasi",
+      "4 nuqtali qulflash",
+      "Issiqlik/tovush yalıtımı",
+      "Qoplama rangi variantlari",
+      "O‘lcham varianti"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈90mm" },
+      { label: "Qulf", value: "4-nuqtali" },
+      { label: "Kafolat", value: "6 yil" }
+    ]
+  },
+
+  'euro-model12': {
+    name: 'EURO Model-599 Metal Door',
+    image: 'https://iili.io/KqcGW37.jpg',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 80mm',
+    price: "Narx so'rang",
+    description: "Yuqori xavfsizlik va ixcham qalinlikdagi model.",
+    features: [
+      "Yengil konstruktsiya",
+      "3-nuqtali qulflash",
+      "Sifatli izolyatsiya",
+      "Silliq qoplama",
+      "Oson parvarish"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈80mm" },
+      { label: "Qulf", value: "3-nuqtali" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model13': {
+    name: 'EURO Model-511 Metal Door',
+    image: 'https://iili.io/KqcGhve.jpg',
+    material: 'Metall + MDF + Oyna',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 90mm',
+    price: "Narx so'rang",
+    description: "Oyna elementlari bilan zamonaviy ko‘rinishga ega metall eshik.",
+    features: [
+      "Oyna dekor",
+      "4 nuqtali qulflash",
+      "Tovush/issiqlik yalıtımı",
+      "Chidamli tashqi qatlam",
+      "O‘lchamlar tanlovi"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF + Oyna" },
+      { label: "Qalinlik", value: "≈90mm" },
+      { label: "Qulf", value: "4-nuqtali" },
+      { label: "Shisha", value: "Temirlangan" },
+      { label: "Kafolat", value: "6 yil" }
+    ]
+  },
+
+  'euro-model14': {
+    name: 'EURO Model-112 Metal Door',
+    image: 'https://iili.io/KqcGjyu.jpg',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 90mm',
+    price: "Narx so'rang",
+    description: "Kuchli ramka va MDF bezak bilan ishonchli model.",
+    features: [
+      "Metall ramka",
+      "MDF panel",
+      "4 nuqtali qulflash",
+      "Yuqori chidamlilik",
+      "Estetik dizayn"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈90mm" },
+      { label: "Qulf", value: "4-nuqtali" },
+      { label: "Kafolat", value: "6 yil" }
+    ]
+  },
+
+  'euro-model15': {
+    name: 'EURO Model-710 MDF Door',
+    image: 'https://iili.io/KqcGNTb.jpg',
+    material: 'MDF + MDF',
+    security: 'B+ sinf',
+    dimensions: '2050x860mm + 2050x960mm',
+    price: "Narx so'rang",
+    description: "MDF materialidan tayyorlangan, uy ichki eshiklari uchun qulay tanlov.",
+    features: [
+      "Yengil va silliq yuzalar",
+      "Ichki makon uchun ideal",
+      "Sokin yopilish imkoniyati",
+      "Rang/lak variantlari",
+      "O‘lchamlar varianti"
+    ],
+    specifications: [
+      { label: "Material", value: "MDF + MDF" },
+      { label: "O'lchamlar", value: "2050x860/960mm" },
+      { label: "Qulf", value: "Standart ichki eshik qulfi" },
+      { label: "Kafolat", value: "3 yil" }
+    ]
+  },
+
+  'euro-model16': {
+    name: 'EURO Model-601 MDF Door',
+    image: 'https://iili.io/KqcGOjj.jpg',
+    material: 'MDF + MDF',
+    security: 'B+ sinf',
+    dimensions: '2050x860mm',
+    price: "Narx so'rang",
+    description: "Minimalistik MDF eshik, ichki xonalar uchun.",
+    features: [
+      "Minimal dizayn",
+      "Yengil vazn",
+      "Silliq qoplama",
+      "Oson tozalash",
+      "Ichki sifat standartlari"
+    ],
+    specifications: [
+      { label: "Material", value: "MDF + MDF" },
+      { label: "O'lcham", value: "2050x860mm" },
+      { label: "Qulf", value: "Standart ichki" },
+      { label: "Kafolat", value: "3 yil" }
+    ]
+  },
+
+  'euro-model17': {
+    name: 'EURO Model-600 MDF Door',
+    image: 'https://iili.io/KqcGS6B.jpg',
+    material: 'MDF + MDF',
+    security: 'B+ sinf',
+    dimensions: '2050x860mm',
+    price: "Narx so'rang",
+    description: "MDF dan tayyorlangan amaliy va byudjetga mos eshik.",
+    features: [
+      "Byudjet dostona",
+      "Silliq MDF panellar",
+      "Rang/lak variantlari",
+      "Ichki foydalanish uchun",
+      "Oson montaj"
+    ],
+    specifications: [
+      { label: "Material", value: "MDF + MDF" },
+      { label: "O'lcham", value: "2050x860mm" },
+      { label: "Qulf", value: "Standart ichki" },
+      { label: "Kafolat", value: "3 yil" }
+    ]
+  },
+
+  'euro-model18': {
+    name: 'EURO Model-515 Metal Door',
+    image: 'https://iili.io/KqM7TKB.png',
+    material: 'Metall + Metall',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 2050x960mm + 90mm',
+    price: "Narx so'rang",
+    description: "100% metall konstruksiya: maksimal xavfsizlik va barqarorlik.",
+    features: [
+      "Ikki tomonlama metall qatlam",
+      "4–5 nuqtali qulflash",
+      "O‘ta yuqori mustahkamlik",
+      "Yaxshi izolyatsiya",
+      "Tashqi muhitga chidamli qoplama"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + Metall" },
+      { label: "Qalinlik", value: "≈90mm" },
+      { label: "Qulf", value: "4–5 nuqtali" },
+      { label: "Ilgaklar", value: "6 ta" },
+      { label: "Kafolat", value: "7 yil" }
+    ]
+  },
+
+  'euro-model19': {
+    name: 'EURO Model-517 Metal Door',
+    image: 'https://iili.io/KqM7oox.png',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 90mm',
+    price: "Narx so'rang",
+    description: "Metall ramka va MDF ichki qoplama bilan ishonchli model.",
+    features: [
+      "Metall ramka",
+      "MDF ichki panel",
+      "3–4 nuqtali qulflash",
+      "Izolyatsiya qatlamlari",
+      "Zamonaviy tashqi ko‘rinish"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈90mm" },
+      { label: "Qulf", value: "3–4 nuqtali" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model20': {
+    name: 'EURO Model-518 Metal Door',
+    image: 'https://iili.io/KqM7f9e.png',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 90mm',
+    price: "Narx so'rang",
+    description: "Yuqori darajadagi xavfsizlikka ega metall + MDF kombinatsiyasi.",
+    features: [
+      "Mustahkam metall plita",
+      "MDF bezak paneli",
+      "3–4 nuqtali qulflash",
+      "Tovush/issiqlik yalıtımı",
+      "Uzoq xizmat muddati"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈90mm" },
+      { label: "Qulf", value: "3–4 nuqtali" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  },
+
+  'euro-model21': {
+    name: 'EURO Model-519 Metal Door',
+    image: 'https://iili.io/KqM7zPV.png',
+    material: 'Metall + MDF',
+    security: 'A+ sinf',
+    dimensions: '2050x860mm + 90mm',
+    price: "Narx so'rang",
+    description: "Metall va MDF uyg‘unligidagi funksional va nafis eshik.",
+    features: [
+      "3–4 nuqtali qulflash tizimi",
+      "Chidamli tashqi qoplama",
+      "Yaxshi izolyatsiya",
+      "Zamonaviy ko‘rinish",
+      "Oson parvarish"
+    ],
+    specifications: [
+      { label: "Material", value: "Metall + MDF" },
+      { label: "Qalinlik", value: "≈90mm" },
+      { label: "Qulf", value: "3–4 nuqtali" },
+      { label: "Kafolat", value: "5 yil" }
+    ]
+  }
+};
+
     
     return products[id] || products['euro-model1'];
   };
