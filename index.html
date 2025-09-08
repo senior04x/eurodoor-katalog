@@ -3,16 +3,17 @@
   <head>
     <!-- =========================================================
          Eurodoor — SEO-optimized index.html for Vite + React
+         FIX: Product schema errors (uses OfferCatalog + Offers)
          GA4 + Yandex.Metrika, Uzbek/Russian keywords, OG/Twitter,
-         JSON-LD (WebSite, Organization, LocalBusiness, FAQ, Breadcrumbs, ItemList)
-         Tailwind via CDN (remove if using PostCSS plugin)
+         JSON-LD (WebSite, Organization, LocalBusiness with hasOfferCatalog,
+         FAQ, Breadcrumbs, ItemList)
          ========================================================= -->
-   <meta name="google-site-verification" content="VK7JXvF3PEEQqXpbhVC8AdzmqUaQdApPv_vDu6KFhxA" />
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- ===== Search engine verifications ===== -->
+    <meta name="google-site-verification" content="VK7JXvF3PEEQqXpbhVC8AdzmqUaQdApPv_vDu6KFhxA" />
+    <!-- Do NOT add Yandex meta verification here unless you intend to verify via meta. -->
 
     <!-- =================== Canonical & Hreflang =================== -->
     <link rel="canonical" href="https://eurodoor.uz/" />
@@ -21,27 +22,15 @@
     <link rel="alternate" href="https://eurodoor.uz/" hreflang="x-default" />
 
     <!-- =================== Primary Title & Description =================== -->
-    <title>
-      Eurodoor — Temir &amp; MDF ko‘cha eshiklari Toshkentda | Tashqi (kirish)
-      eshiklar, narx va o‘rnatish
-    </title>
-    <meta
-      name="description"
-      content="Eurodoor: ko‘cha/tashqi (kirish) uchun temir va MDF eshiklar. Toshkentda o‘rnatish, kafolat va bepul maslahat. Issiqlik/ovoz izolatsiyasi, xavfsizlik, zamonaviy dizayn. Katalog va narxlar!"
-    />
+    <title>Eurodoor — Temir &amp; MDF ko‘cha eshiklari Toshkentda | Tashqi (kirish) eshiklar, narx va o‘rnatish</title>
+    <meta name="description" content="Eurodoor: ko‘cha/tashqi (kirish) uchun temir va MDF eshiklar. Toshkentda o‘rnatish, kafolat va bepul maslahat. Issiqlik/ovoz izolatsiyasi, xavfsizlik, zamonaviy dizayn. Katalog va narxlar!" />
 
     <!-- =================== Robots / Crawling =================== -->
-    <meta
-      name="robots"
-      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
-    />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow" />
 
     <!-- =================== Keywords (low weight, but local semantics) =================== -->
-    <meta
-      name="keywords"
-      content="temir eshik, temir eshik narxlari, mdf eshik, tashqi eshik, ko‘cha eshigi, xavfsizlik eshigi, issiqlik o‘tkazmaydigan eshik, eshik o‘rnatish, Toshkent eshiklari, входные двери, металлические двери, железные двери, уличная дверь, дверь для улицы, утеплённая входная дверь, входные двери цена Ташкент"
-    />
+    <meta name="keywords" content="temir eshik, temir eshik narxlari, mdf eshik, tashqi eshik, ko‘cha eshigi, xavfsizlik eshigi, issiqlik o‘tkazmaydigan eshik, eshik o‘rnatish, Toshkent eshiklari, входные двери, металлические двери, железные двери, уличная дверь, дверь для улицы, утеплённая входная дверь, входные двери цена Ташкент" />
 
     <!-- =================== App / Theme =================== -->
     <meta name="application-name" content="Eurodoor" />
@@ -49,12 +38,7 @@
     <meta name="format-detection" content="telephone=no" />
 
     <!-- =================== Icons / Manifest =================== -->
-    <link
-      rel="icon"
-      href="https://iili.io/Fy0g33Q.png"
-      type="image/png"
-      sizes="any"
-    />
+    <link rel="icon" href="https://iili.io/Fy0g33Q.png" type="image/png" sizes="any" />
     <link rel="apple-touch-icon" href="https://iili.io/Fy0g33Q.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
@@ -62,92 +46,44 @@
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="preconnect" href="https://mc.yandex.ru" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Preload an OG image or hero if needed -->
-    <link
-      rel="preload"
-      as="image"
-      href="https://eurodoor.uz/og-image.jpg"
-      imagesrcset="https://eurodoor.uz/og-image.jpg 1x"
-      imagesizes="(max-width: 1200px) 100vw, 1200px"
-    />
+    <link rel="preload" as="image" href="https://eurodoor.uz/og-image.jpg" imagesrcset="https://eurodoor.uz/og-image.jpg 1x" imagesizes="(max-width: 1200px) 100vw, 1200px" />
 
     <!-- =================== Open Graph / Twitter =================== -->
     <meta property="og:site_name" content="Eurodoor" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:title"
-      content="Eurodoor — Temir & MDF ko‘cha eshiklari Toshkentda"
-    />
-    <meta
-      property="og:description"
-      content="Tashqi/ko‘cha uchun temir va MDF eshiklar: mustahkam, issiqlik/ovoz izolatsiyasi, zamonaviy dizayn. Toshkentda o‘rnatish va kafolat. Katalogni ko‘ring!"
-    />
+    <meta property="og:title" content="Eurodoor — Temir &amp; MDF ko‘cha eshiklari Toshkentda" />
+    <meta property="og:description" content="Tashqi/ko‘cha uchun temir va MDF eshiklar: mustahkam, issiqlik/ovoz izolatsiyasi, zamonaviy dizayn. Toshkentda o‘rnatish va kafolat. Katalogni ko‘ring!" />
     <meta property="og:url" content="https://eurodoor.uz/" />
     <meta property="og:image" content="https://eurodoor.uz/og-image.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta
-      property="og:image:alt"
-      content="Eurodoor — temir va MDF ko‘cha eshiklari katalogi"
-    />
+    <meta property="og:image:alt" content="Eurodoor — temir va MDF ko‘cha eshiklari katalogi" />
     <meta property="og:locale" content="uz_UZ" />
     <meta property="og:locale:alternate" content="ru_RU" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="Eurodoor — Temir & MDF ko‘cha eshiklari Toshkentda"
-    />
-    <meta
-      name="twitter:description"
-      content="Katalog, narxlar, o‘rnatish va kafolat. Bepul maslahat oling."
-    />
+    <meta name="twitter:title" content="Eurodoor — Temir &amp; MDF ko‘cha eshiklari Toshkentda" />
+    <meta name="twitter:description" content="Katalog, narxlar, o‘rnatish va kafolat. Bepul maslahat oling." />
     <meta name="twitter:image" content="https://eurodoor.uz/og-image.jpg" />
 
-    <!-- =================== Verification (fill with your codes) =================== -->
-    <!-- <meta name="google-site-verification" content="YOUR_GOOGLE_CODE" /> -->
-    <!-- <meta name="yandex-verification" content="YOUR_YANDEX_CODE" /> -->
-
     <!-- =================== Google Analytics (GA4) =================== -->
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-ZBQHLLEY6K"
-    ></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZBQHLLEY6K"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
+      function gtag(){dataLayer.push(arguments);} 
       gtag("js", new Date());
       gtag("config", "G-ZBQHLLEY6K");
     </script>
 
-    <!-- =================== Yandex.Metrika (script — OK in head) =================== -->
+    <!-- =================== Yandex.Metrika =================== -->
     <script type="text/javascript">
       (function (m, e, t, r, i, k, a) {
-        m[i] =
-          m[i] ||
-          function () {
-            (m[i].a = m[i].a || []).push(arguments);
-          };
+        m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
         m[i].l = 1 * new Date();
-        for (var j = 0; j < document.scripts.length; j++) {
-          if (document.scripts[j].src === r) {
-            return;
-          }
-        }
-        k = e.createElement(t), (a = e.getElementsByTagName(t)[0]);
-        k.async = 1;
-        k.src = r;
-        a.parentNode.insertBefore(k, a);
-      })(
-        window,
-        document,
-        "script",
-        "https://mc.yandex.ru/metrika/tag.js?id=103943142",
-        "ym"
-      );
+        for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+        k = e.createElement(t), a = e.getElementsByTagName(t)[0];
+        k.async = 1; k.src = r; a.parentNode.insertBefore(k, a);
+      })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js?id=103943142", "ym");
 
       ym(103943142, "init", {
         ssr: true,
@@ -155,17 +91,13 @@
         clickmap: true,
         ecommerce: "dataLayer",
         accurateTrackBounce: true,
-        trackLinks: true,
+        trackLinks: true
       });
     </script>
 
     <!-- =================== Tailwind CDN (remove if using PostCSS) =================== -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: ["class"],
-      };
-    </script>
+    <script> tailwind.config = { darkMode: ["class"] };</script>
 
     <!-- =================== JSON-LD: WebSite + SearchAction =================== -->
     <script type="application/ld+json">
@@ -198,18 +130,12 @@
       }
     </script>
 
-    <!-- =================== JSON-LD: LocalBusiness (door supplier) =================== -->
+    <!-- =================== JSON-LD: LocalBusiness with OfferCatalog (FIX) =================== -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "Eurodoor — Temir & MDF ko‘cha eshiklari",
-        "alternateName": [
-          "Temir eshiklar Toshkent",
-          "MDF ko‘cha eshiklari",
-          "Входные металлические двери Ташкент",
-          "Железные уличные двери"
-        ],
         "image": "https://eurodoor.uz/og-image.jpg",
         "url": "https://eurodoor.uz/",
         "telephone": "+998909447240",
@@ -223,44 +149,47 @@
           "addressCountry": "UZ"
         },
         "areaServed": "UZ",
-        "openingHoursSpecification": [
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": [
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday"
-            ],
-            "opens": "09:00",
-            "closes": "19:00"
-          }
-        ],
-        "makesOffer": [
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Product",
-              "name": "Temir ko‘cha (tashqi) eshiklari"
+        "openingHoursSpecification": [{
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+          "opens": "09:00",
+          "closes": "19:00"
+        }],
+
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Eurodoor katalogi",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "url": "https://eurodoor.uz/catalog/temir",
+              "priceCurrency": "UZS",
+              "price": "2000000",
+              "availability": "https://schema.org/InStock",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Temir ko‘cha (tashqi) eshiklari",
+                "description": "Issiqlik/ovoz izolatsiyasi bilan mustahkam metall eshiklar.",
+                "image": "https://eurodoor.uz/og-image.jpg",
+                "brand": { "@type": "Brand", "name": "Eurodoor" }
+              }
+            },
+            {
+              "@type": "Offer",
+              "url": "https://eurodoor.uz/catalog/mdf",
+              "priceCurrency": "UZS",
+              "price": "2200000",
+              "availability": "https://schema.org/InStock",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "MDF ko‘cha (tashqi) eshiklari",
+                "description": "Tashqi sharoitga chidamli MDF qoplamali eshiklar.",
+                "image": "https://eurodoor.uz/og-image.jpg",
+                "brand": { "@type": "Brand", "name": "Eurodoor" }
+              }
             }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Product",
-              "name": "MDF ko‘cha (tashqi) eshiklari"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Eshik o‘rnatish (Toshkent)"
-            }
-          }
-        ]
+          ]
+        }
       }
     </script>
 
@@ -270,70 +199,14 @@
         "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "Temir eshik narxlari qancha?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Narx model, qalinlik, izolyatsiya va furnituraga bog‘liq. Amaldagi narxlar katalogda. O‘lchov va o‘rnatish bo‘yicha bepul maslahat beramiz."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "MDF tashqi eshik ob-havoga chidamlilik bormi?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Tashqi sharoitga mo‘ljallangan MDF qoplamali modellarimiz namlik va haroratga chidamli himoya bilan ishlab chiqiladi."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Ko‘cha eshigini o‘rnatish xizmati bormi?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Ha, Toshkent bo‘ylab o‘rnatish xizmati mavjud. Muddat va narxlar kelishiladi."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Issiqlik va shovqindan himoya qanchalik?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Eshiklarimiz issiqlik va ovoz izolatsiyasi materiallari bilan jihozlanadi; kerak bo‘lsa qo‘shimcha zichlagichlar va issiq ko‘prikdan himoya variantlari bor."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Qanday o‘lcham va ranglarni tanlash mumkin?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Ko‘plab modellar bo‘yicha o‘lcham, rang va aksessuarlarni moslashtirish mumkin. Maslahat uchun bog‘laning."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Kafolat muddati nechchi?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Mahsulot va o‘rnatishga kafolat beriladi. Kafolat shartlari modelga qarab belgilanadi."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Toshkentdan tashqariga yetkazib berish bormi?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Alohida kelishuv asosida mintaqalarga yetkazib berish yo‘lga qo‘yiladi."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "To‘lov turlari?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Naqd, bank kartalari va rasmiy hisob-kitob shakllari qabul qilinadi."
-            }
-          }
+          {"@type": "Question","name": "Temir eshik narxlari qancha?","acceptedAnswer": {"@type": "Answer","text": "Narx model, qalinlik, izolyatsiya va furnituraga bog‘liq. Amaldagi narxlar katalogda. O‘lchov va o‘rnatish bo‘yicha bepul maslahat beramiz."}},
+          {"@type": "Question","name": "MDF tashqi eshik ob-havoga chidamlilik bormi?","acceptedAnswer": {"@type": "Answer","text": "Tashqi sharoitga mo‘ljallangan MDF qoplamali modellarimiz namlik va haroratga chidamli himoya bilan ishlab chiqiladi."}},
+          {"@type": "Question","name": "Ko‘cha eshigini o‘rnatish xizmati bormi?","acceptedAnswer": {"@type": "Answer","text": "Ha, Toshkent bo‘ylab o‘rnatish xizmati mavjud. Muddat va narxlar kelishiladi."}},
+          {"@type": "Question","name": "Issiqlik va shovqindan himoya qanchalik?","acceptedAnswer": {"@type": "Answer","text": "Eshiklarimiz issiqlik va ovoz izolatsiyasi materiallari bilan jihozlanadi; kerak bo‘lsa qo‘shimcha zichlagichlar va issiq ko‘prikdan himoya variantlari bor."}},
+          {"@type": "Question","name": "Qanday o‘lcham va ranglarni tanlash mumkin?","acceptedAnswer": {"@type": "Answer","text": "Ko‘plab modellar bo‘yicha o‘lcham, rang va aksessuarlarni moslashtirish mumkin. Maslahat uchun bog‘laning."}},
+          {"@type": "Question","name": "Kafolat muddati nechchi?","acceptedAnswer": {"@type": "Answer","text": "Mahsulot va o‘rnatishga kafolat beriladi. Kafolat shartlari modelga qarab belgilanadi."}},
+          {"@type": "Question","name": "Toshkentdan tashqariga yetkazib berish bormi?","acceptedAnswer": {"@type": "Answer","text": "Alohida kelishuv asosida mintaqalarga yetkazib berish yo‘lga qo‘yiladi."}},
+          {"@type": "Question","name": "To‘lov turlari?","acceptedAnswer": {"@type": "Answer","text": "Naqd, bank kartalari va rasmiy hisob-kitob shakllari qabul qilinadi."}}
         ]
       }
     </script>
@@ -357,46 +230,22 @@
         "@type":"ItemList",
         "name":"Eurodoor katalog bo‘limlari",
         "itemListElement":[
-          {
-            "@type":"ListItem",
-            "position":1,
-            "name":"Temir ko‘cha eshiklari",
-            "url":"https://eurodoor.uz/catalog/temir"
-          },
-          {
-            "@type":"ListItem",
-            "position":2,
-            "name":"MDF ko‘cha eshiklari",
-            "url":"https://eurodoor.uz/catalog/mdf"
-          },
-          {
-            "@type":"ListItem",
-            "position":3,
-            "name":"Aksessuarlar",
-            "url":"https://eurodoor.uz/catalog/aksessuarlar"
-          }
+          {"@type":"ListItem","position":1,"name":"Temir ko‘cha eshiklari","url":"https://eurodoor.uz/catalog/temir"},
+          {"@type":"ListItem","position":2,"name":"MDF ko‘cha eshiklari","url":"https://eurodoor.uz/catalog/mdf"},
+          {"@type":"ListItem","position":3,"name":"Aksessuarlar","url":"https://eurodoor.uz/catalog/aksessuarlar"}
         ]
       }
     </script>
-
-    <!-- =================== (Optional) Preload fonts if self-hosted =================== -->
-    <!--
-    <link rel="preload" href="/fonts/Inter.woff2" as="font" type="font/woff2" crossorigin />
-    -->
   </head>
 
   <body class="m-0 antialiased">
     <!-- =================== Yandex.Metrika noscript (MUST BE IN BODY) =================== -->
     <noscript>
       <div>
-        <img
-          src="https://mc.yandex.ru/watch/103943142"
-          style="position:absolute; left:-9999px;"
-          alt="Yandex Metrika"
-        />
+        <img src="https://mc.yandex.ru/watch/103943142" style="position:absolute; left:-9999px;" alt="Yandex Metrika" />
       </div>
     </noscript>
-   
+
     <!-- =================== Root for React/Vite app =================== -->
     <main id="root" class="min-h-[40vh]"></main>
 
@@ -405,10 +254,7 @@
 
     <!-- =================== Helper to keep year current (non-SEO critical) =================== -->
     <script>
-      (function () {
-        const y = document.getElementById("y");
-        if (y) y.textContent = new Date().getFullYear();
-      })();
+      (function(){ const y = document.getElementById("y"); if (y) y.textContent = new Date().getFullYear(); })();
     </script>
   </body>
 </html>
