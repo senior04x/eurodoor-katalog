@@ -5,3 +5,9 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# SPA routing uchun redirect qoidasi
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
