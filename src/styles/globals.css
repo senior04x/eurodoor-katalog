@@ -110,6 +110,7 @@ body {
 
 html {
   background: transparent !important;
+  -webkit-text-size-adjust: 100%;
 }
 
 /**
@@ -168,6 +169,21 @@ html {
 
 html {
   font-size: var(--font-size);
+}
+
+/* Prevent iOS Safari from auto-zooming inputs on focus by ensuring
+   form controls use at least 16px font-size on iOS devices */
+@supports (-webkit-touch-callout: none) {
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="number"],
+  input[type="search"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
 
 
