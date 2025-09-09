@@ -18,15 +18,19 @@ export default function AdminPanel() {
     const loadOrders = async () => {
       try {
         // Supabase dan zakazlarni olish
+        console.log('Loading orders from Supabase...');
         const supabaseOrders = await ordersApi.getAllOrders();
+        console.log('✅ Supabase orders loaded:', supabaseOrders.length);
         setOrders(supabaseOrders);
         
         // Agar Supabase da zakazlar yo'q bo'lsa, localStorage dan olish (fallback)
         if (supabaseOrders.length === 0) {
+          console.log('⚠️ No Supabase orders, checking localStorage...');
           const savedOrders = localStorage.getItem('orders');
           if (savedOrders) {
             try {
               const parsedOrders = JSON.parse(savedOrders);
+              console.log('📱 localStorage orders found:', parsedOrders.length);
               setOrders(parsedOrders.reverse());
             } catch (error) {
               console.error('Error parsing localStorage orders:', error);
@@ -34,7 +38,7 @@ export default function AdminPanel() {
           }
         }
       } catch (error) {
-        console.error('Error loading orders from Supabase:', error);
+        console.error('❌ Error loading orders from Supabase:', error);
         
         // Xatolik bo'lsa localStorage dan olish (fallback)
         const savedOrders = localStorage.getItem('orders');

@@ -68,11 +68,12 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
     
     try {
       // Supabase ga zakaz yuborish
+      console.log('Sending order to Supabase:', order);
       const savedOrder = await ordersApi.createOrder(order);
       
       if (savedOrder) {
         // Muvaffaqiyatli saqlangan
-        console.log('Order saved to Supabase:', savedOrder);
+        console.log('✅ Order saved to Supabase:', savedOrder);
         
         // Form ma'lumotlarini tozalash
         setFormData({ name: '', phone: '', product: '', message: '' });
@@ -86,7 +87,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
         }
       } else {
         // Xatolik bo'lsa localStorage ga saqlash (fallback)
-        console.warn('Failed to save to Supabase, saving to localStorage');
+        console.warn('❌ Failed to save to Supabase, saving to localStorage');
         const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
         existingOrders.push(order);
         localStorage.setItem('orders', JSON.stringify(existingOrders));
@@ -103,7 +104,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
         }
       }
     } catch (error) {
-      console.error('Error saving order:', error);
+      console.error('❌ Error saving order:', error);
       
       // Xatolik bo'lsa localStorage ga saqlash (fallback)
       const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');

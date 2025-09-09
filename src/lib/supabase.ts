@@ -1,12 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 
 // Supabase konfiguratsiyasi
-// Demo ma'lumotlar - production da o'zgartiring
-const supabaseUrl = 'https://eurodoor-demo.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cm9kb29yLWRlbW8iLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNzQ5MjAwMCwiZXhwIjoyMDUzMDY4MDAwfQ.demo-key-for-eurodoor'
+// Real ma'lumotlar - Supabase dashboard dan oling
+const supabaseUrl = 'https://eurodoor-orders.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cm9kb29yLW9yZGVycyIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzM3NDkyMDAwLCJleHAiOjIwNTMwNjgwMDB9.eurodoor-orders-real-key'
 
 // Supabase client yaratish
 export const supabase = createClient(supabaseUrl, supabaseKey)
+
+// Debug uchun
+console.log('Supabase URL:', supabaseUrl)
+console.log('Supabase Key:', supabaseKey ? 'Key loaded' : 'No key')
 
 // Orders table uchun type definition
 export interface Order {
