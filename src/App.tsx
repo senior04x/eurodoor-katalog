@@ -18,9 +18,15 @@ export default function App() {
   useEffect(() => {
     const savedPage = localStorage.getItem('currentPage');
     const savedProductId = localStorage.getItem('selectedProductId');
-    if (savedPage) {
+    
+    // URL dan admin sahifasini aniqlash
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('/admin')) {
+      setCurrentPage('admin');
+    } else if (savedPage) {
       setCurrentPage(savedPage);
     }
+    
     if (savedProductId) {
       setSelectedProductId(savedProductId);
     }

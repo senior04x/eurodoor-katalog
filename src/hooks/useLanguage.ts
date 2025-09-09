@@ -923,10 +923,19 @@ export function useLanguage() {
     // Joriy til prefiksini olib tashlash
     const pathWithoutLanguage = currentPath.replace(/^\/(ru|en)/, '') || '/';
     
-    if (newLanguage === 'uz') {
-      newPath = pathWithoutLanguage;
+    // Admin sahifasini saqlash
+    if (pathWithoutLanguage === '/admin') {
+      if (newLanguage === 'uz') {
+        newPath = '/admin';
+      } else {
+        newPath = `/${newLanguage}/admin`;
+      }
     } else {
-      newPath = `/${newLanguage}${pathWithoutLanguage}`;
+      if (newLanguage === 'uz') {
+        newPath = pathWithoutLanguage;
+      } else {
+        newPath = `/${newLanguage}${pathWithoutLanguage}`;
+      }
     }
     
     // Til o'zgarishi uchun localStorage ga saqlash
