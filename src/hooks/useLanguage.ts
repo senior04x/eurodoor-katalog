@@ -850,6 +850,113 @@ const translations: Translations = {
     ru: 'Назад - к продукту',
     en: 'Back to product'
   },
+
+  // Order Success Page
+  'order.success_title': {
+    uz: 'Zakaz muvaffaqiyatli berildi!',
+    ru: 'Заказ успешно оформлен!',
+    en: 'Order Successfully Placed!'
+  },
+  'order.success_message': {
+    uz: 'Sizning zakazingiz qabul qilindi. Tez orada siz bilan bog\'lanamiz.',
+    ru: 'Ваш заказ принят. Мы свяжемся с вами в ближайшее время.',
+    en: 'Your order has been received. We will contact you soon.'
+  },
+  'order.order_info': {
+    uz: 'Zakaz ma\'lumotlari',
+    ru: 'Информация о заказе',
+    en: 'Order Information'
+  },
+  'order.order_id': {
+    uz: 'Zakaz raqami',
+    ru: 'Номер заказа',
+    en: 'Order ID'
+  },
+  'order.order_date': {
+    uz: 'Zakaz sanasi',
+    ru: 'Дата заказа',
+    en: 'Order Date'
+  },
+  'order.status': {
+    uz: 'Holat',
+    ru: 'Статус',
+    en: 'Status'
+  },
+  'order.status_new': {
+    uz: 'Yangi',
+    ru: 'Новый',
+    en: 'New'
+  },
+  'order.customer_info': {
+    uz: 'Mijoz ma\'lumotlari',
+    ru: 'Информация о клиенте',
+    en: 'Customer Information'
+  },
+  'order.customer_name': {
+    uz: 'Ism',
+    ru: 'Имя',
+    en: 'Name'
+  },
+  'order.customer_phone': {
+    uz: 'Telefon',
+    ru: 'Телефон',
+    en: 'Phone'
+  },
+  'order.customer_message': {
+    uz: 'Xabar',
+    ru: 'Сообщение',
+    en: 'Message'
+  },
+  'order.product_info': {
+    uz: 'Mahsulot ma\'lumotlari',
+    ru: 'Информация о продукте',
+    en: 'Product Information'
+  },
+  'order.product_name': {
+    uz: 'Mahsulot nomi',
+    ru: 'Название продукта',
+    en: 'Product Name'
+  },
+  'order.product_material': {
+    uz: 'Material',
+    ru: 'Материал',
+    en: 'Material'
+  },
+  'order.product_security': {
+    uz: 'Xavfsizlik',
+    ru: 'Безопасность',
+    en: 'Security'
+  },
+  'order.product_dimensions': {
+    uz: 'O\'lchamlar',
+    ru: 'Размеры',
+    en: 'Dimensions'
+  },
+  'order.product_price': {
+    uz: 'Narx',
+    ru: 'Цена',
+    en: 'Price'
+  },
+  'order.thank_you': {
+    uz: 'Rahmat! Sizning zakazingiz uchun minnatdormiz.',
+    ru: 'Спасибо! Мы благодарны за ваш заказ.',
+    en: 'Thank you! We appreciate your order.'
+  },
+  'order.contact_soon': {
+    uz: 'Tez orada siz bilan bog\'lanamiz va batafsil ma\'lumot beramiz.',
+    ru: 'Мы свяжемся с вами в ближайшее время и предоставим подробную информацию.',
+    en: 'We will contact you soon and provide detailed information.'
+  },
+  'order.back_to_catalog': {
+    uz: 'Katalogga qaytish',
+    ru: 'Вернуться в каталог',
+    en: 'Back to Catalog'
+  },
+  'order.back_to_home': {
+    uz: 'Bosh sahifaga qaytish',
+    ru: 'Вернуться на главную',
+    en: 'Back to Home'
+  },
   'contact.our_location': {
     uz: 'Bizning joylashuvimiz',
     ru: 'Наше местоположение',

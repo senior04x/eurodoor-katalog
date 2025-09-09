@@ -72,11 +72,15 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
     // Zakazlarni localStorage ga saqlash
     localStorage.setItem('orders', JSON.stringify(existingOrders));
     
-    alert(t('contact.form_success'));
+    // Form ma'lumotlarini tozalash
     setFormData({ name: '', phone: '', product: '', message: '' });
-    // Form submit qilinganda selected product ni tozalash
     setSelectedProduct(null);
     localStorage.removeItem('selectedProduct');
+    
+    // Order success sahifasiga yo'naltirish
+    if (onNavigate) {
+      onNavigate('order-success');
+    }
   };
 
   const handleChange = (

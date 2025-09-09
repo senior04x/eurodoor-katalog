@@ -6,6 +6,7 @@ import ProductDetailPage from './components/ProductDetailPage';
 import AboutPage from './components/AboutPage';
 import ContactPage from './components/ContactPage';
 import AdminPanel from './components/AdminPanel';
+import OrderSuccessPage from './components/OrderSuccessPage';
 import { useLanguage } from './hooks/useLanguage';
 
 export default function App() {
@@ -73,6 +74,8 @@ export default function App() {
         return <ContactPage onNavigate={handleNavigate} />;
       case 'admin':
         return <AdminPanel />;
+      case 'order-success':
+        return <OrderSuccessPage onNavigate={handleNavigate} />;
       case 'blog':
         return (
           <div className="min-h-screen flex items-center justify-center">
