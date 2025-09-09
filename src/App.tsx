@@ -1,18 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import HomePage from './components/HomePage';
 import CatalogPage from './components/CatalogPage';
 import ProductDetailPage from './components/ProductDetailPage';
 import AboutPage from './components/AboutPage';
 import ContactPage from './components/ContactPage';
+import AdminPanel from './components/AdminPanel';
+import { useLanguage } from './hooks/useLanguage';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedProductId, setSelectedProductId] = useState<string>('');
+  const { language, t } = useLanguage();
+
+  // localStorage dan current page ni o'qish
+  useEffect(() => {
+    const savedPage = localStorage.getItem('currentPage');
+    const savedProductId = localStorage.getItem('selectedProductId');
+    if (savedPage) {
+      setCurrentPage(savedPage);
+    }
+    if (savedProductId) {
+      setSelectedProductId(savedProductId);
+    }
+  }, []);
+
+  // Til o'zgarishi paytida current state ni saqlash
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      localStorage.setItem('currentPage', currentPage);
+      if (selectedProductId) {
+        localStorage.setItem('selectedProductId', selectedProductId);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [currentPage, selectedProductId]);
 
   const handleNavigate = (page: string, productId?: string) => {
     setCurrentPage(page);
-    if (productId) setSelectedProductId(productId);
+    localStorage.setItem('currentPage', page);
+    if (productId) {
+      setSelectedProductId(productId);
+      localStorage.setItem('selectedProductId', productId);
+    }
   };
 
   const renderCurrentPage = () => {
@@ -24,13 +56,15 @@ export default function App() {
       case 'about':
         return <AboutPage onNavigate={handleNavigate} />;
       case 'contact':
-        return <ContactPage />;
+        return <ContactPage onNavigate={handleNavigate} />;
+      case 'admin':
+        return <AdminPanel />;
       case 'blog':
         return (
           <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
-              <h1 className="text-4xl font-bold text-white mb-4">Chegirma Mahsulotlar</h1>
-              <p className="text-gray-300">Tez orada...</p>
+              <h1 className="text-4xl font-bold text-white mb-4">{t('app.promotions')}</h1>
+              <p className="text-gray-300">{t('app.coming_soon')}</p>
             </div>
           </div>
         );

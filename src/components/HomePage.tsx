@@ -1,26 +1,29 @@
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ArrowRight, Shield, Award, Clock } from 'lucide-react';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface HomePageProps {
   onNavigate: (page: string) => void;
 }
 
 export default function HomePage({ onNavigate }: HomePageProps) {
+  const { t } = useLanguage();
+  
   const features = [
     {
       icon: Shield,
-      title: "Yuqori xavfsizlik",
-      description: "Metall va MDF materiallardan yasalgan mustahkam eshiklar"
+      title: t('home.security'),
+      description: t('home.security_desc')
     },
     {
       icon: Award,
-      title: "Sifat sertifikati",
-      description: "Barcha mahsulotlar xalqaro standartlarga javob beradi"
+      title: t('home.quality'),
+      description: t('home.quality_desc')
     },
     {
       icon: Clock,
-      title: "Tez yetkazib berish",
-      description: "Professional o'rnatish xizmati bilan birga"
+      title: t('home.delivery'),
+      description: t('home.delivery_desc')
     }
   ];
 
@@ -38,18 +41,16 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   <div className="relative container mx-auto px-4 h-full flex items-center justify-center">
     <div className="max-w-2xl text-white bg-none rounded-2xl p-8 border border-none text-center">
       <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-        Sizning uyingiz xavfsizligi bizning 
-        <span className="text-white"> ustuvorligimiz</span>
+        {t('home.hero_title')}
       </h1>
       <p className="text-xl mb-8 opacity-90">
-        Zamonaviy dizayn va yuqori xavfsizlik standartlarini birlashtirgan 
-        premium temir va MDF eshiklar
+        {t('home.hero_subtitle')}
       </p>
       <button 
         onClick={() => onNavigate('catalog')}
         className="bg-white/5 backdrop-blur-sm text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/10 transition-all duration-300 flex items-center gap-2 group border border-white/30 shadow-lg hover:shadow-xl mx-auto"
       >
-        Katalogni ko'rish
+        {t('home.view_catalog')}
         <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
       </button>
     </div>
@@ -62,10 +63,10 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Nima uchun EURODOOR?
+            {t('home.why_eurodoor')}
           </h2>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Ko'p yillik tajriba va zamonaviy texnologiyalar asosida ishlab chiqarilgan eshiklar
+            {t('home.experience_text')}
           </p>
         </div>
 
@@ -92,10 +93,10 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     <section className="py-16 bg-gradient-to-r from-black/30 to-black/15 backdrop-blur-md text-white">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold mb-6">
-          Bepul maslahat va o'lchash xizmati
+          {t('home.free_consultation')}
         </h2>
         <p className="text-lg mb-8 opacity-90">
-          Mutaxassislarimiz sizga eng mos keluvchi eshikni tanlashda yordam beradi
+          {t('home.specialists_help')}
         </p>
        <button
   onClick={() => {

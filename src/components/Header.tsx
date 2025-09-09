@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../hooks/useLanguage';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface HeaderProps {
   currentPage: string;
@@ -10,6 +12,8 @@ interface HeaderProps {
 
 export default function Header({ currentPage, onNavigate }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
+  const { t } = useLanguage();
 
   // Body scrollni bloklash (mobil menyu ochilganda)
   useEffect(() => {
@@ -21,11 +25,42 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
     return () => document.body.classList.remove('overflow-hidden');
   }, [isMenuOpen]);
 
+  // Maxsus kombinatsiya uchun event listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl + Shift + A bosganda admin link ko'rinadi
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        setShowAdmin(!showAdmin);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showAdmin]);
+
+  // Logo ustida 5 marta bosish (mobil uchun)
+  const [logoClickCount, setLogoClickCount] = useState(0);
+  const handleLogoClick = () => {
+    setLogoClickCount(prev => {
+      const newCount = prev + 1;
+      if (newCount >= 5) {
+        setShowAdmin(!showAdmin);
+        return 0;
+      }
+      // 3 soniyadan keyin counter reset
+      setTimeout(() => setLogoClickCount(0), 3000);
+      return newCount;
+    });
+  };
+
   const navigation = [
-    { name: 'Katalog', id: 'catalog' },
-    { name: 'Biz haqimizda', id: 'about' },
-    { name: 'Aloqa', id: 'contact' },
-    { name: 'Aksiyalar', id: 'blog' }
+    { name: t('nav.catalog'), id: 'catalog' },
+    { name: t('nav.about'), id: 'about' },
+    { name: t('nav.contact'), id: 'contact' },
+    { name: t('nav.blog'), id: 'blog' },
+    // Admin link faqat maxsus kombinatsiya orqali ko'rinadi
+    ...(showAdmin ? [{ name: 'Admin', id: 'admin' }] : [])
   ];
 
   // Animatsiya variantlar (mobil menyu)
@@ -86,9 +121,14 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
         <div className="flex items-center justify-between h-20 md:h-15">
           {/* Logo */}
           <div
-            onClick={() => {
-              onNavigate('home');
-              window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+            onClick={(e) => {
+              // Agar Ctrl yoki Shift bosilgan bo'lsa, admin toggle
+              if (e.ctrlKey || e.shiftKey) {
+                handleLogoClick();
+              } else {
+                onNavigate('home');
+                window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+              }
             }}
             className="cursor-pointer"
           >
@@ -100,7 +140,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex items-center space-x-8">
             {navigation.map((item) => {
               const active = currentPage === item.id;
               return (
@@ -121,6 +161,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
                 </button>
               );
             })}
+            <LanguageSwitcher />
           </nav>
 
           {/* Mobile menu button */}
@@ -172,6 +213,9 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
                     </motion.button>
                   );
                 })}
+                <div className="px-2 py-2">
+                  <LanguageSwitcher />
+                </div>
               </nav>
             </motion.div>
           )}

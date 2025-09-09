@@ -1,5 +1,7 @@
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ArrowLeft, Shield, Ruler, Award, Phone } from 'lucide-react';
+import { useLanguage } from '../hooks/useLanguage';
+import { useMemo } from 'react';
 
 interface ProductDetailPageProps {
   productId: string;
@@ -7,61 +9,66 @@ interface ProductDetailPageProps {
 }
 
 export default function ProductDetailPage({ productId, onNavigate }: ProductDetailPageProps) {
+  const { t } = useLanguage();
+  
   // Mock product data - in a real app this would come from an API
   const getProductData = (id: string) => {
    const products: { [key: string]: any } = {
   'euro-model1': {
     name: 'EURO Model-558 Metal Door',
+    model: 'Model-558',
     image: 'https://iili.io/KqcGK21.jpg',
     material: 'Metall + MDF',
     security: 'A+ sinf',
     dimensions: '2050x860mm + 2050x960mm + 100mm',
     price: "Narx so'rang",
-    description: "Zamonaviy dizaynli metall eshik, ichki qismi yuqori sifatli MDF qoplama bilan.",
+    description: t('product.modern_design'),
     features: [
-      "Galvanizatsiyalangan metall korpus",
-      "Ichki MDF panel",
-      "3-nuqtali qulflash tizimi",
-      "Issiqlik va shovqin izolyatsiyasi",
-      "UVga chidamli bo'yoq"
+      t('product.galvanized_corpus'),
+      t('product.inner_mdf_panel'),
+      t('product.three_point_lock'),
+      t('product.heat_sound_insulation'),
+      t('product.uv_resistant_paint')
     ],
     specifications: [
-      { label: "Material", value: "Metall + MDF" },
-      { label: "Qalinlik", value: "≈100mm" },
-      { label: "Qulf", value: "3-nuqtali" },
-      { label: "Ilgaklar", value: "4 ta" },
-      { label: "Izolyatsiya", value: "Mineral paxta" },
-      { label: "Kafolat", value: "5 yil" }
+      { label: t('product.material'), value: "Metall + MDF" },
+      { label: t('product.thickness'), value: "≈100mm" },
+      { label: t('product.lock'), value: "3-nuqtali" },
+      { label: t('product.hinges'), value: "4 ta" },
+      { label: t('product.insulation'), value: "Mineral paxta" },
+      { label: t('product.warranty'), value: "5 yil" }
     ]
   },
 
   'euro-model2': {
     name: 'EURO Model-556 Metal Door',
+    model: 'Model-556',
     image: 'https://iili.io/KqcGqkg.jpg',
     material: 'Metall + MDF + Oyna',
     security: 'A+ sinf',
     dimensions: '2050x860mm + 2050x960mm + 100mm',
     price: "Narx so'rang",
-    description: "Metall korpus, MDF va oyna dekor bilan uyg‘unlashgan model.",
+    description: t('product.metal_mdf_decor'),
     features: [
-      "MDF + oyna dekor panellari",
-      "3-nuqtali qulflash",
-      "Yaxshilangan izolyatsiya",
-      "Chizilishga chidamli qoplama",
-      "Professional montaj imkoniyati"
+      t('product.mdf_glass_decor_panels'),
+      t('product.three_point_lock'),
+      t('product.improved_insulation'),
+      t('product.scratch_resistant_coating'),
+      t('product.professional_installation_option')
     ],
     specifications: [
-      { label: "Material", value: "Metall + MDF + Oyna" },
-      { label: "Qalinlik", value: "≈100mm" },
-      { label: "Qulf", value: "3-nuqtali" },
-      { label: "Shisha", value: "Temirlangan (tempered)" },
-      { label: "Izolyatsiya", value: "Mineral paxta" },
-      { label: "Kafolat", value: "5 yil" }
+      { label: t('product.material'), value: "Metall + MDF + Oyna" },
+      { label: t('product.thickness'), value: "≈100mm" },
+      { label: t('product.lock'), value: "3-nuqtali" },
+      { label: t('product.glass'), value: t('product.tempered_glass') },
+      { label: t('product.insulation'), value: "Mineral paxta" },
+      { label: t('product.warranty'), value: "5 yil" }
     ]
   },
 
   'euro-model3': {
     name: 'EURO Model-555 Metal Door',
+    model: 'Model-555',
     image: 'https://iili.io/KqcGBpa.jpg',
     material: 'Metall + MDF + Oyna',
     security: 'A sinf',
@@ -86,6 +93,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model4': {
     name: 'EURO Model-557 Metal Door',
+    model: 'Model-557',
     image: 'https://iili.io/KqcGnTJ.jpg',
     material: 'Metall + MDF',
     security: 'A+ sinf',
@@ -110,6 +118,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model5': {
     name: 'EURO Model-516 Metal Door',
+    model: 'Model-516',
     image: 'https://iili.io/KqcGu4I.jpg',
     material: 'Metall + MDF',
     security: 'A+ sinf',
@@ -157,6 +166,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model7': {
     name: 'EURO Model-513 Metal Door',
+    model: 'Model-513',
     image: 'https://iili.io/KqcG5YX.jpg',
     material: 'Metall + MDF + Oyna',
     security: 'A+ sinf',
@@ -181,6 +191,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model8': {
     name: 'EURO Model-588 Metal Door',
+    model: 'Model-588',
     image: 'https://iili.io/KqcG7vn.jpg',
     material: 'Metall + MDF',
     security: 'A+ sinf',
@@ -204,6 +215,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model9': {
     name: 'EURO Model-514 Metal Door',
+    model: 'Model-514',
     image: 'https://iili.io/KqcGljf.jpg',
     material: 'Metall + MDF',
     security: 'A+ sinf',
@@ -227,6 +239,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model10': {
     name: 'EURO Model-111 Metal Door',
+    model: 'Model-111',
     image: 'https://iili.io/KqcGECl.jpg',
     material: 'Metall + MDF',
     security: 'A+ sinf',
@@ -250,6 +263,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model11': {
     name: 'EURO Model-512 Metal Door',
+    model: 'Model-512',
     image: 'https://iili.io/KqcGM4S.jpg',
     material: 'Metall + MDF',
     security: 'A+ sinf',
@@ -273,6 +287,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model12': {
     name: 'EURO Model-599 Metal Door',
+    model: 'Model-599',
     image: 'https://iili.io/KqcGW37.jpg',
     material: 'Metall + MDF',
     security: 'A+ sinf',
@@ -296,6 +311,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model13': {
     name: 'EURO Model-511 Metal Door',
+    model: 'Model-511',
     image: 'https://iili.io/KqcGhve.jpg',
     material: 'Metall + MDF + Oyna',
     security: 'A+ sinf',
@@ -320,6 +336,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model14': {
     name: 'EURO Model-112 Metal Door',
+    model: 'Model-112',
     image: 'https://iili.io/KqcGjyu.jpg',
     material: 'Metall + MDF',
     security: 'A+ sinf',
@@ -412,6 +429,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model18': {
     name: 'EURO Model-515 Metal Door',
+    model: 'Model-515',
     image: 'https://iili.io/KqM7TKB.png',
     material: 'Metall + Metall',
     security: 'A+ sinf',
@@ -436,6 +454,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model19': {
     name: 'EURO Model-517 Metal Door',
+    model: 'Model-517',
     image: 'https://iili.io/KqM7oox.png',
     material: 'Metall + MDF',
     security: 'A+ sinf',
@@ -459,6 +478,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model20': {
     name: 'EURO Model-518 Metal Door',
+    model: 'Model-518',
     image: 'https://iili.io/KqM7f9e.png',
     material: 'Metall + MDF',
     security: 'A+ sinf',
@@ -482,6 +502,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   'euro-model21': {
     name: 'EURO Model-519 Metal Door',
+    model: 'Model-519',
     image: 'https://iili.io/KqM7zPV.png',
     material: 'Metall + MDF',
     security: 'A+ sinf',
@@ -508,7 +529,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
     return products[id] || products['euro-model1'];
   };
 
-  const product = getProductData(productId);
+  const product = useMemo(() => getProductData(productId), [productId, t]);
 
    return (
     <div className="relative min-h-screen">
@@ -530,12 +551,91 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
         .anim-stagger {
           animation: fadeSlideUpSlow 0.5s ease-out both;
         }
-        /* Reduced motion foydalanuvchilar uchun animatsiyalarni o‘chirib qo‘yamiz */
+        
+        /* Water wave animatsiya */
+        @keyframes waterWave {
+          0%, 100% {
+            transform: translateY(0px) scale(1);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(147, 51, 234, 0.2);
+          }
+          25% {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), 0 0 50px rgba(147, 51, 234, 0.3);
+          }
+          50% {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(147, 51, 234, 0.4);
+          }
+          75% {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), 0 0 50px rgba(147, 51, 234, 0.3);
+          }
+        }
+        
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-3px);
+          }
+        }
+        
+        /* Water wave overlay */
+        .water-wave-overlay {
+          background: linear-gradient(45deg, 
+            rgba(255, 255, 255, 0.1) 0%, 
+            rgba(255, 255, 255, 0.05) 25%, 
+            rgba(255, 255, 255, 0.1) 50%, 
+            rgba(255, 255, 255, 0.05) 75%, 
+            rgba(255, 255, 255, 0.1) 100%);
+          background-size: 200% 200%;
+          animation: waveFlow 4s ease-in-out infinite;
+          opacity: 0.6;
+        }
+        
+        @keyframes waveFlow {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+        
+        /* Hover effect */
+        .water-wave-button:hover {
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 0 40px rgba(59, 130, 246, 0.6), 0 0 80px rgba(147, 51, 234, 0.5);
+        }
+        
+        /* Text shimmer effect */
+        .water-wave-button span {
+          background: linear-gradient(45deg, #ffffff, #e0e7ff, #ffffff);
+          background-size: 200% 200%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: textShimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes textShimmer {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+        
+        /* Reduced motion foydalanuvchilar uchun animatsiyalarni o'chirib qo'yamiz */
         @media (prefers-reduced-motion: reduce) {
           .anim-base,
           .anim-slower,
           .anim-card,
-          .anim-stagger {
+          .anim-stagger,
+          .water-wave-button,
+          .water-wave-overlay {
             animation: none !important;
           }
         }
@@ -555,7 +655,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
             className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Katalogga qaytish
+            {t('product.back_to_catalog')}
           </button>
         </div>
       </div>
@@ -584,7 +684,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               >
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Ruler className="h-5 w-5 text-white" />
-                  Texnik chizma
+                  {t('product.technical_drawing')}
                 </h3>
                 <div className="bg-white/0 backdrop-blur-sm rounded-xl aspect-square flex items-center justify-center border-2 border-dashed border-white/0 overflow-hidden shadow-lg">
                   <ImageWithFallback
@@ -619,7 +719,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2 anim-stagger" style={{ animationDelay: '240ms' }}>
                     <Shield className="h-5 w-5 text-white" />
-                    Asosiy xususiyatlar
+                    {t('product.key_features')}
                   </h3>
                   <ul className="space-y-2">
                     {product.features.map((feature: string, index: number) => (
@@ -635,11 +735,6 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                   </ul>
                 </div>
 
-                {/* Order Button (agar kerak bo'lsa) */}
-                {/* <button className="w-full bg-white/0 backdrop-blur-sm text-white py-4 px-6 rounded-xl font-semibold hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2 border border-white/30 shadow-lg hover:shadow-xl">
-                  <Phone className="h-5 w-5" />
-                  Buyurtma berish
-                </button> */}
               </div>
 
               {/* Specifications */}
@@ -649,7 +744,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               >
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2 anim-stagger" style={{ animationDelay: '220ms' }}>
                   <Award className="h-5 w-5 text-white" />
-                  Texnik xususiyatlar
+                  {t('product.technical_specs')}
                 </h3>
                 <div className="space-y-3">
                   {product.specifications.map((spec: any, index: number) => (
@@ -671,14 +766,14 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                 style={{ animationDelay: '220ms' }}
               >
                 <h3 className="text-lg font-semibold text-white mb-3 anim-stagger" style={{ animationDelay: '260ms' }}>
-                  O'rnatish bo'yicha tavsiyalar
+                  {t('product.installation_tips')}
                 </h3>
                 <ul className="space-y-2 text-gray-300">
                   {[
-                    "• Professional o'rnatish xizmati mavjud",
-                    '• O\'rnatish 2-3 soat davom etadi',
-                    "• Barcha kerakli jihozlar ta'minlanadi",
-                    "• 1 yillik o'rnatish kafolati",
+                    t('product.professional_installation'),
+                    t('product.installation_time'),
+                    t('product.all_equipment'),
+                    t('product.installation_warranty'),
                   ].map((tip, i) => (
                     <li
                       key={i}
@@ -693,6 +788,43 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
             </div>
             {/* ========== /O'ng ========== */}
           </div>
+        </div>
+      </div>
+
+      {/* Order Button - Sahifaning eng pastida */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 z-50">
+        <div className="container mx-auto">
+          <button
+            onClick={() => {
+              // Product ma'lumotini localStorage ga saqlash
+              localStorage.setItem('selectedProduct', JSON.stringify({
+                id: productId,
+                name: product.name,
+                material: product.material,
+                security: product.security,
+                dimensions: product.dimensions,
+                price: product.price
+              }));
+              // Contact page ga o'tish
+              onNavigate('contact');
+              window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+            }}
+            className="w-full bg-gradient-to-r from-blue-500/80 to-purple-600/80 backdrop-blur-xl text-white py-4 px-6 rounded-2xl font-semibold hover:from-blue-600/90 hover:to-purple-700/90 transition-all duration-500 flex items-center justify-center gap-3 border border-white/30 shadow-2xl hover:shadow-3xl relative overflow-hidden water-wave-button"
+            style={{
+              animation: 'waterWave 3s ease-in-out infinite, float 2s ease-in-out infinite'
+            }}
+          >
+            {/* Water wave effect */}
+            <div className="absolute inset-0 water-wave-overlay"></div>
+            
+            {/* Button content */}
+            <div className="relative z-10 flex items-center gap-3">
+              <Phone className="h-6 w-6" />
+              <span className="text-lg font-bold">
+                Ushbu {product.model} ga buyurtma berish
+              </span>
+            </div>
+          </button>
         </div>
       </div>
     </div>

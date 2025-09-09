@@ -1,23 +1,26 @@
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Shield, Award, Users, MapPin } from 'lucide-react';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface AboutPageProps {
   onNavigate: (page: string) => void;
 }
 
 export default function AboutPage({ onNavigate }: AboutPageProps) {
+  const { t } = useLanguage();
+  
   const stats = [
-    { number: '10+', label: 'Yillik tajriba' },
-    { number: '5000+', label: 'Mamnun mijozlar' },
-    { number: '50+', label: 'Eshik modellari' },
-    { number: '100%', label: 'Sifat kafolati' }
+    { number: '10+', label: t('about.experience') },
+    { number: '5000+', label: t('about.customers') },
+    { number: '50+', label: t('about.models') },
+    { number: '100%', label: t('about.quality') }
   ];
 
   const certificates = [
     'ISO 9001:2015',
-    'GOST sertifikati',
-    'CE belgisi',
-    "Yong'indan himoya sertifikati"
+    t('about.gost_cert'),
+    t('about.ce_mark'),
+    t('about.fire_cert')
   ];
 
   return (
@@ -35,14 +38,10 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-4xl font-bold text-white mb-6">
-                EURODOOR haqida
+                {t('about.title')}
               </h1>
               <p className="text-lg text-white leading-relaxed">
-                EURODOOR kompaniyasi 2014-yilda tashkil etilgan bo'lib, yuqori
-                sifatli temir va MDF eshiklar ishlab chiqarish sohasida yetakchi
-                o'rinni egallaydi. Bizning asosiy maqsadimiz - mijozlarimizga
-                xavfsizlik va estetikani birlashtirgan zamonaviy eshiklar taqdim
-                etishdir.
+                {t('about.description')}
               </p>
             </div>
           </div>
@@ -70,24 +69,17 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-3xl font-bold text-white mb-6">
-                  Bizning missiyamiz
+                  {t('about.mission')}
                 </h2>
                 <div className="space-y-4 text-white">
                   <p>
-                    EURODOOR kompaniyasi sifatida biz har bir uyning
-                    xavfsizligini ta'minlash uchun eng zamonaviy texnologiyalar va
-                    yuqori sifatli materiallardan foydalanib eshiklar
-                    ishlab chiqaramiz.
+                    {t('about.mission_text')}
                   </p>
                   <p>
-                    Bizning eshiklarimiz faqat ko'cha tarafga mo'ljallangan bo'lib,
-                    xavfsizlik va estetik ko'rinishni mukammal tarzda
-                    birlashtiradi. Har bir mahsulot alohida e'tibor bilan
-                    tayyorlanadi va qat'iy sifat nazoratidan o'tadi.
+                    {t('about.doors_description')}
                   </p>
                   <p>
-                    Mijozlar ehtiyojlarini tushunish va ularga eng yaxshi
-                    yechimlarni taklif qilish bizning asosiy tamoyilimizdir.
+                    {t('about.customer_needs')}
                   </p>
                 </div>
 
@@ -95,9 +87,9 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
                   <div className="flex items-start gap-3">
                     <Shield className="h-6 w-6 text-[#E32C27] mt-1" />
                     <div>
-                      <h4 className="font-semibold text-white mb-1">Xavfsizlik</h4>
+                      <h4 className="font-semibold text-white mb-1">{t('about.security')}</h4>
                       <p className="text-sm text-white">
-                        Eng yuqori xavfsizlik standartlari
+                        {t('about.highest_security')}
                       </p>
                     </div>
                   </div>
@@ -135,7 +127,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
                 <div className="bg-white/10 rounded-lg h-64 flex items-center justify-center">
                   <ImageWithFallback
                     src="https://images.unsplash.com/photo-1629649933424-42da2426e3ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBkb29yJTIwc3RlZWx8ZW58MXx8fHwxNzU2MTA4MjM0fDA&ixlib=rb-4.1.0&q=80&w=1080"
-                    alt="EURODOOR zavodi"
+                    alt={t('about.factory_alt')}
                     className="w-full h-full object-cover rounded-lg"
                   />
                 </div>
@@ -149,11 +141,10 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-white mb-4">
-                Sertifikatlar va standartlar
+                {t('about.certificates_standards')}
               </h2>
               <p className="text-white max-w-2xl mx-auto">
-                Bizning barcha mahsulotlarimiz xalqaro standartlarga javob beradi
-                va tegishli sertifikatlarga ega
+                {t('about.international_standards')}
               </p>
             </div>
 
@@ -176,16 +167,15 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
         {/* Contact CTA */}
         <section className="py-16 bg-white/0qwwqwqqwwq m-4 rounded-2xl p-8 text-white">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-6">Biz bilan hamkorlik qiling</h2>
+            <h2 className="text-3xl font-bold mb-6">{t('about.partnership')}</h2>
             <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-              Professional maslahat va eng yaxshi eshiklarni tanlash uchun
-              mutaxassislarimiz bilan bog'laning
+              {t('about.partnership_desc')}
             </p>
             <button
               onClick={() => onNavigate('contact')}
               className="bg-[#E32C27] text-white px-8 py-4 font-semibold rounded-lg hover:bg-[#F43737] transition-colors"
             >
-              Aloqa ma'lumotlari
+              {t('about.contact_info')}
             </button>
           </div>
         </section>

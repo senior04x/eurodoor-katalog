@@ -1,10 +1,37 @@
-import { useState } from 'react';
-import { Phone, MessageCircle, Instagram, MapPin, Clock, Mail } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Phone, MessageCircle, Instagram, MapPin, Clock, Mail, Package, ArrowLeft } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { motion, useReducedMotion } from 'framer-motion';
+import { useLanguage } from '../hooks/useLanguage';
 
-export default function ContactPage() {
+interface ContactPageProps {
+  onNavigate?: (page: string, productId?: string) => void;
+}
+
+export default function ContactPage({ onNavigate }: ContactPageProps) {
   const prefersReduced = useReducedMotion();
+  const { t } = useLanguage();
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+
+  // localStorage dan selected product ni o'qish
+  useEffect(() => {
+    const savedProduct = localStorage.getItem('selectedProduct');
+    if (savedProduct) {
+      try {
+        const product = JSON.parse(savedProduct);
+        setSelectedProduct(product);
+        // Form data ga product nomini qo'shish
+        setFormData(prev => ({
+          ...prev,
+          product: product.name
+        }));
+        // localStorage ni tozalash - faqat form submit qilinganda
+        // localStorage.removeItem('selectedProduct');
+      } catch (error) {
+        console.error('Error parsing selected product:', error);
+      }
+    }
+  }, []);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -15,8 +42,41 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Sizning so'rovingiz qabul qilindi! Tez orada aloqaga chiqamiz.");
+    
+    // Zakaz ma'lumotlarini yaratish
+    const order = {
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString(),
+      customer: {
+        name: formData.name,
+        phone: formData.phone,
+        message: formData.message
+      },
+      product: selectedProduct ? {
+        id: selectedProduct.id,
+        name: selectedProduct.name,
+        material: selectedProduct.material,
+        security: selectedProduct.security,
+        dimensions: selectedProduct.dimensions,
+        price: selectedProduct.price
+      } : {
+        name: formData.product
+      },
+      status: 'new'
+    };
+    
+    // Mavjud zakazlarni olish
+    const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+    existingOrders.push(order);
+    
+    // Zakazlarni localStorage ga saqlash
+    localStorage.setItem('orders', JSON.stringify(existingOrders));
+    
+    alert(t('contact.form_success'));
     setFormData({ name: '', phone: '', product: '', message: '' });
+    // Form submit qilinganda selected product ni tozalash
+    setSelectedProduct(null);
+    localStorage.removeItem('selectedProduct');
   };
 
   const handleChange = (
@@ -26,6 +86,18 @@ export default function ContactPage() {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const handleBackToProduct = () => {
+    if (selectedProduct && onNavigate) {
+      // Product detail page ga qaytish
+      onNavigate('product', selectedProduct.id);
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    } else if (onNavigate) {
+      // Agar product yo'q bo'lsa, catalog ga qaytish
+      onNavigate('catalog');
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
   };
 
   // ---- Umumiy (ota) variant: hammasini bir vaqtda boshqaradi
@@ -63,6 +135,7 @@ export default function ContactPage() {
       />
       <div className="fixed inset-0 bg-black/30" />
 
+
       {/* OTA KONTROL: barcha sectionlar sinxron chiqadi */}
       <motion.main
         variants={pageVariants}
@@ -70,21 +143,78 @@ export default function ContactPage() {
         animate="show"
         className="relative"
       >
-        {/* Header (bola) */}
-        <motion.section
-          variants={fadeUp}
-          className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl mx-4 py-16 shadow-2xl border border-white/20 mb-0 transform-gpu will-change-transform"
-        >
-          <div className="container mx-auto px-4">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-white mb-4">Aloqa</h1>
-              <p className="text-lg text-white/90 max-w-2xl mx-auto">
-                Sizga kerakli eshikni tanlashda yordam berish uchun biz bilan bog'laning.
-                Mutaxassislarimiz bepul maslahat va o'lchash xizmati taklif qiladi.
-              </p>
+        {/* Header (bola) - only show when no product selected */}
+        {!selectedProduct && (
+          <motion.section
+            variants={fadeUp}
+            className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl mx-4 py-16 shadow-2xl border border-white/20 mb-0 transform-gpu will-change-transform"
+          >
+            <div className="container mx-auto px-4">
+              <div className="text-center">
+                <h1 className="text-4xl font-bold text-white mb-4">
+                  {t('contact.title')}
+                </h1>
+                <p className="text-lg text-white/90 max-w-2xl mx-auto">
+                  {t('contact.description')}
+                </p>
+              </div>
             </div>
-          </div>
-        </motion.section>
+          </motion.section>
+        )}
+
+        {/* Back Button - faqat product tanlangan bo'lsa ko'rinadi */}
+        {selectedProduct && onNavigate && (
+          <motion.section
+            variants={fadeUp}
+            className="py-4"
+          >
+            <div className="container mx-auto px-4">
+              <button
+                onClick={handleBackToProduct}
+                className="bg-white/20 backdrop-blur-xl text-white px-6 py-3 rounded-xl hover:bg-white/30 transition-all duration-300 flex items-center gap-3 border border-white/30 shadow-lg hover:shadow-xl"
+              >
+                <ArrowLeft className="h-5 w-5" />
+                <span className="font-medium">{t('contact.back_to_product')}</span>
+              </button>
+            </div>
+          </motion.section>
+        )}
+
+        {/* Selected Product Info */}
+        {selectedProduct && (
+          <section className="py-8">
+            <div className="container mx-auto px-4">
+              <div className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 border border-white/20 shadow-2xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Package className="h-5 w-5 text-white" />
+                      <h4 className="font-semibold text-white">{selectedProduct.name}</h4>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-300">{t('contact.product_material')}:</span>
+                        <span className="text-white">{selectedProduct.material}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-300">{t('contact.product_security')}:</span>
+                        <span className="text-white">{selectedProduct.security}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-300">{t('contact.product_dimensions')}:</span>
+                        <span className="text-white">{selectedProduct.dimensions}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-300">{t('contact.product_price')}:</span>
+                        <span className="text-white font-semibold">{selectedProduct.price}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Main grid (bola) */}
         <motion.div
@@ -93,9 +223,67 @@ export default function ContactPage() {
         >
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              {/* Contact Form */}
+              <motion.div variants={fadeUp} className={cardClass}>
+                <h2 className="text-2xl font-bold text-white mb-6">
+                  {selectedProduct ? t('contact.order_form') : t('contact.contact_form')}
+                </h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <input
+                      type="text"
+                      placeholder={t('contact.name_placeholder')}
+                      value={formData.name}
+                      onChange={(e) => handleChange(e)}
+                      name="name"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-white/40 transition-colors"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="tel"
+                      placeholder={t('contact.phone_placeholder')}
+                      value={formData.phone}
+                      onChange={(e) => handleChange(e)}
+                      name="phone"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-white/40 transition-colors"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder={t('contact.product_placeholder')}
+                      value={formData.product}
+                      onChange={(e) => handleChange(e)}
+                      name="product"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-white/40 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <textarea
+                      placeholder={t('contact.message_placeholder')}
+                      value={formData.message}
+                      onChange={(e) => handleChange(e)}
+                      name="message"
+                      rows={4}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-[#E32C27] transition-colors resize-none"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-white/20 text-white py-3 px-6 rounded-lg font-semibold hover:bg-white/30 transition-colors duration-300 flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle className="h-5 w-5" />
+                    {selectedProduct ? t('contact.order_button') : t('contact.send_button')}
+                  </button>
+                </form>
+              </motion.div>
+
               {/* Contact Information */}
               <motion.div variants={fadeUp} className={cardClass}>
-                <h2 className="text-2xl font-bold text-white mb-6">Bog'lanish ma'lumotlari</h2>
+                <h2 className="text-2xl font-bold text-white mb-6">{t('contact.contact_info')}</h2>
 
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
@@ -103,7 +291,7 @@ export default function ContactPage() {
                       <Phone className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Telefon</h3>
+                      <h3 className="font-semibold text-white mb-1">{t('contact.phone')}</h3>
                           <a href="tel:+998901234567" className="text-white hover:underline">
                               +998 90 123 45 67
                             </a> <br />
@@ -119,7 +307,7 @@ export default function ContactPage() {
                       <MessageCircle className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Telegram</h3>
+                      <h3 className="font-semibold text-white mb-1">{t('contact.telegram')}</h3>
                      <a
                        href="https://t.me/eurodoor_uz"
                        target="_blank"
@@ -137,7 +325,7 @@ export default function ContactPage() {
                       <Instagram className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Instagram</h3>
+                      <h3 className="font-semibold text-white mb-1">{t('contact.instagram')}</h3>
                        <a
                          href="https://instagram.com/eurodoor.uz"
                          target="_blank"
@@ -155,7 +343,7 @@ export default function ContactPage() {
                       <Mail className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Email</h3>
+                      <h3 className="font-semibold text-white mb-1">{t('contact.email')}</h3>
                       <p className="text-white">info@eurodoor.uz</p>
                     </div>
                   </div>
@@ -165,10 +353,8 @@ export default function ContactPage() {
                       <MapPin className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Manzil</h3>
-                      <p className="text-white">
-                         Chilonzor tumani, Toshkent <br />
-                       Tirsakobod mahalla fuqarolar yigʻini
+                      <h3 className="font-semibold text-white mb-1">{t('contact.address')}</h3>
+                      <p className="text-white" dangerouslySetInnerHTML={{ __html: t('contact.address_detail') }}>
                       </p>
                     </div>
                   </div>
@@ -178,7 +364,7 @@ export default function ContactPage() {
                       <Clock className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Ish vaqti</h3>
+                      <h3 className="font-semibold text-white mb-1">{t('contact.working_hours')}</h3>
                       <p className="text-white">
                         Dushanba - Shanba: 9:00 - 19:00 <br />
                         Yakshanba: 10:00 - 17:00
@@ -190,7 +376,7 @@ export default function ContactPage() {
 
               {/* Map */}
               <motion.div variants={fadeUp} className={cardClass}>
-  <h3 className="text-xl font-semibold text-white mb-4">Bizning joylashuvimiz</h3>
+  <h3 className="text-xl font-semibold text-white mb-4">{t('contact.our_location')}</h3>
   <div className="rounded-lg overflow-hidden h-64 lg:h-[500px] flex items-center justify-center">
     <div style={{ position: "relative", overflow: "hidden", width: "100%", height: "100%" }}>
       <a
@@ -219,7 +405,7 @@ export default function ContactPage() {
         target="_blank"
         rel="noopener noreferrer"
       >
-        Eshiklar Toshkentda
+        {t('contact.doors_tashkent')}
       </a>
       <iframe
         src="https://yandex.uz/map-widget/v1/?ll=69.194934%2C41.250800&mode=search&oid=204432436811&ol=biz&z=17.75"
@@ -245,8 +431,8 @@ export default function ContactPage() {
         >
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-white mb-2">Bizning xizmatlarimiz</h2>
-              <p className="text-gray-300">Mahsulot tanlashdan tortib o‘rnatishgacha — barchasi bir joyda</p>
+              <h2 className="text-3xl font-bold text-white mb-2">{t('contact.our_services')}</h2>
+              <p className="text-gray-300">{t('contact.services_desc')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -254,9 +440,9 @@ export default function ContactPage() {
                 <div className="w-16 h-16 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Phone className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Bepul maslahat</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('contact.free_consultation')}</h3>
                 <p className="text-gray-300">
-                  Mutaxassislarimiz sizga eng mos eshikni tanlashda yordam beradi
+                  {t('contact.free_consultation_desc')}
                 </p>
               </div>
 
@@ -264,9 +450,9 @@ export default function ContactPage() {
                 <div className="w-16 h-16 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <MapPin className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Bepul o'lchash</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('contact.free_measurement')}</h3>
                 <p className="text-gray-300">
-                  Uyingizga borib, aniq o'lchamlarni olamiz
+                  {t('contact.free_measurement_desc')}
                 </p>
               </div>
 
@@ -274,9 +460,9 @@ export default function ContactPage() {
                 <div className="w-16 h-16 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Clock className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Tez o'rnatish</h3>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('contact.fast_installation')}</h3>
                 <p className="text-gray-300">
-                  Professional jamoa tomonidan sifatli o'rnatish
+                  {t('contact.fast_installation_desc')}
                 </p>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { Eye, Layers } from 'lucide-react';
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface CatalogPageProps {
   onNavigate: (page: string, productId?: string) => void;
@@ -19,28 +20,29 @@ interface DoorProduct {
 type GroupMode = 'material' | 'size';
 
 export default function CatalogPage({ onNavigate }: CatalogPageProps) {
+  const { t } = useLanguage();
   const doors: DoorProduct[] = [
-    { id: 'euro-model1',  name: 'EURO Model-558 Metal Door',     image: 'https://iili.io/KqcGK21.jpg', material: 'Metall + MDF',                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 100mm',  description: 'Zamonaviy dizaynli Metall eshik ichki MDF qoplama bilan' },
-    { id: 'euro-model2',  name: 'EURO Model-556 Metal Door',     image: 'https://iili.io/KqcGqkg.jpg', material: 'Metall + MDF + Oyna',                   security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 100mm',  description: 'Zamonaviy dizaynli Metall eshik ichki MDF + Oyna qoplama bilan' },
-    { id: 'euro-model3',  name: 'EURO Model-555 Metal Door',     image: 'https://iili.io/KqcGBpa.jpg', material: 'Metall + MDF + Oyna',                   security: 'A sinf',  dimensions: '2050x860mm + 2050x960mm + 100mm',  description: 'Klassik uslubdagi Metall eshik Oyna elementlar bilan' },
-    { id: 'euro-model4',  name: 'EURO Model-557 Metal Door',     image: 'https://iili.io/KqcGnTJ.jpg', material: 'Metall + MDF',                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 100mm',  description: 'Designer uslubidagi eshik MDF dekor elementlari bilan' },
-    { id: 'euro-model5',  name: 'EURO Model-516 Metal Door',     image: 'https://iili.io/KqcGu4I.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm',  description: 'Eng yuqori darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model6',  name: 'EURO Model-020 MDF Door',       image: 'https://iili.io/KqcGR2t.jpg', material: 'MDF + MDF',                             security: 'Premium', dimensions: '2300x860mm',  description: 'Hashamatli dizayn va MDF materiallar va Elektron quluf' },
-    { id: 'euro-model7',  name: 'EURO Model-513 Metal Door',     image: 'https://iili.io/KqcG5YX.jpg', material: 'Metall + MDF + Oyna',                   security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: 'Zamonaviy kompozit materiallar bilan ishlangan eshik' },
-    { id: 'euro-model8',  name: 'EURO Model-588 Metal Door',     image: 'https://iili.io/KqcG7vn.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 80mm',  description: 'Elite darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model9',  name: 'EURO Model-514 Metal Door',     image: 'https://iili.io/KqcGljf.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: 'Klassik va zamonaviy elementlarni birlashtirgan eshik' },
-    { id: 'euro-model10', name: 'EURO Model-111 Metal Door',     image: 'https://iili.io/KqcGECl.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: 'Ijrochi darajadagi xavfsizlik va hashamat' },
-    { id: 'euro-model11', name: 'EURO Model-512 Metal Door',     image: 'https://iili.io/KqcGM4S.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: 'Eng yuqori darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model12', name: 'EURO Model-599 Metal Door',     image: 'https://iili.io/KqcGW37.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 80mm', description: 'Eng yuqori darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model13', name: 'EURO Model-511 Metal Door',     image: 'https://iili.io/KqcGhve.jpg', material: "Metall + MDF + Oyna",                   security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm', description: 'Eng yuqori darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model14', name: 'EURO Model-112 Metal Door',     image: 'https://iili.io/KqcGjyu.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm', description: 'Eng yuqori darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model15', name: 'EURO Model-710 MDF Door',       image: 'https://iili.io/KqcGNTb.jpg', material: "MDF + MDF",                             security: 'B+ sinf', dimensions: '2050x860mm + 2050x960mm', description: 'Eng yuqori darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model16', name: 'EURO Model-601 MDF Door',       image: 'https://iili.io/KqcGOjj.jpg', material: "MDF + MDF",                             security: 'B+ sinf', dimensions: '2050x860mm', description: 'Eng yuqori darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model17', name: 'EURO Model-600 MDF Door',       image: 'https://iili.io/KqcGS6B.jpg', material: "MDF + MDF",                             security: 'B+ sinf', dimensions: '2050x860mm', description: 'Eng yuqori darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model18', name: 'EURO Model-515 Metal Door',     image: 'https://iili.io/KqM7TKB.png', material: "Metall + Metall",                       security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm', description: 'Eng yuqori darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model19', name: 'EURO Model-517 Metal Door',     image: 'https://iili.io/KqM7oox.png', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm', description: 'Eng yuqori darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model20', name: 'EURO Model-518 Metal Door',     image: 'https://iili.io/KqM7f9e.png', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm', description: 'Eng yuqori darajadagi xavfsizlik va dizayn' },
-    { id: 'euro-model21', name: 'EURO Model-519 Metal Door',     image: 'https://iili.io/KqM7zPV.png', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm', description: 'Eng yuqori darajadagi xavfsizlik va dizayn' }
+    { id: 'euro-model1',  name: 'EURO Model-558 Metal Door',     image: 'https://iili.io/KqcGK21.jpg', material: 'Metall + MDF',                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 100mm',  description: t('catalog.product1_desc') },
+    { id: 'euro-model2',  name: 'EURO Model-556 Metal Door',     image: 'https://iili.io/KqcGqkg.jpg', material: 'Metall + MDF + Oyna',                   security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 100mm',  description: t('catalog.product2_desc') },
+    { id: 'euro-model3',  name: 'EURO Model-555 Metal Door',     image: 'https://iili.io/KqcGBpa.jpg', material: 'Metall + MDF + Oyna',                   security: 'A sinf',  dimensions: '2050x860mm + 2050x960mm + 100mm',  description: t('catalog.product3_desc') },
+    { id: 'euro-model4',  name: 'EURO Model-557 Metal Door',     image: 'https://iili.io/KqcGnTJ.jpg', material: 'Metall + MDF',                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 100mm',  description: t('catalog.product4_desc') },
+    { id: 'euro-model5',  name: 'EURO Model-516 Metal Door',     image: 'https://iili.io/KqcGu4I.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm',  description: t('catalog.product5_desc') },
+    { id: 'euro-model6',  name: 'EURO Model-020 MDF Door',       image: 'https://iili.io/KqcGR2t.jpg', material: 'MDF + MDF',                             security: 'Premium', dimensions: '2300x860mm',  description: t('catalog.product6_desc') },
+    { id: 'euro-model7',  name: 'EURO Model-513 Metal Door',     image: 'https://iili.io/KqcG5YX.jpg', material: 'Metall + MDF + Oyna',                   security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: t('catalog.product7_desc') },
+    { id: 'euro-model8',  name: 'EURO Model-588 Metal Door',     image: 'https://iili.io/KqcG7vn.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 80mm',  description: t('catalog.product8_desc') },
+    { id: 'euro-model9',  name: 'EURO Model-514 Metal Door',     image: 'https://iili.io/KqcGljf.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: t('catalog.product9_desc') },
+    { id: 'euro-model10', name: 'EURO Model-111 Metal Door',     image: 'https://iili.io/KqcGECl.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: t('catalog.product10_desc') },
+    { id: 'euro-model11', name: 'EURO Model-512 Metal Door',     image: 'https://iili.io/KqcGM4S.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: t('catalog.product11_desc') },
+    { id: 'euro-model12', name: 'EURO Model-599 Metal Door',     image: 'https://iili.io/KqcGW37.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 80mm', description: t('catalog.product11_desc') },
+    { id: 'euro-model13', name: 'EURO Model-511 Metal Door',     image: 'https://iili.io/KqcGhve.jpg', material: "Metall + MDF + Oyna",                   security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm', description: t('catalog.product11_desc') },
+    { id: 'euro-model14', name: 'EURO Model-112 Metal Door',     image: 'https://iili.io/KqcGjyu.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm', description: t('catalog.product11_desc') },
+    { id: 'euro-model15', name: 'EURO Model-710 MDF Door',       image: 'https://iili.io/KqcGNTb.jpg', material: "MDF + MDF",                             security: 'B+ sinf', dimensions: '2050x860mm + 2050x960mm', description: t('catalog.product11_desc') },
+    { id: 'euro-model16', name: 'EURO Model-601 MDF Door',       image: 'https://iili.io/KqcGOjj.jpg', material: "MDF + MDF",                             security: 'B+ sinf', dimensions: '2050x860mm', description: t('catalog.product11_desc') },
+    { id: 'euro-model17', name: 'EURO Model-600 MDF Door',       image: 'https://iili.io/KqcGS6B.jpg', material: "MDF + MDF",                             security: 'B+ sinf', dimensions: '2050x860mm', description: t('catalog.product11_desc') },
+    { id: 'euro-model18', name: 'EURO Model-515 Metal Door',     image: 'https://iili.io/KqM7TKB.png', material: "Metall + Metall",                       security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm', description: t('catalog.product11_desc') },
+    { id: 'euro-model19', name: 'EURO Model-517 Metal Door',     image: 'https://iili.io/KqM7oox.png', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm', description: t('catalog.product11_desc') },
+    { id: 'euro-model20', name: 'EURO Model-518 Metal Door',     image: 'https://iili.io/KqM7f9e.png', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm', description: t('catalog.product11_desc') },
+    { id: 'euro-model21', name: 'EURO Model-519 Metal Door',     image: 'https://iili.io/KqM7zPV.png', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm', description: t('catalog.product11_desc') }
   ];
 
   // --- Helperlar ---
@@ -56,7 +58,7 @@ const norm = (s: string) =>
     .replace(/yog'och|yogoch/g, 'mdf')
     .replace(/shisha/g, 'oyna');
 
-const getMaterialKey = (m: string) => {
+const getMaterialKey = (m: string, t: any) => {
   const x = norm(m);
   const hasMetall = x.includes('metall');
   const hasMdf = x.includes('mdf');
@@ -65,16 +67,16 @@ const getMaterialKey = (m: string) => {
   const hasNatural = x.includes('natural');
 
   // 1) Avval uchlik kombinatsiya
-  if (hasMetall && hasMdf && hasOyna) return 'Metall + MDF + Oyna';
+  if (hasMetall && hasMdf && hasOyna) return t('catalog.material_metall_mdf_oyna');
 
   // 2) Keyin qolganlari
-  if (hasMetall && hasMdf) return 'Metall + MDF';
-  if (hasMdf && !hasMetall) return 'MDF + MDF';
-  if (hasMetall && !hasMdf && !hasOyna && !hasKompozit && !hasNatural) return 'Metall + Metall';
-  if (hasMetall && hasOyna) return 'Metall + Oyna';
-  if (hasMetall && hasKompozit) return 'Metall + Kompozit';
+  if (hasMetall && hasMdf) return t('catalog.material_metall_mdf');
+  if (hasMdf && !hasMetall) return t('catalog.material_mdf_mdf');
+  if (hasMetall && !hasMdf && !hasOyna && !hasKompozit && !hasNatural) return t('catalog.material_metall_metall');
+  if (hasMetall && hasOyna) return t('catalog.material_metall_mdf_oyna');
+  if (hasMetall && hasKompozit) return t('catalog.material_metall_kompozit');
 
-  return 'Boshqa';
+  return t('catalog.material_other');
 };
 
 
@@ -83,12 +85,12 @@ const getMaterialKey = (m: string) => {
     return m ? parseInt(m[1], 10) : NaN;
   };
 
-  const getSizeKey = (d: string) => {
+  const getSizeKey = (d: string, t: any) => {
     const h = parseHeight(d);
-    if (isNaN(h)) return 'Boshqa o‘lcham';
-    if (h <= 2000) return '2000 mm seriya';
-    if (h <= 2100) return '2050 mm seriya';
-    return '2300 mm seriya';
+    if (isNaN(h)) return t('catalog.size_other');
+    if (h <= 2000) return t('catalog.size_2050_series');
+    if (h <= 2100) return t('catalog.size_2050_series');
+    return t('catalog.size_2300_series');
   };
 
   const [mode, setMode] = useState<GroupMode>('material');
@@ -105,15 +107,15 @@ const getMaterialKey = (m: string) => {
   const grouped = useMemo(() => {
     const map = new Map<string, DoorProduct[]>();
     for (const d of doors) {
-      const key = mode === 'material' ? getMaterialKey(d.material) : getSizeKey(d.dimensions);
+      const key = mode === 'material' ? getMaterialKey(d.material, t) : getSizeKey(d.dimensions, t);
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(d);
     }
 
     const order =
       mode === 'material'
-        ? ['Metall + MDF', 'MDF + MDF', 'Metall + Metall', 'Metall + MDF + Oyna', 'Metall + Kompozit', 'Boshqa']
-        : ['2050 mm seriya', '2300 mm seriya', '2100 mm seriya', 'Boshqa o‘lcham'];
+        ? [t('catalog.material_metall_mdf'), t('catalog.material_mdf_mdf'), t('catalog.material_metall_metall'), t('catalog.material_metall_mdf_oyna'), t('catalog.material_metall_kompozit'), t('catalog.material_other')]
+        : [t('catalog.size_2050_series'), t('catalog.size_2300_series'), t('catalog.size_2100_series'), t('catalog.size_other')];
 
     return Array.from(map.entries()).sort((a, b) => {
       const ai = order.indexOf(a[0]);
@@ -185,9 +187,9 @@ const getMaterialKey = (m: string) => {
       <section className="bg-none backdrop-blur-xl py-16">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-4">Eshiklar katalogi</h1>
+            <h1 className="text-4xl font-bold text-white mb-4">{t('catalog.title')}</h1>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Yuqori sifatli Metall va MDF eshiklarimiz bilan tanishing. Har bir model maxsus texnologiya asosida ishlab chiqarilgan.
+              {t('catalog.description')}
             </p>
 
             {/* Rejim tanlash */}
@@ -199,7 +201,7 @@ const getMaterialKey = (m: string) => {
                   mode === 'material' ? 'bg-white/25 text-white' : 'text-gray-200 hover:bg-white/10'
                 }`}
               >
-                Material bo‘yicha
+                {t('catalog.group_by_material')}
               </button>
               <button
                 type="button"
@@ -208,7 +210,7 @@ const getMaterialKey = (m: string) => {
                   mode === 'size' ? 'bg-white/25 text-white' : 'text-gray-200 hover:bg-white/10'
                 }`}
               >
-                O‘lcham bo‘yicha
+                {t('catalog.group_by_size')}
               </button>
             </div>
           </div>
@@ -282,9 +284,9 @@ const getMaterialKey = (m: string) => {
                           <div className="p-5">
                             <h3 className="text-lg font-semibold text-white mb-2">{door.name}</h3>
                             <div className="space-y-1 mb-3 text-sm text-gray-300">
-                              <div><span className="font-medium">Material:</span> {door.material}</div>
-                              <div><span className="font-medium">Xavfsizlik:</span> {door.security}</div>
-                              <div><span className="font-medium">O‘lcham:</span> {door.dimensions}</div>
+                              <div><span className="font-medium">{t('catalog.material')}:</span> {door.material}</div>
+                              <div><span className="font-medium">{t('catalog.security')}:</span> {door.security}</div>
+                              <div><span className="font-medium">{t('catalog.dimensions')}:</span> {door.dimensions}</div>
                             </div>
                             <p className="text-gray-300 text-sm mb-4">{door.description}</p>
 
@@ -300,14 +302,14 @@ const getMaterialKey = (m: string) => {
                                 window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
                               }}
                               className="w-full bg-white/20 backdrop-blur-md text-white py-3 px-4 rounded-xl font-semibold hover:bg-white/30 disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 border border-white/30 shadow-lg"
-                            >
-                              <Eye className="h-4 w-4" />
-                              {isNavigating ? 'Ochilmoqda…' : "Batafsil ko‘rish"}
-                            </button>
-                          </div>
+                  >
+                    <Eye className="h-4 w-4" />
+                              {isNavigating ? t('catalog.opening') : t('catalog.view_details')}
+                  </button>
+                </div>
                         </motion.div>
-                      ))}
-                    </div>
+            ))}
+          </div>
                   </motion.div>
                 )}
               </motion.div>
