@@ -149,7 +149,7 @@ export default function WaterWave3D({
         h += sin(dot(p * (u_freq*1.00), dir1)) * 0.7;
         h += sin(dot(p * (u_freq*1.55), dir2) + 1.2) * 0.35;
         h += sin(dot(p * (u_freq*2.20), dir3) - 0.7) * 0.22;
-        h += (noise(p*2.5) - 0.5) * 0.5;
+        h += (noise(p*3.0) - 0.5) * 0.28;
         return h * u_amp;
       }
 
@@ -166,9 +166,9 @@ export default function WaterWave3D({
       void main(){
         // Normalize coords so canvas always fully covered without stretching artifacts
         vec2 uv = v_uv;
-        // center coords -1..1 preserving aspect
+        // center coords -1..1 preserving aspect; overfill to avoid gaps
         float aspect = u_res.x / u_res.y;
-        vec2 p = (uv - 0.5) * vec2(aspect, 1.0) * 2.2; // scale 2.2 to fill corners
+        vec2 p = (uv - 0.5) * vec2(aspect, 1.0) * 2.6;
 
         // Height and normal
         float h = waveHeight(p);
@@ -184,7 +184,7 @@ export default function WaterWave3D({
         // Diffuse + tempered specular
         float diff = clamp(dot(n, lightDir), 0.0, 1.0);
         vec3 halfVec = normalize(lightDir + viewDir);
-        float spec = pow(max(dot(n, halfVec), 0.0), 48.0) * 0.25;
+        float spec = pow(max(dot(n, halfVec), 0.0), 40.0) * 0.18;
 
         // Base water color blend by height (shallower near crests)
         float shallowMix = smoothstep(0.0, 0.25*u_amp, h + 0.12);
