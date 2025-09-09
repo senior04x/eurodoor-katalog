@@ -795,7 +795,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
       {/* Order Button - Suv akvarium effektli past panel (safe-area bilan) */}
       <div className="fixed bottom-0 left-0 right-0 z-50 px-0 pt-0 pb-0" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        <div className="container mx-auto">
+        <div className="w-full">
           <button
             onClick={() => {
               // Product ma'lumotini localStorage ga saqlash
@@ -811,22 +811,41 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               onNavigate('contact');
               window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             }}
-            className="w-full bg-transparent backdrop-blur-2xl text-white py-5 px-6 rounded-none font-semibold transition-all duration-500 flex items-center justify-center gap-3 border-t border-white/20 shadow-2xl relative overflow-hidden"
+            className="w-full bg-transparent text-white py-5 px-6 rounded-none font-semibold transition-all duration-500 flex items-center justify-center gap-3 border-t border-white/10 shadow-2xl relative overflow-hidden"
             style={{
               animation: 'float 2.4s ease-in-out infinite'
             }}
           >
-            {/* Adaptive: Mobile => video fallback, Desktop => WebGL */}
-            <WaterWaveAdaptive
-              className="absolute -inset-1 pointer-events-none"
-              speedSec={7.5}
-              amplitude={0.14}
-              frequency={1.4}
-              shallowColor="#45c0ff"
-              deepColor="#0b5f9a"
-              foamColor="#ffffff"
-              forceVideo={true}
-            />
+            {/* Transparent button with internal sea wave (SVG) */}
+            <svg className="absolute -inset-1 pointer-events-none" viewBox="0 0 1200 220" preserveAspectRatio="none" aria-hidden>
+              <defs>
+                <linearGradient id="btnWater" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#7fd3ff" stopOpacity="0.35"/>
+                  <stop offset="60%" stopColor="#2aa2e6" stopOpacity="0.32"/>
+                  <stop offset="100%" stopColor="#0b5f9a" stopOpacity="0.30"/>
+                </linearGradient>
+                <filter id="btnRipples">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.004 0.010" numOctaves="2" seed="8"/>
+                  <feDisplacementMap in="SourceGraphic" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+                </filter>
+                <clipPath id="btnClip">
+                  <rect x="0" y="0" width="1200" height="220" rx="0" ry="0"/>
+                </clipPath>
+              </defs>
+              <g clipPath="url(#btnClip)" filter="url(#btnRipples)">
+                <rect x="0" y="0" width="1200" height="220" fill="url(#btnWater)">
+                  <animate attributeName="x" from="0" to="-600" dur="9s" repeatCount="indefinite"/>
+                </rect>
+                <rect x="1200" y="0" width="1200" height="220" fill="url(#btnWater)">
+                  <animate attributeName="x" from="1200" to="600" dur="9s" repeatCount="indefinite"/>
+                </rect>
+              </g>
+              <linearGradient id="crest" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.15"/>
+                <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
+              </linearGradient>
+              <rect x="0" y="0" width="1200" height="60" fill="url(#crest)" opacity="0.7"/>
+            </svg>
             
             {/* Button content */}
             <div className="relative z-10 flex items-center gap-3 drop-shadow-[0_3px_6px_rgba(0,0,0,0.35)]">
