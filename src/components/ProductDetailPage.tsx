@@ -817,17 +817,16 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
             }}
           >
             {/* WebGL 3D water overlay (with mobile-safe fallback inside) */}
-            {/** Using adaptive overlay to prefer WebGL where supported */}
-            {React.createElement(require('./ui/WaterWaveAdaptive').default, {
-              className: 'absolute -inset-1 pointer-events-none',
-              speedSec: 6.5,
-              amplitude: 0.18,
-              frequency: 1.5,
-              shallowColor: '#45c0ff',
-              deepColor: '#0b5f9a',
-              foamColor: '#ffffff',
-              forceVideo: false
-            })}
+            <WaterWaveAdaptive
+              className="absolute -inset-1 pointer-events-none"
+              speedSec={6.5}
+              amplitude={0.18}
+              frequency={1.5}
+              shallowColor="#45c0ff"
+              deepColor="#0b5f9a"
+              foamColor="#ffffff"
+              forceVideo={false}
+            />
             
             {/* Button content */}
             <div className="relative z-10 flex items-center gap-3 drop-shadow-[0_3px_6px_rgba(0,0,0,0.35)]">
