@@ -52,7 +52,7 @@ export default defineConfig({
     target: 'esnext',
     outDir: 'build',
   },
-  base: './', // ✅ MUHIM QO‘SHIMCHA
+  base: '/', // ✅ Root path uchun
   server: {
     port: 3000,
     open: true,

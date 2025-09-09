@@ -239,13 +239,31 @@
     </script>
   </head>
 
-  <body class="m-0 antialiased">
+  <body class="m-0 antialiased" style="background: transparent !important; margin: 0; padding: 0;">
     <!-- =================== Yandex.Metrika noscript (MUST BE IN BODY) =================== -->
     <noscript>
       <div>
         <img src="https://mc.yandex.ru/watch/103943142" style="position:absolute; left:-9999px;" alt="Yandex Metrika" />
       </div>
     </noscript>
+
+    <!-- =================== CSS Import =================== -->
+    <link rel="stylesheet" href="/src/styles/globals.css">
+    <link rel="stylesheet" href="/src/index.css">
+    
+    <!-- =================== Inline CSS for immediate loading =================== -->
+    <style>
+      html, body {
+        background: transparent !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font-family: 'Geist Mono', monospace !important;
+      }
+      #root {
+        background: transparent !important;
+        min-height: 100vh !important;
+      }
+    </style>
 
     <!-- =================== Root for React/Vite app =================== -->
     <main id="root" class="min-h-[40vh]"></main>
