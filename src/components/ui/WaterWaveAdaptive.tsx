@@ -13,6 +13,8 @@ interface WaterWaveAdaptiveProps {
   /** Optional custom video sources */
   mp4Src?: string;
   webmSrc?: string;
+  /** Force using video even if WebGL is available */
+  forceVideo?: boolean;
 }
 
 const DEFAULT_MP4 = 'https://cdn.coverr.co/videos/coverr-waves-1576/1080p.mp4';
@@ -28,7 +30,8 @@ export default function WaterWaveAdaptive({
   deepColor,
   foamColor,
   mp4Src = DEFAULT_MP4,
-  webmSrc = DEFAULT_WEBM
+  webmSrc = DEFAULT_WEBM,
+  forceVideo = false
 }: WaterWaveAdaptiveProps) {
   const [useVideo, setUseVideo] = useState(false);
   const [canPlay, setCanPlay] = useState(false);
@@ -53,8 +56,8 @@ export default function WaterWaveAdaptive({
       }
     })();
 
-    setUseVideo(!webglSupported);
-  }, []);
+    setUseVideo(forceVideo || !webglSupported);
+  }, [forceVideo]);
 
   useEffect(() => {
     if (!useVideo) return;

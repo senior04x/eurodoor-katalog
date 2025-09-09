@@ -794,7 +794,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
       </div>
 
       {/* Order Button - Suv akvarium effektli past panel (safe-area bilan) */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 px-6 pt-2 pb-3" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)' }}>
+      <div className="fixed bottom-0 left-0 right-0 z-50 px-0 pt-0 pb-0" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="container mx-auto">
           <button
             onClick={() => {
@@ -811,20 +811,21 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               onNavigate('contact');
               window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             }}
-            className="w-full bg-transparent backdrop-blur-2xl text-white py-5 px-6 rounded-2xl font-semibold transition-all duration-500 flex items-center justify-center gap-3 border border-white/20 shadow-2xl relative overflow-hidden"
+            className="w-full bg-transparent backdrop-blur-2xl text-white py-5 px-6 rounded-none font-semibold transition-all duration-500 flex items-center justify-center gap-3 border-t border-white/20 shadow-2xl relative overflow-hidden"
             style={{
               animation: 'float 2.4s ease-in-out infinite'
             }}
           >
             {/* Adaptive: Mobile => video fallback, Desktop => WebGL */}
             <WaterWaveAdaptive
-              className="absolute -inset-px pointer-events-none"
+              className="absolute -inset-1 pointer-events-none"
               speedSec={7.5}
               amplitude={0.14}
               frequency={1.4}
               shallowColor="#45c0ff"
               deepColor="#0b5f9a"
               foamColor="#ffffff"
+              forceVideo={true}
             />
             
             {/* Button content */}
