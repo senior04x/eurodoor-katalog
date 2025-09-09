@@ -1,6 +1,6 @@
 import React from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import WaterWave3D from './ui/WaterWave3D';
+import WaterWaveAdaptive from './ui/WaterWaveAdaptive';
 import { ArrowLeft, Shield, Ruler, Award, Phone } from 'lucide-react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useMemo } from 'react';
@@ -816,8 +816,8 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               animation: 'float 2.4s ease-in-out infinite'
             }}
           >
-            {/* 3D suv shader (WebGL) — realistik ko'rinish */}
-            <WaterWave3D
+            {/* Adaptive: Mobile => video fallback, Desktop => WebGL */}
+            <WaterWaveAdaptive
               className="absolute inset-0 pointer-events-none"
               speedSec={7.5}
               amplitude={0.14}
