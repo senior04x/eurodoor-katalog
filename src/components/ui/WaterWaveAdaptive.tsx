@@ -40,7 +40,7 @@ export default function WaterWaveAdaptive({
   }, []);
 
   useEffect(() => {
-    // Prefer video on mobile for cross-browser consistency
+    // Prefer WebGL if supported; fallback to video otherwise (also on mobile)
     const webglSupported = (() => {
       try {
         const canvas = document.createElement('canvas');
@@ -50,8 +50,7 @@ export default function WaterWaveAdaptive({
       }
     })();
 
-    // On mobile, default to video; on desktop, keep WebGL
-    setUseVideo(isMobile || !webglSupported);
+    setUseVideo(!webglSupported);
   }, [isMobile]);
 
   useEffect(() => {
