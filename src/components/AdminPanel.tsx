@@ -30,7 +30,7 @@ export default function AdminPanel() {
   const [error, setError] = useState('');
 
   // Admin paroli - bu yerdan o'zgartiring
-  const ADMIN_PASSWORD = 'sizning_yangi_parolingiz';
+  const ADMIN_PASSWORD = 'eurodoor2025';
 
   useEffect(() => {
     // localStorage dan zakazlarni o'qish
