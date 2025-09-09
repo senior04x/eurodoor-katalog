@@ -5,6 +5,9 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = 'https://eurodoor-orders.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cm9kb29yLW9yZGVycyIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzM3NDkyMDAwLCJleHAiOjIwNTMwNjgwMDB9.eurodoor-orders-real-key'
 
+// Test uchun - agar Supabase ishlamasa, localStorage fallback
+const USE_LOCALSTORAGE_FALLBACK = true
+
 // Supabase client yaratish
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
@@ -38,6 +41,14 @@ export interface Order {
 export const ordersApi = {
   // Barcha zakazlarni olish
   async getAllOrders(): Promise<Order[]> {
+    // Agar localStorage fallback yoqilgan bo'lsa
+    if (USE_LOCALSTORAGE_FALLBACK) {
+      console.log('📱 Using localStorage fallback (cross-browser issue)')
+      const localOrders = JSON.parse(localStorage.getItem('orders') || '[]')
+      console.log('📱 localStorage orders found:', localOrders.length)
+      return localOrders
+    }
+
     try {
       const { data, error } = await supabase
         .from('orders')
@@ -65,6 +76,16 @@ export const ordersApi = {
 
   // Yangi zakaz qo'shish
   async createOrder(order: Omit<Order, 'created_at' | 'updated_at'>): Promise<Order | null> {
+    // Agar localStorage fallback yoqilgan bo'lsa
+    if (USE_LOCALSTORAGE_FALLBACK) {
+      console.log('📱 Saving to localStorage (cross-browser issue)')
+      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]')
+      existingOrders.push(order)
+      localStorage.setItem('orders', JSON.stringify(existingOrders))
+      console.log('📱 Order saved to localStorage:', order.id)
+      return order as Order
+    }
+
     try {
       const { data, error } = await supabase
         .from('orders')
