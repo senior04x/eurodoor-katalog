@@ -80,6 +80,8 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
     // Order success sahifasiga yo'naltirish
     if (onNavigate) {
       onNavigate('order-success');
+      // Scroll ni tepaga olib chiqish
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
   };
 

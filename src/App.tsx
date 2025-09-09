@@ -20,10 +20,12 @@ export default function App() {
     const savedPage = localStorage.getItem('currentPage');
     const savedProductId = localStorage.getItem('selectedProductId');
     
-    // URL dan admin sahifasini aniqlash
+    // URL dan sahifalarni aniqlash
     const currentPath = window.location.pathname;
     if (currentPath.includes('/admin')) {
       setCurrentPage('admin');
+    } else if (savedPage === 'order-success') {
+      setCurrentPage('order-success');
     } else if (savedPage) {
       setCurrentPage(savedPage);
     }
@@ -59,6 +61,13 @@ export default function App() {
     if (productId) {
       setSelectedProductId(productId);
       localStorage.setItem('selectedProductId', productId);
+    }
+    
+    // Order success sahifasiga o'tganda scroll ni tepaga olib chiqish
+    if (page === 'order-success') {
+      setTimeout(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      }, 100);
     }
   };
 

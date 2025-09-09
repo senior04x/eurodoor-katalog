@@ -12,6 +12,9 @@ export default function OrderSuccessPage({ onNavigate }: OrderSuccessPageProps) 
   const [orderData, setOrderData] = useState<any>(null);
 
   useEffect(() => {
+    // Scroll ni tepaga olib chiqish
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    
     // localStorage dan oxirgi zakazni olish
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
     if (orders.length > 0) {
@@ -35,19 +38,19 @@ export default function OrderSuccessPage({ onNavigate }: OrderSuccessPageProps) 
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
+        duration: 0.4,
         ease: "easeOut"
       }
     }
   };
 
   const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 20 },
     show: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.5,
+        duration: 0.3,
         ease: "easeOut"
       }
     }
@@ -56,7 +59,7 @@ export default function OrderSuccessPage({ onNavigate }: OrderSuccessPageProps) 
   const stagger = {
     show: {
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.05
       }
     }
   };
@@ -99,9 +102,9 @@ export default function OrderSuccessPage({ onNavigate }: OrderSuccessPageProps) 
             className="text-center mb-8"
           >
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 20 }}
               className="inline-flex items-center justify-center w-20 h-20 bg-green-500/20 rounded-full mb-6 border-2 border-green-500/30"
             >
               <CheckCircle className="h-12 w-12 text-green-400" />
