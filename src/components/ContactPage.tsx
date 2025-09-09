@@ -67,30 +67,13 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
     };
     
     try {
-      // Supabase ga zakaz yuborish
-      console.log('Sending order to Supabase:', order);
+      // Supabase backend ga zakaz yuborish
+      console.log('Sending order to Supabase backend:', order);
       const savedOrder = await ordersApi.createOrder(order);
       
       if (savedOrder) {
         // Muvaffaqiyatli saqlangan
-        console.log('✅ Order saved to Supabase:', savedOrder);
-        
-        // Form ma'lumotlarini tozalash
-        setFormData({ name: '', phone: '', product: '', message: '' });
-        setSelectedProduct(null);
-        localStorage.removeItem('selectedProduct');
-        
-        // Order success sahifasiga yo'naltirish
-        if (onNavigate) {
-          onNavigate('order-success');
-          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-        }
-      } else {
-        // Xatolik bo'lsa localStorage ga saqlash (fallback)
-        console.warn('❌ Failed to save to Supabase, saving to localStorage');
-        const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-        existingOrders.push(order);
-        localStorage.setItem('orders', JSON.stringify(existingOrders));
+        console.log('✅ Order saved to Supabase backend:', savedOrder);
         
         // Form ma'lumotlarini tozalash
         setFormData({ name: '', phone: '', product: '', message: '' });
@@ -104,23 +87,8 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
         }
       }
     } catch (error) {
-      console.error('❌ Error saving order:', error);
-      
-      // Xatolik bo'lsa localStorage ga saqlash (fallback)
-      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-      existingOrders.push(order);
-      localStorage.setItem('orders', JSON.stringify(existingOrders));
-      
-      // Form ma'lumotlarini tozalash
-      setFormData({ name: '', phone: '', product: '', message: '' });
-      setSelectedProduct(null);
-      localStorage.removeItem('selectedProduct');
-      
-      // Order success sahifasiga yo'naltirish
-      if (onNavigate) {
-        onNavigate('order-success');
-        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-      }
+      console.error('❌ Error saving order to backend:', error);
+      alert('Xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring.');
     }
   };
 

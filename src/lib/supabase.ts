@@ -5,8 +5,8 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = 'https://eurodoor-orders.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cm9kb29yLW9yZGVycyIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzM3NDkyMDAwLCJleHAiOjIwNTMwNjgwMDB9.eurodoor-orders-real-key'
 
-// Test uchun - agar Supabase ishlamasa, localStorage fallback
-const USE_LOCALSTORAGE_FALLBACK = true
+// Real backend uchun - localStorage fallback o'chirilgan
+const USE_LOCALSTORAGE_FALLBACK = false
 
 // Supabase client yaratish
 export const supabase = createClient(supabaseUrl, supabaseKey)
@@ -41,15 +41,8 @@ export interface Order {
 export const ordersApi = {
   // Barcha zakazlarni olish
   async getAllOrders(): Promise<Order[]> {
-    // Agar localStorage fallback yoqilgan bo'lsa
-    if (USE_LOCALSTORAGE_FALLBACK) {
-      console.log('📱 Using localStorage fallback (cross-browser issue)')
-      const localOrders = JSON.parse(localStorage.getItem('orders') || '[]')
-      console.log('📱 localStorage orders found:', localOrders.length)
-      return localOrders
-    }
-
     try {
+      console.log('🔄 Loading orders from Supabase backend...')
       const { data, error } = await supabase
         .from('orders')
         .select('*')
@@ -57,36 +50,21 @@ export const ordersApi = {
       
       if (error) {
         console.error('❌ Supabase error fetching orders:', error)
-        // localStorage dan olish (fallback)
-        const localOrders = JSON.parse(localStorage.getItem('orders') || '[]')
-        console.log('📱 Using localStorage fallback:', localOrders.length, 'orders')
-        return localOrders
+        throw new Error(`Supabase error: ${error.message}`)
       }
       
       console.log('✅ Supabase orders fetched:', data?.length || 0)
       return data || []
     } catch (error) {
       console.error('❌ Supabase connection error:', error)
-      // localStorage dan olish (fallback)
-      const localOrders = JSON.parse(localStorage.getItem('orders') || '[]')
-      console.log('📱 Using localStorage fallback:', localOrders.length, 'orders')
-      return localOrders
+      throw new Error(`Connection error: ${error}`)
     }
   },
 
   // Yangi zakaz qo'shish
   async createOrder(order: Omit<Order, 'created_at' | 'updated_at'>): Promise<Order | null> {
-    // Agar localStorage fallback yoqilgan bo'lsa
-    if (USE_LOCALSTORAGE_FALLBACK) {
-      console.log('📱 Saving to localStorage (cross-browser issue)')
-      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]')
-      existingOrders.push(order)
-      localStorage.setItem('orders', JSON.stringify(existingOrders))
-      console.log('📱 Order saved to localStorage:', order.id)
-      return order as Order
-    }
-
     try {
+      console.log('🔄 Saving order to Supabase backend...')
       const { data, error } = await supabase
         .from('orders')
         .insert([order])
@@ -95,54 +73,58 @@ export const ordersApi = {
       
       if (error) {
         console.error('❌ Supabase error creating order:', error)
-        // localStorage ga saqlash (fallback)
-        const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]')
-        existingOrders.push(order)
-        localStorage.setItem('orders', JSON.stringify(existingOrders))
-        console.log('📱 Order saved to localStorage as fallback')
-        return order as Order
+        throw new Error(`Supabase error: ${error.message}`)
       }
       
-      console.log('✅ Order saved to Supabase:', data)
+      console.log('✅ Order saved to Supabase backend:', data)
       return data
     } catch (error) {
       console.error('❌ Supabase connection error:', error)
-      // localStorage ga saqlash (fallback)
-      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]')
-      existingOrders.push(order)
-      localStorage.setItem('orders', JSON.stringify(existingOrders))
-      console.log('📱 Order saved to localStorage as fallback')
-      return order as Order
+      throw new Error(`Connection error: ${error}`)
     }
   },
 
   // Zakazni o'chirish
   async deleteOrder(orderId: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('orders')
-      .delete()
-      .eq('id', orderId)
-    
-    if (error) {
-      console.error('Error deleting order:', error)
-      return false
+    try {
+      console.log('🔄 Deleting order from Supabase backend...')
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderId)
+      
+      if (error) {
+        console.error('❌ Supabase error deleting order:', error)
+        throw new Error(`Supabase error: ${error.message}`)
+      }
+      
+      console.log('✅ Order deleted from Supabase backend:', orderId)
+      return true
+    } catch (error) {
+      console.error('❌ Supabase connection error:', error)
+      throw new Error(`Connection error: ${error}`)
     }
-    
-    return true
   },
 
   // Zakaz holatini yangilash
   async updateOrderStatus(orderId: string, status: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('orders')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('id', orderId)
-    
-    if (error) {
-      console.error('Error updating order status:', error)
-      return false
+    try {
+      console.log('🔄 Updating order status in Supabase backend...')
+      const { error } = await supabase
+        .from('orders')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', orderId)
+      
+      if (error) {
+        console.error('❌ Supabase error updating order status:', error)
+        throw new Error(`Supabase error: ${error.message}`)
+      }
+      
+      console.log('✅ Order status updated in Supabase backend:', orderId, status)
+      return true
+    } catch (error) {
+      console.error('❌ Supabase connection error:', error)
+      throw new Error(`Connection error: ${error}`)
     }
-    
-    return true
   }
 }

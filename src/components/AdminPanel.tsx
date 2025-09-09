@@ -17,42 +17,18 @@ export default function AdminPanel() {
   useEffect(() => {
     const loadOrders = async () => {
       try {
-        // Supabase dan zakazlarni olish (fallback bilan)
-        console.log('🔄 Loading orders from Supabase...');
+        // Supabase backend dan zakazlarni olish
+        console.log('🔄 Loading orders from Supabase backend...');
         const orders = await ordersApi.getAllOrders();
-        console.log('✅ Orders loaded:', orders.length);
+        console.log('✅ Orders loaded from backend:', orders.length);
         setOrders(orders);
         
-        // Agar hali ham zakazlar yo'q bo'lsa, localStorage ni tekshirish
         if (orders.length === 0) {
-          console.log('⚠️ No orders found, checking localStorage directly...');
-          const savedOrders = localStorage.getItem('orders');
-          if (savedOrders) {
-            try {
-              const parsedOrders = JSON.parse(savedOrders);
-              console.log('📱 Direct localStorage orders found:', parsedOrders.length);
-              setOrders(parsedOrders.reverse());
-            } catch (error) {
-              console.error('Error parsing localStorage orders:', error);
-            }
-          } else {
-            console.log('📭 No orders found in localStorage either');
-          }
+          console.log('📭 No orders found in backend database');
         }
       } catch (error) {
-        console.error('❌ Error loading orders:', error);
-        
-        // Xatolik bo'lsa localStorage dan olish (fallback)
-        const savedOrders = localStorage.getItem('orders');
-        if (savedOrders) {
-          try {
-            const parsedOrders = JSON.parse(savedOrders);
-            console.log('📱 Fallback localStorage orders:', parsedOrders.length);
-            setOrders(parsedOrders.reverse());
-          } catch (error) {
-            console.error('Error parsing localStorage orders:', error);
-          }
-        }
+        console.error('❌ Error loading orders from backend:', error);
+        setOrders([]); // Xatolik bo'lsa bo'sh array
       }
     };
     
