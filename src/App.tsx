@@ -11,6 +11,7 @@ import { useLanguage } from './hooks/useLanguage';
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedProductId, setSelectedProductId] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
   const { language, t } = useLanguage();
 
   // localStorage dan current page ni o'qish
@@ -23,6 +24,13 @@ export default function App() {
     if (savedProductId) {
       setSelectedProductId(savedProductId);
     }
+    
+    // Loading ni o'chirish
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   // Til o'zgarishi paytida current state ni saqlash
@@ -73,6 +81,29 @@ export default function App() {
     }
   };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="relative min-h-screen font-[Inter] overflow-x-hidden">
+        {/* ===== Fixed Background (past qatlam) ===== */}
+        <div
+          className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }}
+        />
+        {/* Yengil qoraytirish */}
+        <div className="pointer-events-none fixed inset-0 z-0 bg-black/30" />
+        
+        {/* Loading spinner */}
+        <div className="relative z-10 min-h-screen flex items-center justify-center">
+          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+            <p className="text-white mt-4 text-center">Yuklanmoqda...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen font-[Inter] overflow-x-hidden">
       {/* ===== Fixed Background (past qatlam) ===== */}
@@ -80,7 +111,7 @@ export default function App() {
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center"
         style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }}
       />
-      {/* Yengil qoraytirish (o‘chirmoqchi bo‘lsangiz, pastdagi divni olib tashlang) */}
+      {/* Yengil qoraytirish (o'chirmoqchi bo'lsangiz, pastdagi divni olib tashlang) */}
       <div className="pointer-events-none fixed inset-0 z-0 bg-black/30" />
 
       {/* ===== Kontent (ustki qatlam) ===== */}

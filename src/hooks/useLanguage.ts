@@ -929,15 +929,11 @@ export function useLanguage() {
       newPath = `/${newLanguage}${pathWithoutLanguage}`;
     }
     
-    // URL ni yangilash
-    window.history.pushState({}, '', newPath);
-    setLanguage(newLanguage);
-    
     // Til o'zgarishi uchun localStorage ga saqlash
     localStorage.setItem('selectedLanguage', newLanguage);
     
-    // Sahifani qayta yuklash - til o'zgarishi uchun kerak
-    window.location.reload();
+    // URL ni yangilash va sahifani qayta yuklash
+    window.location.href = newPath;
   };
 
   return { language, t, changeLanguage };
