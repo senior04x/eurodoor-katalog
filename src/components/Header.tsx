@@ -116,6 +116,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
       initial="hidden"
       animate="show"
       className="bg-white/3 backdrop-blur-sm border border-white/20 sticky top-0 z-50 shadow-lg m-4 rounded-md"
+      style={{ top: 'env(safe-area-inset-top)' }}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20 md:h-15">
