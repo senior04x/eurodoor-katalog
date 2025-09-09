@@ -128,7 +128,7 @@ export default function AdminPanel() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-        <div className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-8 border border-white/20 max-w-md w-full">
+        <div className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-md w-full">
           <div className="text-center mb-6">
             <Lock className="h-12 w-12 text-white mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-white mb-2">Admin Panel</h1>
@@ -169,7 +169,7 @@ export default function AdminPanel() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
-        <div className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 mb-6 border border-white/20">
+        <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 mb-6 border border-white/20">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">Admin Panel</h1>
@@ -187,7 +187,7 @@ export default function AdminPanel() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Orders List */}
           <div className="lg:col-span-2">
-            <div className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 border border-white/20">
+            <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/20">
               <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                 <Package className="h-5 w-5" />
                 Zakazlar ({orders.length})
@@ -251,7 +251,7 @@ export default function AdminPanel() {
           {/* Order Details */}
           <div className="lg:col-span-1">
             {selectedOrder ? (
-              <div className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 border border-white/20">
+              <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Eye className="h-5 w-5" />
                   Zakaz tafsilotlari
@@ -387,7 +387,7 @@ export default function AdminPanel() {
                 </div>
               </div>
             ) : (
-              <div className="bg-white/10 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 border border-white/20">
+              <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                 <div className="text-center py-8">
                   <Eye className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-400">Zakaz tanlang</p>
