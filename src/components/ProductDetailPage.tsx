@@ -1,3 +1,4 @@
+import React from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ArrowLeft, Shield, Ruler, Award, Phone } from 'lucide-react';
 import { useLanguage } from '../hooks/useLanguage';
@@ -814,55 +815,73 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               animation: 'float 2.4s ease-in-out infinite'
             }}
           >
-            {/* Realistic water surface + body (aquarium) */}
-            <svg className="absolute inset-0 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+            {/* Realistic sea wave (crest + foam) inside the button */}
+            <svg className="absolute inset-0 pointer-events-none" viewBox="0 0 1200 220" preserveAspectRatio="none" aria-hidden>
               <defs>
-                {/* Subtle blue water tint (very light) */}
-                <linearGradient id="waterBody" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#82c7ff" stopOpacity="0.20"/>
-                  <stop offset="100%" stopColor="#5aa3e6" stopOpacity="0.18"/>
+                <linearGradient id="gWaterBtn" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#57c1ff"/>
+                  <stop offset="55%" stopColor="#2390d9"/>
+                  <stop offset="100%" stopColor="#0b5f9a"/>
                 </linearGradient>
-                {/* Moving caustics */}
-                <filter id="caustics" x="-20%" y="-20%" width="140%" height="140%">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="2" seed="11" result="noise"/>
-                  <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="G">
-                    <animate attributeName="scale" dur="8s" values="8;18;8" repeatCount="indefinite"/>
-                  </feDisplacementMap>
+                <filter id="fRipplesBtn">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.004 0.009" numOctaves="3" seed="7">
+                    <animate attributeName="baseFrequency" values="0.004 0.009;0.006 0.014;0.004 0.009" dur="12s" repeatCount="indefinite"/>
+                  </feTurbulence>
+                  <feDisplacementMap in="SourceGraphic" scale="18" xChannelSelector="R" yChannelSelector="G"/>
                 </filter>
-                {/* Specular highlights on the surface */}
-                <filter id="specular" x="-20%" y="-20%" width="140%" height="140%">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="4" result="waves"/>
-                  <feSpecularLighting in="waves" surfaceScale="3" specularConstant="0.8" specularExponent="20" lighting-color="#ffffff" result="spec">
-                    <feDistantLight azimuth="235" elevation="40"/>
-                  </feSpecularLighting>
-                  <feComposite in="spec" in2="SourceAlpha" operator="in"/>
+                <filter id="fFoamBtn" x="-20%" y="-20%" width="140%" height="140%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="4" seed="3"/>
+                  <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 3 -1.2"/>
+                  <feGaussianBlur stdDeviation="0.7"/>
                 </filter>
-                {/* Wave shapes for surface mask animation */}
-                <clipPath id="surfaceClip">
-                  <path id="surfacePath" d="M0,65 C20,62 30,68 50,65 C70,62 80,68 100,65 L100,0 L0,0 Z">
-                    <animate attributeName="d" dur="6s" repeatCount="indefinite"
-                      values="M0,66 C20,63 30,69 50,66 C70,63 80,69 100,66 L100,0 L0,0 Z;
-                              M0,64 C20,67 30,63 50,66 C70,69 80,63 100,66 L100,0 L0,0 Z;
-                              M0,66 C20,63 30,69 50,66 C70,63 80,69 100,66 L100,0 L0,0 Z"/>
-                  </path>
+                <clipPath id="clipWaveBtn">
+                  <path d="M0,140 C220,130 300,115 420,105 C640,86 770,80 860,95 C955,110 1005,140 1000,165 C995,185 955,200 900,205 C920,190 890,180 845,175 C800,170 760,182 735,195 C690,215 595,220 470,220 L0,220 Z"/>
                 </clipPath>
+                <clipPath id="clipCrestBtn">
+                  <path d="M600,82 C720,70 820,72 885,86 C940,97 980,120 980,145 C965,137 920,132 870,132 C810,132 755,142 720,158 C695,170 665,182 640,190 Z"/>
+                </clipPath>
+                <linearGradient id="gGlassTop" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.35"/>
+                  <stop offset="35%" stopColor="#ffffff" stopOpacity="0.10"/>
+                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0.00"/>
+                </linearGradient>
               </defs>
 
-              {/* Water body (clipped to beneath surface) */}
-              <g clipPath="url(#surfaceClip)">
-                <rect x="0" y="0" width="100" height="100" fill="url(#waterBody)" filter="url(#caustics)"/>
+              {/* Wave body flowing horizontally */}
+              <g clipPath="url(#clipWaveBtn)" filter="url(#fRipplesBtn)">
+                <rect x="0" y="0" width="1200" height="220" fill="url(#gWaterBtn)">
+                  <animate attributeName="x" from="0" to="-600" dur="12s" repeatCount="indefinite"/>
+                </rect>
+                <rect x="1200" y="0" width="1200" height="220" fill="url(#gWaterBtn)">
+                  <animate attributeName="x" from="1200" to="600" dur="12s" repeatCount="indefinite"/>
+                </rect>
               </g>
 
-              {/* Surface highlights */}
-              <rect x="0" y="0" width="100" height="100" filter="url(#specular)" opacity="0.25"/>
+              {/* Crest foam */}
+              <g clipPath="url(#clipCrestBtn)" opacity="0.9">
+                <rect x="540" y="40" width="460" height="160" fill="#ffffff" filter="url(#fFoamBtn)" opacity="0.9">
+                  <animate attributeName="x" values="540;560;540" dur="6s" repeatCount="indefinite"/>
+                </rect>
+              </g>
 
-              {/* Glass highlights (top gloss) */}
-              <linearGradient id="glassGloss" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.35"/>
-                <stop offset="35%" stopColor="#ffffff" stopOpacity="0.10"/>
-                <stop offset="100%" stopColor="#ffffff" stopOpacity="0.00"/>
-              </linearGradient>
-              <rect x="0" y="0" width="100" height="20" fill="url(#glassGloss)"/>
+              {/* Spray droplets */}
+              <g fill="#ffffff" opacity="0.6">
+                <circle cx="880" cy="50" r="2">
+                  <animate attributeName="cx" values="880;900;880" dur="6s" repeatCount="indefinite"/>
+                  <animate attributeName="cy" values="50;40;50" dur="6s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="892" cy="44" r="1.6">
+                  <animate attributeName="cx" values="892;905;892" dur="6s" repeatCount="indefinite"/>
+                  <animate attributeName="cy" values="44;35;44" dur="6s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="868" cy="46" r="1.9">
+                  <animate attributeName="cx" values="868;885;868" dur="6s" repeatCount="indefinite"/>
+                  <animate attributeName="cy" values="46;38;46" dur="6s" repeatCount="indefinite"/>
+                </circle>
+              </g>
+
+              {/* Top glass gloss */}
+              <rect x="0" y="0" width="1200" height="70" fill="url(#gGlassTop)"/>
             </svg>
             
             {/* Button content */}
