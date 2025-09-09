@@ -16,10 +16,17 @@ export default function OrderSuccessPage({ onNavigate }: OrderSuccessPageProps) 
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     
     // localStorage dan oxirgi zakazni olish
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    if (orders.length > 0) {
-      setOrderData(orders[orders.length - 1]); // Oxirgi zakaz
-    }
+    try {
+      const lastOrder = localStorage.getItem('lastOrder');
+      if (lastOrder) {
+        setOrderData(JSON.parse(lastOrder));
+        return;
+      }
+      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      if (orders.length > 0) {
+        setOrderData(orders[orders.length - 1]); // Oxirgi zakaz
+      }
+    } catch {}
   }, []);
 
   const formatTimestamp = (timestamp: string) => {

@@ -72,6 +72,13 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
       const savedOrder = await ordersApi.createOrder(order);
       
       if (savedOrder) {
+        // LocalStorage ga ham so'nggi zakazni saqlaymiz (OrderSuccessPage o'qiydi)
+        try {
+          const existing = JSON.parse(localStorage.getItem('orders') || '[]');
+          const updated = Array.isArray(existing) ? existing.concat(savedOrder) : [savedOrder];
+          localStorage.setItem('orders', JSON.stringify(updated));
+          localStorage.setItem('lastOrder', JSON.stringify(savedOrder));
+        } catch {}
         // Muvaffaqiyatli saqlangan
         console.log('✅ Order saved to Supabase backend:', savedOrder);
         
