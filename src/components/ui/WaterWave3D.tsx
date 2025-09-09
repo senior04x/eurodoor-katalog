@@ -46,25 +46,43 @@ export default function WaterWave3D({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext('webgl');
+    let gl: WebGLRenderingContext | null = null;
+    try {
+      gl = canvas.getContext('webgl');
+    } catch (e) {
+      gl = null;
+    }
     if (!gl) {
       // Graceful fallback: simple gradient background
       const ctx2d = canvas.getContext('2d');
       if (ctx2d) {
         const resize = () => {
-          const dpr = devicePixelRatio || 1;
-          canvas.width = Math.max(1, Math.floor(canvas.clientWidth * dpr));
-          canvas.height = Math.max(1, Math.floor(canvas.clientHeight * dpr));
+          const dpr = (typeof devicePixelRatio !== 'undefined' ? devicePixelRatio : 1) || 1;
+          const w = Math.max(1, Math.floor((canvas.clientWidth || 1) * dpr));
+          const h = Math.max(1, Math.floor((canvas.clientHeight || 1) * dpr));
+          if (canvas.width !== w || canvas.height !== h) {
+            canvas.width = w;
+            canvas.height = h;
+          }
           const g = ctx2d.createLinearGradient(0, 0, 0, canvas.height);
           g.addColorStop(0, shallowColor);
           g.addColorStop(1, deepColor);
+          ctx2d.clearRect(0, 0, canvas.width, canvas.height);
           ctx2d.fillStyle = g;
           ctx2d.fillRect(0, 0, canvas.width, canvas.height);
         };
         resize();
-        const ro = new ResizeObserver(resize);
-        ro.observe(canvas);
-        return () => ro.disconnect();
+        let ro: ResizeObserver | null = null;
+        if (typeof ResizeObserver !== 'undefined') {
+          ro = new ResizeObserver(resize);
+          ro.observe(canvas);
+        } else {
+          window.addEventListener('resize', resize);
+        }
+        return () => {
+          if (ro) ro.disconnect();
+          else window.removeEventListener('resize', resize);
+        };
       }
       return;
     }
@@ -237,17 +255,22 @@ export default function WaterWave3D({
     const foam = hexToRgb(foamColor);
 
     const resize = () => {
-      const dpr = devicePixelRatio || 1;
-      const w = Math.max(1, Math.floor(canvas.clientWidth * dpr));
-      const h = Math.max(1, Math.floor(canvas.clientHeight * dpr));
+      const dpr = (typeof devicePixelRatio !== 'undefined' ? devicePixelRatio : 1) || 1;
+      const w = Math.max(1, Math.floor((canvas.clientWidth || 1) * dpr));
+      const h = Math.max(1, Math.floor((canvas.clientHeight || 1) * dpr));
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
       }
       gl.viewport(0, 0, w, h);
     };
-    const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(resize);
+      ro.observe(canvas);
+    } else {
+      window.addEventListener('resize', resize);
+    }
     resize();
 
     const render = () => {
@@ -271,7 +294,8 @@ export default function WaterWave3D({
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      ro.disconnect();
+      if (ro) ro.disconnect();
+      else window.removeEventListener('resize', resize);
       if (programRef.current) {
         gl.deleteProgram(programRef.current);
       }
