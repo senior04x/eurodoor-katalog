@@ -90,6 +90,30 @@ export default function AdminPanel() {
     }
   };
 
+  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    try {
+      console.log('Updating order status:', orderId, newStatus);
+      const success = await ordersApi.updateOrderStatus(orderId, newStatus);
+      
+      if (success) {
+        console.log('✅ Order status updated successfully');
+        // UI ni yangilash
+        setOrders(orders.map(order => 
+          order.id === orderId ? { ...order, status: newStatus } : order
+        ));
+        if (selectedOrder?.id === orderId) {
+          setSelectedOrder({ ...selectedOrder, status: newStatus });
+        }
+      } else {
+        console.error('❌ Failed to update order status');
+        alert('Zakaz holatini yangilashda xatolik yuz berdi!');
+      }
+    } catch (error) {
+      console.error('❌ Error updating order status:', error);
+      alert('Zakaz holatini yangilashda xatolik yuz berdi!');
+    }
+  };
+
   const formatDate = (timestamp: string) => {
     return new Date(timestamp).toLocaleString('uz-UZ', {
       year: 'numeric',
@@ -196,9 +220,15 @@ export default function AdminPanel() {
                           <span className={`px-2 py-1 rounded text-xs ${
                             order.status === 'new' 
                               ? 'bg-green-500/20 text-green-300' 
-                              : 'bg-blue-500/20 text-blue-300'
+                              : order.status === 'accepted'
+                              ? 'bg-blue-500/20 text-blue-300'
+                              : order.status === 'completed'
+                              ? 'bg-purple-500/20 text-purple-300'
+                              : 'bg-gray-500/20 text-gray-300'
                           }`}>
-                            {order.status === 'new' ? 'Yangi' : order.status}
+                            {order.status === 'new' ? 'Yangi' : 
+                             order.status === 'accepted' ? 'Qabul qilindi' :
+                             order.status === 'completed' ? 'Yakunlandi' : order.status}
                           </span>
                           <button
                             onClick={(e) => {
@@ -310,11 +340,48 @@ export default function AdminPanel() {
                         <span className={`ml-2 px-2 py-1 rounded text-xs ${
                           selectedOrder.status === 'new' 
                             ? 'bg-green-500/20 text-green-300' 
-                            : 'bg-blue-500/20 text-blue-300'
+                            : selectedOrder.status === 'accepted'
+                            ? 'bg-blue-500/20 text-blue-300'
+                            : selectedOrder.status === 'completed'
+                            ? 'bg-purple-500/20 text-purple-300'
+                            : 'bg-gray-500/20 text-gray-300'
                         }`}>
-                          {selectedOrder.status === 'new' ? 'Yangi' : selectedOrder.status}
+                          {selectedOrder.status === 'new' ? 'Yangi' : 
+                           selectedOrder.status === 'accepted' ? 'Qabul qilindi' :
+                           selectedOrder.status === 'completed' ? 'Yakunlandi' : selectedOrder.status}
                         </span>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Status Actions */}
+                  <div>
+                    <h4 className="font-semibold text-white mb-2">Zakaz holatini o'zgartirish</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedOrder.status === 'new' && (
+                        <button
+                          onClick={() => updateOrderStatus(selectedOrder.id, 'accepted')}
+                          className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-lg text-sm hover:bg-blue-500/30 transition-colors"
+                        >
+                          Qabul qilish
+                        </button>
+                      )}
+                      {selectedOrder.status === 'accepted' && (
+                        <button
+                          onClick={() => updateOrderStatus(selectedOrder.id, 'completed')}
+                          className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-lg text-sm hover:bg-purple-500/30 transition-colors"
+                        >
+                          Yakunlash
+                        </button>
+                      )}
+                      {selectedOrder.status === 'completed' && (
+                        <button
+                          onClick={() => updateOrderStatus(selectedOrder.id, 'new')}
+                          className="px-3 py-1 bg-green-500/20 text-green-300 rounded-lg text-sm hover:bg-green-500/30 transition-colors"
+                        >
+                          Yangi qilish
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
