@@ -34,13 +34,16 @@ export default function WaterWaveAdaptive({
   const [canPlay, setCanPlay] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const isMobile = useMemo(() => {
+  const { isMobile, isIOS } = useMemo(() => {
     if (typeof navigator === 'undefined') return false;
-    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const ua = navigator.userAgent;
+    const mobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+    const ios = /iPhone|iPad|iPod/i.test(ua);
+    return { isMobile: mobile, isIOS: ios };
   }, []);
 
   useEffect(() => {
-    // Prefer WebGL if supported; fallback to video otherwise (also on mobile)
+    // Prefer WebGL if supported; on iOS force video for stability
     const webglSupported = (() => {
       try {
         const canvas = document.createElement('canvas');
@@ -50,8 +53,8 @@ export default function WaterWaveAdaptive({
       }
     })();
 
-    setUseVideo(!webglSupported);
-  }, [isMobile]);
+    setUseVideo(isIOS || !webglSupported);
+  }, [isIOS]);
 
   useEffect(() => {
     if (!useVideo) return;
@@ -74,10 +77,16 @@ export default function WaterWaveAdaptive({
       }
     };
     const onCanPlay = () => play();
+    const onVisibility = () => { if (document.visibilityState === 'visible') play(); };
+    const onTouch = () => play();
     v.addEventListener('canplay', onCanPlay);
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('touchstart', onTouch, { once: true });
     play();
     return () => {
       v.removeEventListener('canplay', onCanPlay);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('touchstart', onTouch);
     };
   }, [useVideo]);
 
@@ -91,7 +100,7 @@ export default function WaterWaveAdaptive({
           autoPlay
           loop
           muted
-          preload="metadata"
+          preload="auto"
           aria-hidden
         >
           <source src={webmSrc} type="video/webm" />
