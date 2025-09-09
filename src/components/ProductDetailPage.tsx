@@ -818,7 +818,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
           >
             {/* Adaptive: Mobile => video fallback, Desktop => WebGL */}
             <WaterWaveAdaptive
-              className="absolute inset-0 pointer-events-none"
+              className="absolute -inset-px pointer-events-none"
               speedSec={7.5}
               amplitude={0.14}
               frequency={1.4}

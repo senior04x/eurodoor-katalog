@@ -206,7 +206,7 @@ export default function WaterWave3D({
         float depthShade = smoothstep(0.0, 1.0, uv.y);
         color *= mix(0.95, 1.0, depthShade);
 
-        gl_FragColor = vec4(color, 0.98);
+        gl_FragColor = vec4(color, 1.0);
       }
     `;
 
