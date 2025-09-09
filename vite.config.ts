@@ -1,9 +1,40 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      injectRegister: 'auto',
+      manifest: {
+        name: 'Eurodoor',
+        short_name: 'Eurodoor',
+        start_url: '/',
+        scope: '/',
+        display: 'standalone',
+        background_color: '#0f172a',
+        theme_color: '#0f172a',
+        icons: [
+          {
+            src: 'https://iili.io/Fy0g33Q.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'https://iili.io/Fy0g33Q.png',
+            sizes: '512x512',
+            type: 'image/png'
+          }
+        ]
+      },
+      workbox: {
+        navigateFallback: '/index.html',
+      }
+    })
+  ],
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
