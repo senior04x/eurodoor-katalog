@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 
 // Supabase konfiguratsiyasi
 // Real ma'lumotlar - Supabase dashboard dan oling
-const supabaseUrl = 'https://eurodoor-orders.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cm9kb29yLW9yZGVycyIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzM3NDkyMDAwLCJleHAiOjIwNTMwNjgwMDB9.eurodoor-orders-real-key'
+const supabaseUrl = 'https://oathybjrmhtubbemjeyy.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdGh5YmpybWh0dWJiZW1qZXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MjMzOTIsImV4cCI6MjA3Mjk5OTM5Mn0.GlKHHQj1nhDGwF78Fr7zlKytRxEwXwlyRTlgEX6d4io'
 
 // Real backend uchun - localStorage fallback o'chirilgan
 const USE_LOCALSTORAGE_FALLBACK = false
