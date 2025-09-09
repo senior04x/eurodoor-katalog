@@ -38,33 +38,61 @@ export interface Order {
 export const ordersApi = {
   // Barcha zakazlarni olish
   async getAllOrders(): Promise<Order[]> {
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*')
-      .order('created_at', { ascending: false })
-    
-    if (error) {
-      console.error('Error fetching orders:', error)
-      return []
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false })
+      
+      if (error) {
+        console.error('❌ Supabase error fetching orders:', error)
+        // localStorage dan olish (fallback)
+        const localOrders = JSON.parse(localStorage.getItem('orders') || '[]')
+        console.log('📱 Using localStorage fallback:', localOrders.length, 'orders')
+        return localOrders
+      }
+      
+      console.log('✅ Supabase orders fetched:', data?.length || 0)
+      return data || []
+    } catch (error) {
+      console.error('❌ Supabase connection error:', error)
+      // localStorage dan olish (fallback)
+      const localOrders = JSON.parse(localStorage.getItem('orders') || '[]')
+      console.log('📱 Using localStorage fallback:', localOrders.length, 'orders')
+      return localOrders
     }
-    
-    return data || []
   },
 
   // Yangi zakaz qo'shish
   async createOrder(order: Omit<Order, 'created_at' | 'updated_at'>): Promise<Order | null> {
-    const { data, error } = await supabase
-      .from('orders')
-      .insert([order])
-      .select()
-      .single()
-    
-    if (error) {
-      console.error('Error creating order:', error)
-      return null
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([order])
+        .select()
+        .single()
+      
+      if (error) {
+        console.error('❌ Supabase error creating order:', error)
+        // localStorage ga saqlash (fallback)
+        const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]')
+        existingOrders.push(order)
+        localStorage.setItem('orders', JSON.stringify(existingOrders))
+        console.log('📱 Order saved to localStorage as fallback')
+        return order as Order
+      }
+      
+      console.log('✅ Order saved to Supabase:', data)
+      return data
+    } catch (error) {
+      console.error('❌ Supabase connection error:', error)
+      // localStorage ga saqlash (fallback)
+      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]')
+      existingOrders.push(order)
+      localStorage.setItem('orders', JSON.stringify(existingOrders))
+      console.log('📱 Order saved to localStorage as fallback')
+      return order as Order
     }
-    
-    return data
   },
 
   // Zakazni o'chirish
