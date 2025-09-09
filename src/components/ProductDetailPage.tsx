@@ -814,8 +814,31 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               animation: 'waterWave 3s ease-in-out infinite, float 2s ease-in-out infinite'
             }}
           >
-            {/* Water wave effect */}
-            <div className="absolute inset-0 water-wave-overlay"></div>
+            {/* Water ripple aquarium overlay (SVG filter animated) */}
+            <svg
+              className="absolute inset-0 pointer-events-none"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <linearGradient id="waterGradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.55" />
+                  <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.55" />
+                </linearGradient>
+                <filter id="waterRipple" x="-20%" y="-20%" width="140%" height="140%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="3">
+                    <animate attributeName="baseFrequency" dur="10s" values="0.006 0.01;0.012 0.008;0.006 0.01" repeatCount="indefinite" />
+                  </feTurbulence>
+                  <feDisplacementMap in="SourceGraphic" scale="18" xChannelSelector="R" yChannelSelector="G">
+                    <animate attributeName="scale" dur="6s" values="10;22;10" repeatCount="indefinite" />
+                  </feDisplacementMap>
+                </filter>
+              </defs>
+              <rect x="0" y="0" width="100" height="100" rx="16" fill="url(#waterGradient)" filter="url(#waterRipple)" opacity="0.45" />
+              <rect x="0" y="0" width="100" height="100" rx="16" fill="url(#waterGradient)" opacity="0.15">
+                <animate attributeName="opacity" dur="4s" values="0.1;0.2;0.1" repeatCount="indefinite" />
+              </rect>
+            </svg>
             
             {/* Button content */}
             <div className="relative z-10 flex items-center gap-3">
