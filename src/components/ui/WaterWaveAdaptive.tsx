@@ -43,7 +43,7 @@ export default function WaterWaveAdaptive({
   }, []);
 
   useEffect(() => {
-    // Prefer WebGL if supported; on iOS force video for stability
+    // Prefer WebGL if supported; only fallback to video if WebGL not available
     const webglSupported = (() => {
       try {
         const canvas = document.createElement('canvas');
@@ -53,8 +53,8 @@ export default function WaterWaveAdaptive({
       }
     })();
 
-    setUseVideo(isIOS || !webglSupported);
-  }, [isIOS]);
+    setUseVideo(!webglSupported);
+  }, []);
 
   useEffect(() => {
     if (!useVideo) return;

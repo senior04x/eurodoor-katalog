@@ -48,7 +48,16 @@ export default function WaterWave3D({
 
     let gl: WebGLRenderingContext | null = null;
     try {
-      gl = canvas.getContext('webgl');
+      // iOS optimization: request low-power, no antialias for stability
+      const opts: WebGLContextAttributes = {
+        antialias: false,
+        alpha: true,
+        depth: false,
+        stencil: false,
+        preserveDrawingBuffer: false,
+        powerPreference: 'high-performance' as any
+      };
+      gl = (canvas.getContext('webgl', opts) || canvas.getContext('experimental-webgl', opts)) as WebGLRenderingContext | null;
     } catch (e) {
       gl = null;
     }
@@ -255,7 +264,11 @@ export default function WaterWave3D({
     const foam = hexToRgb(foamColor);
 
     const resize = () => {
-      const dpr = (typeof devicePixelRatio !== 'undefined' ? devicePixelRatio : 1) || 1;
+      // Cap DPR on iOS to reduce memory/precision issues
+      const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+      const isiOS = /iPhone|iPad|iPod/i.test(ua);
+      const rawDpr = (typeof devicePixelRatio !== 'undefined' ? devicePixelRatio : 1) || 1;
+      const dpr = isiOS ? Math.min(1.0, rawDpr) : rawDpr;
       const w = Math.max(1, Math.floor((canvas.clientWidth || 1) * dpr));
       const h = Math.max(1, Math.floor((canvas.clientHeight || 1) * dpr));
       if (canvas.width !== w || canvas.height !== h) {
