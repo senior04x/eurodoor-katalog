@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { Package, User, Phone, MessageCircle, Calendar, Eye, Trash2, Lock } from 'lucide-react';
 import { ordersApi, Order } from '../lib/supabase';

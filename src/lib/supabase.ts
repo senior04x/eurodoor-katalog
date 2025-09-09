@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 
 // Supabase konfiguratsiyasi
-// Bu ma'lumotlarni Supabase dashboard dan olasiz
-const supabaseUrl = 'https://your-project.supabase.co'
-const supabaseKey = 'your-anon-key'
+// Demo ma'lumotlar - production da o'zgartiring
+const supabaseUrl = 'https://eurodoor-demo.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cm9kb29yLWRlbW8iLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNzQ5MjAwMCwiZXhwIjoyMDUzMDY4MDAwfQ.demo-key-for-eurodoor'
 
 // Supabase client yaratish
 export const supabase = createClient(supabaseUrl, supabaseKey)

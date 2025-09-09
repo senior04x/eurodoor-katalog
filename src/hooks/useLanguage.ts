@@ -116,11 +116,6 @@ const translations: Translations = {
   },
   
   // Catalog
-  'catalog.title': {
-    uz: 'Mahsulotlar katalogi',
-    ru: 'Каталог продукции',
-    en: 'Product catalog'
-  },
   'catalog.iron_doors': {
     uz: 'Temir eshiklar',
     ru: 'Железные двери',
@@ -130,11 +125,6 @@ const translations: Translations = {
     uz: 'MDF eshiklar',
     ru: 'MDF двери',
     en: 'MDF doors'
-  },
-  'catalog.view_details': {
-    uz: 'Batafsil ko\'rish',
-    ru: 'Подробнее',
-    en: 'View Details'
   },
   'catalog.material': {
     uz: 'Material',
@@ -150,11 +140,6 @@ const translations: Translations = {
     uz: 'O\'lchamlar',
     ru: 'Размеры',
     en: 'Dimensions'
-  },
-  'catalog.description': {
-    uz: 'Tavsif',
-    ru: 'Описание',
-    en: 'Description'
   },
   'catalog.group_by_material': {
     uz: 'Material bo\'yicha',
@@ -627,31 +612,6 @@ const translations: Translations = {
     uz: 'Hashamatli dizayn va MDF materiallar va Elektron quluf',
     ru: 'Элегантный дизайн и МДФ материалы с электронным замком',
     en: 'Elegant design and MDF materials with Electronic lock'
-  },
-  'catalog.product7_desc': {
-    uz: 'Zamonaviy kompozit materiallar bilan ishlangan eshik',
-    ru: 'Дверь, изготовленная из современных композитных материалов',
-    en: 'Door made with modern composite materials'
-  },
-  'catalog.product8_desc': {
-    uz: 'Elite darajadagi xavfsizlik va dizayn',
-    ru: 'Элитный уровень безопасности и дизайна',
-    en: 'Elite level of security and design'
-  },
-  'catalog.product9_desc': {
-    uz: 'Klassik va zamonaviy elementlarni birlashtirgan eshik',
-    ru: 'Дверь, сочетающая классические и современные элементы',
-    en: 'Door combining classic and modern elements'
-  },
-  'catalog.product10_desc': {
-    uz: 'Ijrochi darajadagi xavfsizlik va hashamat',
-    ru: 'Исполнительский уровень безопасности и элегантности',
-    en: 'Executive level of security and elegance'
-  },
-  'catalog.view_details': {
-    uz: 'Batafsil ko\'rish',
-    ru: 'Подробнее',
-    en: 'View Details'
   },
   'catalog.product7_desc': {
     uz: 'Zamonaviy kompozit materiallar bilan ishlangan eshik',

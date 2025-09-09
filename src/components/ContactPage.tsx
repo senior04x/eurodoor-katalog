@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Phone, MessageCircle, Instagram, MapPin, Clock, Mail, Package, ArrowLeft } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { motion, useReducedMotion } from 'framer-motion';
