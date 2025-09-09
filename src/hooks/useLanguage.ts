@@ -643,6 +643,11 @@ const translations: Translations = {
     ru: 'Открывается…',
     en: 'Opening…'
   },
+  'catalog.view_details': {
+    uz: 'Batafsil ko\'rish',
+    ru: 'Подробнее',
+    en: 'View Details'
+  },
   
   // Contact
   'contact.title': {
