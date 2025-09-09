@@ -791,8 +791,8 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
         </div>
       </div>
 
-      {/* Order Button - Sahifaning eng pastida */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 z-50">
+      {/* Order Button - Suv akvarium effektli past panel (safe-area bilan) */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pt-2" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 8px)' }}>
         <div className="container mx-auto">
           <button
             onClick={() => {
@@ -809,39 +809,64 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               onNavigate('contact');
               window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             }}
-            className="w-full bg-gradient-to-r from-blue-500/80 to-purple-600/80 backdrop-blur-xl text-white py-4 px-6 rounded-2xl font-semibold hover:from-blue-600/90 hover:to-purple-700/90 transition-all duration-500 flex items-center justify-center gap-3 border border-white/30 shadow-2xl hover:shadow-3xl relative overflow-hidden water-wave-button"
+            className="w-full bg-transparent backdrop-blur-2xl text-white py-5 px-6 rounded-t-3xl rounded-b-none font-semibold transition-all duration-500 flex items-center justify-center gap-3 border border-white/20 shadow-2xl relative overflow-hidden"
             style={{
-              animation: 'waterWave 3s ease-in-out infinite, float 2s ease-in-out infinite'
+              animation: 'float 2.4s ease-in-out infinite'
             }}
           >
-            {/* Water ripple aquarium overlay (SVG filter animated) */}
-            <svg
-              className="absolute inset-0 pointer-events-none"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-            >
+            {/* Realistic water surface + body (aquarium) */}
+            <svg className="absolute inset-0 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
               <defs>
-                <linearGradient id="waterGradient" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.55" />
-                  <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.55" />
+                {/* Subtle blue water tint (very light) */}
+                <linearGradient id="waterBody" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#82c7ff" stopOpacity="0.20"/>
+                  <stop offset="100%" stopColor="#5aa3e6" stopOpacity="0.18"/>
                 </linearGradient>
-                <filter id="waterRipple" x="-20%" y="-20%" width="140%" height="140%">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="3">
-                    <animate attributeName="baseFrequency" dur="10s" values="0.006 0.01;0.012 0.008;0.006 0.01" repeatCount="indefinite" />
-                  </feTurbulence>
-                  <feDisplacementMap in="SourceGraphic" scale="18" xChannelSelector="R" yChannelSelector="G">
-                    <animate attributeName="scale" dur="6s" values="10;22;10" repeatCount="indefinite" />
+                {/* Moving caustics */}
+                <filter id="caustics" x="-20%" y="-20%" width="140%" height="140%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="2" seed="11" result="noise"/>
+                  <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="G">
+                    <animate attributeName="scale" dur="8s" values="8;18;8" repeatCount="indefinite"/>
                   </feDisplacementMap>
                 </filter>
+                {/* Specular highlights on the surface */}
+                <filter id="specular" x="-20%" y="-20%" width="140%" height="140%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="4" result="waves"/>
+                  <feSpecularLighting in="waves" surfaceScale="3" specularConstant="0.8" specularExponent="20" lighting-color="#ffffff" result="spec">
+                    <feDistantLight azimuth="235" elevation="40"/>
+                  </feSpecularLighting>
+                  <feComposite in="spec" in2="SourceAlpha" operator="in"/>
+                </filter>
+                {/* Wave shapes for surface mask animation */}
+                <clipPath id="surfaceClip">
+                  <path id="surfacePath" d="M0,65 C20,62 30,68 50,65 C70,62 80,68 100,65 L100,0 L0,0 Z">
+                    <animate attributeName="d" dur="6s" repeatCount="indefinite"
+                      values="M0,66 C20,63 30,69 50,66 C70,63 80,69 100,66 L100,0 L0,0 Z;
+                              M0,64 C20,67 30,63 50,66 C70,69 80,63 100,66 L100,0 L0,0 Z;
+                              M0,66 C20,63 30,69 50,66 C70,63 80,69 100,66 L100,0 L0,0 Z"/>
+                  </path>
+                </clipPath>
               </defs>
-              <rect x="0" y="0" width="100" height="100" rx="16" fill="url(#waterGradient)" filter="url(#waterRipple)" opacity="0.45" />
-              <rect x="0" y="0" width="100" height="100" rx="16" fill="url(#waterGradient)" opacity="0.15">
-                <animate attributeName="opacity" dur="4s" values="0.1;0.2;0.1" repeatCount="indefinite" />
-              </rect>
+
+              {/* Water body (clipped to beneath surface) */}
+              <g clipPath="url(#surfaceClip)">
+                <rect x="0" y="0" width="100" height="100" fill="url(#waterBody)" filter="url(#caustics)"/>
+              </g>
+
+              {/* Surface highlights */}
+              <rect x="0" y="0" width="100" height="100" filter="url(#specular)" opacity="0.25"/>
+
+              {/* Glass highlights (top gloss) */}
+              <linearGradient id="glassGloss" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.35"/>
+                <stop offset="35%" stopColor="#ffffff" stopOpacity="0.10"/>
+                <stop offset="100%" stopColor="#ffffff" stopOpacity="0.00"/>
+              </linearGradient>
+              <rect x="0" y="0" width="100" height="20" fill="url(#glassGloss)"/>
             </svg>
             
             {/* Button content */}
-            <div className="relative z-10 flex items-center gap-3">
+            <div className="relative z-10 flex items-center gap-3 drop-shadow-[0_3px_6px_rgba(0,0,0,0.35)]">
               <Phone className="h-6 w-6" />
               <span className="text-lg font-bold">
                 Ushbu {product.model} ga buyurtma berish
