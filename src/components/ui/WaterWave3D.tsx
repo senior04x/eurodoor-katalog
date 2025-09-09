@@ -137,17 +137,19 @@ export default function WaterWave3D({
         return mix(a, b, u.x) + (c - a)*u.y*(1.0 - u.x) + (d - b)*u.x*u.y;
       }
 
-      // Multi-octave waves (combination of sin and noise)
+      // Multi-octave waves flowing left→right
       float waveHeight(vec2 p){
-        float t = u_time / u_loop;
+        float t = u_time / u_loop; // 0..1
+        // introduce horizontal flow
+        p.x -= t * 2.0; // flow speed
         float h = 0.0;
-        vec2 dir1 = normalize(vec2(1.0, 0.2));
-        vec2 dir2 = normalize(vec2(-0.4, 1.0));
-        vec2 dir3 = normalize(vec2(0.7, -0.6));
-        h += sin(dot(p* u_freq, dir1) + t*6.28318) * 0.55;
-        h += sin(dot(p*(u_freq*1.6), dir2) + t*8.0) * 0.3;
-        h += sin(dot(p*(u_freq*2.3), dir3) - t*5.3) * 0.2;
-        h += (noise(p*2.0 + t*0.6) - 0.5) * 0.6;
+        vec2 dir1 = normalize(vec2(1.0, 0.18));
+        vec2 dir2 = normalize(vec2(0.6, 1.0));
+        vec2 dir3 = normalize(vec2(0.2, -1.0));
+        h += sin(dot(p * (u_freq*1.00), dir1)) * 0.7;
+        h += sin(dot(p * (u_freq*1.55), dir2) + 1.2) * 0.35;
+        h += sin(dot(p * (u_freq*2.20), dir3) - 0.7) * 0.22;
+        h += (noise(p*2.5) - 0.5) * 0.5;
         return h * u_amp;
       }
 
@@ -162,10 +164,11 @@ export default function WaterWave3D({
       }
 
       void main(){
-        // keep aspect
-        float aspect = u_res.x / u_res.y;
+        // Normalize coords so canvas always fully covered without stretching artifacts
         vec2 uv = v_uv;
-        vec2 p = vec2(uv.x*aspect, uv.y);
+        // center coords -1..1 preserving aspect
+        float aspect = u_res.x / u_res.y;
+        vec2 p = (uv - 0.5) * vec2(aspect, 1.0) * 2.2; // scale 2.2 to fill corners
 
         // Height and normal
         float h = waveHeight(p);
@@ -175,21 +178,23 @@ export default function WaterWave3D({
         vec3 lightDir = normalize(vec3(-0.3, 0.5, 0.8));
         vec3 viewDir = normalize(vec3(0.0, 0.0, 1.0));
 
-        // Fresnel term
-        float fresnel = pow(1.0 - max(dot(n, viewDir), 0.0), 3.0);
+        // Fresnel term (reduced so it doesn't look like a flashlight)
+        float fresnel = pow(1.0 - max(dot(n, viewDir), 0.0), 2.0) * 0.25;
 
-        // Diffuse + specular
+        // Diffuse + tempered specular
         float diff = clamp(dot(n, lightDir), 0.0, 1.0);
         vec3 halfVec = normalize(lightDir + viewDir);
-        float spec = pow(max(dot(n, halfVec), 0.0), 64.0) * 0.6;
+        float spec = pow(max(dot(n, halfVec), 0.0), 48.0) * 0.25;
 
         // Base water color blend by height (shallower near crests)
         float shallowMix = smoothstep(0.0, 0.25*u_amp, h + 0.12);
         vec3 water = mix(u_deep, u_shallow, shallowMix);
 
-        // Foam near sharp crests
-        float foam = smoothstep(0.22, 0.35, h + diff*0.35);
-        foam *= smoothstep(0.4, 0.1, length(n.xy)); // sharper where slope high
+        // Foam near sharp crests: based on slope magnitude and height
+        float slope = length(n.xy);
+        float foam = smoothstep(0.32, 0.12, slope) * smoothstep(0.05, 0.18, h + 0.1);
+        // add fine noise to break up edges
+        foam *= smoothstep(0.35, 0.75, noise(p*3.0 + u_time*0.5) + 0.5);
 
         // Compose
         vec3 color = water;
@@ -197,11 +202,11 @@ export default function WaterWave3D({
         color = mix(color, vec3(1.0), fresnel*0.15);
         color = mix(color, u_foam, foam*0.85);
 
-        // Subtle vignetting for depth
-        float vign = smoothstep(0.0, 0.9, length(uv - 0.5));
-        color *= mix(1.0, 0.95, vign);
+        // Subtle depth darkness towards bottom of button
+        float depthShade = smoothstep(0.0, 1.0, uv.y);
+        color *= mix(0.95, 1.0, depthShade);
 
-        gl_FragColor = vec4(color, 0.95);
+        gl_FragColor = vec4(color, 0.98);
       }
     `;
 
