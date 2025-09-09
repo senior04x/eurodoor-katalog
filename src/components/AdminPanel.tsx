@@ -1,25 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { Package, User, Phone, MessageCircle, Calendar, Eye, Trash2, Lock } from 'lucide-react';
-
-interface Order {
-  id: string;
-  timestamp: string;
-  customer: {
-    name: string;
-    phone: string;
-    message: string;
-  };
-  product: {
-    id?: string;
-    name: string;
-    material?: string;
-    security?: string;
-    dimensions?: string;
-    price?: string;
-  };
-  status: string;
-}
+import { ordersApi, Order } from '../lib/supabase';
 
 export default function AdminPanel() {
   const { t } = useLanguage();
@@ -33,16 +15,41 @@ export default function AdminPanel() {
   const ADMIN_PASSWORD = 'eurodoor2025';
 
   useEffect(() => {
-    // localStorage dan zakazlarni o'qish
-    const savedOrders = localStorage.getItem('orders');
-    if (savedOrders) {
+    const loadOrders = async () => {
       try {
-        const parsedOrders = JSON.parse(savedOrders);
-        setOrders(parsedOrders.reverse()); // Eng yangi zakazlar birinchi
+        // Supabase dan zakazlarni olish
+        const supabaseOrders = await ordersApi.getAllOrders();
+        setOrders(supabaseOrders);
+        
+        // Agar Supabase da zakazlar yo'q bo'lsa, localStorage dan olish (fallback)
+        if (supabaseOrders.length === 0) {
+          const savedOrders = localStorage.getItem('orders');
+          if (savedOrders) {
+            try {
+              const parsedOrders = JSON.parse(savedOrders);
+              setOrders(parsedOrders.reverse());
+            } catch (error) {
+              console.error('Error parsing localStorage orders:', error);
+            }
+          }
+        }
       } catch (error) {
-        console.error('Error parsing orders:', error);
+        console.error('Error loading orders from Supabase:', error);
+        
+        // Xatolik bo'lsa localStorage dan olish (fallback)
+        const savedOrders = localStorage.getItem('orders');
+        if (savedOrders) {
+          try {
+            const parsedOrders = JSON.parse(savedOrders);
+            setOrders(parsedOrders.reverse());
+          } catch (error) {
+            console.error('Error parsing localStorage orders:', error);
+          }
+        }
       }
-    }
+    };
+    
+    loadOrders();
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -63,11 +70,41 @@ export default function AdminPanel() {
     setError('');
   };
 
-  const deleteOrder = (orderId: string) => {
-    const updatedOrders = orders.filter(order => order.id !== orderId);
-    setOrders(updatedOrders);
-    localStorage.setItem('orders', JSON.stringify(updatedOrders));
-    setSelectedOrder(null);
+  const deleteOrder = async (orderId: string) => {
+    try {
+      // Supabase dan zakazni o'chirish
+      const success = await ordersApi.deleteOrder(orderId);
+      
+      if (success) {
+        // Muvaffaqiyatli o'chirilgan
+        const updatedOrders = orders.filter(order => order.id !== orderId);
+        setOrders(updatedOrders);
+        
+        if (selectedOrder?.id === orderId) {
+          setSelectedOrder(null);
+        }
+      } else {
+        // Xatolik bo'lsa localStorage dan o'chirish (fallback)
+        const updatedOrders = orders.filter(order => order.id !== orderId);
+        setOrders(updatedOrders);
+        localStorage.setItem('orders', JSON.stringify(updatedOrders));
+        
+        if (selectedOrder?.id === orderId) {
+          setSelectedOrder(null);
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      
+      // Xatolik bo'lsa localStorage dan o'chirish (fallback)
+      const updatedOrders = orders.filter(order => order.id !== orderId);
+      setOrders(updatedOrders);
+      localStorage.setItem('orders', JSON.stringify(updatedOrders));
+      
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder(null);
+      }
+    }
   };
 
   const formatDate = (timestamp: string) => {

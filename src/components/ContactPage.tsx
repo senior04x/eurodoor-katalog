@@ -3,6 +3,7 @@ import { Phone, MessageCircle, Instagram, MapPin, Clock, Mail, Package, ArrowLef
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLanguage } from '../hooks/useLanguage';
+import { ordersApi } from '../lib/supabase';
 
 interface ContactPageProps {
   onNavigate?: (page: string, productId?: string) => void;
@@ -40,7 +41,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
     message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Zakaz ma'lumotlarini yaratish
@@ -65,23 +66,60 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
       status: 'new'
     };
     
-    // Mavjud zakazlarni olish
-    const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-    existingOrders.push(order);
-    
-    // Zakazlarni localStorage ga saqlash
-    localStorage.setItem('orders', JSON.stringify(existingOrders));
-    
-    // Form ma'lumotlarini tozalash
-    setFormData({ name: '', phone: '', product: '', message: '' });
-    setSelectedProduct(null);
-    localStorage.removeItem('selectedProduct');
-    
-    // Order success sahifasiga yo'naltirish
-    if (onNavigate) {
-      onNavigate('order-success');
-      // Scroll ni tepaga olib chiqish
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    try {
+      // Supabase ga zakaz yuborish
+      const savedOrder = await ordersApi.createOrder(order);
+      
+      if (savedOrder) {
+        // Muvaffaqiyatli saqlangan
+        console.log('Order saved to Supabase:', savedOrder);
+        
+        // Form ma'lumotlarini tozalash
+        setFormData({ name: '', phone: '', product: '', message: '' });
+        setSelectedProduct(null);
+        localStorage.removeItem('selectedProduct');
+        
+        // Order success sahifasiga yo'naltirish
+        if (onNavigate) {
+          onNavigate('order-success');
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        }
+      } else {
+        // Xatolik bo'lsa localStorage ga saqlash (fallback)
+        console.warn('Failed to save to Supabase, saving to localStorage');
+        const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+        existingOrders.push(order);
+        localStorage.setItem('orders', JSON.stringify(existingOrders));
+        
+        // Form ma'lumotlarini tozalash
+        setFormData({ name: '', phone: '', product: '', message: '' });
+        setSelectedProduct(null);
+        localStorage.removeItem('selectedProduct');
+        
+        // Order success sahifasiga yo'naltirish
+        if (onNavigate) {
+          onNavigate('order-success');
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        }
+      }
+    } catch (error) {
+      console.error('Error saving order:', error);
+      
+      // Xatolik bo'lsa localStorage ga saqlash (fallback)
+      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+      existingOrders.push(order);
+      localStorage.setItem('orders', JSON.stringify(existingOrders));
+      
+      // Form ma'lumotlarini tozalash
+      setFormData({ name: '', phone: '', product: '', message: '' });
+      setSelectedProduct(null);
+      localStorage.removeItem('selectedProduct');
+      
+      // Order success sahifasiga yo'naltirish
+      if (onNavigate) {
+        onNavigate('order-success');
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      }
     }
   };
 
