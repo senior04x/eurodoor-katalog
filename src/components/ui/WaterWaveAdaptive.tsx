@@ -103,7 +103,7 @@ export default function WaterWaveAdaptive({
           autoPlay
           loop
           muted
-          preload="auto"
+          preload="none"
           aria-hidden
         >
           <source src={webmSrc} type="video/webm" />
