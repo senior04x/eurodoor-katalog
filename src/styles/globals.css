@@ -101,7 +101,7 @@
 }
 
 body {
-  background: transparent !important;
+  background: #000 !important;
   color: var(--foreground);
   font-family: 'Geist Mono', monospace;
   margin: 0;
@@ -109,7 +109,7 @@ body {
 }
 
 html {
-  background: transparent !important;
+  background: #000 !important;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -169,6 +169,11 @@ html {
 
 html {
   font-size: var(--font-size);
+}
+
+/* iOS Safari va mobil brauzerlar uchun qorong'i tema ko'rsatmasi */
+:root, html, body {
+  color-scheme: dark;
 }
 
 /* Prevent iOS Safari from auto-zooming inputs on focus by ensuring
