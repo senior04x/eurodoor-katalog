@@ -70,10 +70,11 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
       opacity: 1,
       x: 0,
       transition: {
-        type: 'tween',
-        ease: 'easeOut',
-        duration: 0.6,
-        staggerChildren: 0.1,
+        type: 'spring',
+        stiffness: 420,
+        damping: 34,
+        mass: 0.7,
+        staggerChildren: 0.05,
         when: 'beforeChildren'
       }
     },
@@ -90,9 +91,10 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
       opacity: 1,
       x: 0,
       transition: {
-        type: 'tween',
-        ease: 'easeOut',
-        duration: 0.35
+        type: 'spring',
+        stiffness: 500,
+        damping: 30,
+        mass: 0.6
       }
     },
     exit: { opacity: 0, x: 12, transition: { duration: 0.01 } }
