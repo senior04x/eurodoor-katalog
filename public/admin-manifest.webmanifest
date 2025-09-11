@@ -1,8 +1,8 @@
 {
   "name": "Eurodoor Admin Panel",
   "short_name": "Eurodoor Admin",
-  "start_url": "/admin.html",
-  "scope": "/admin.html",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#1a1a1a",
