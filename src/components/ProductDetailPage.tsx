@@ -1,6 +1,5 @@
 import React from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import WaterWaveAdaptive from './ui/WaterWaveAdaptive';
 import { ArrowLeft, Shield, Ruler, Award, Phone } from 'lucide-react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useMemo } from 'react';
@@ -535,111 +534,14 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
    return (
     <div className="relative min-h-screen">
-      {/* ===== Local CSS: sekin animatsiyalar + stagger ===== */}
+      {/* ===== Simple CSS without animations ===== */}
       <style>{`
-        @keyframes fadeSlideUpSlow {
-          0% { opacity: 0; transform: translateY(18px); }
-          100% { opacity: 1; transform: translateY(0); }
+        /* Simple styles without animations for better performance */
+        .simple-button {
+          transition: background-color 0.2s ease;
         }
-        .anim-base {
-          animation: fadeSlideUpSlow 0.55s ease-out both;
-        }
-        .anim-slower {
-          animation: fadeSlideUpSlow 0.7s ease-out both;
-        }
-        .anim-card {
-          animation: fadeSlideUpSlow 0.6s ease-out both;
-        }
-        .anim-stagger {
-          animation: fadeSlideUpSlow 0.5s ease-out both;
-        }
-        
-        /* Water wave animatsiya */
-        @keyframes waterWave {
-          0%, 100% {
-            transform: translateY(0px) scale(1);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(147, 51, 234, 0.2);
-          }
-          25% {
-            transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), 0 0 50px rgba(147, 51, 234, 0.3);
-          }
-          50% {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(147, 51, 234, 0.4);
-          }
-          75% {
-            transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), 0 0 50px rgba(147, 51, 234, 0.3);
-          }
-        }
-        
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-3px);
-          }
-        }
-        
-        /* Water wave overlay */
-        .water-wave-overlay {
-          background: linear-gradient(45deg, 
-            rgba(255, 255, 255, 0.1) 0%, 
-            rgba(255, 255, 255, 0.05) 25%, 
-            rgba(255, 255, 255, 0.1) 50%, 
-            rgba(255, 255, 255, 0.05) 75%, 
-            rgba(255, 255, 255, 0.1) 100%);
-          background-size: 200% 200%;
-          animation: waveFlow 4s ease-in-out infinite;
-          opacity: 0.6;
-        }
-        
-        @keyframes waveFlow {
-          0%, 100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-        
-        /* Hover effect */
-        .water-wave-button:hover {
-          transform: translateY(-2px) scale(1.02);
-          box-shadow: 0 0 40px rgba(59, 130, 246, 0.6), 0 0 80px rgba(147, 51, 234, 0.5);
-        }
-        
-        /* Text shimmer effect */
-        .water-wave-button span {
-          background: linear-gradient(45deg, #ffffff, #e0e7ff, #ffffff);
-          background-size: 200% 200%;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          animation: textShimmer 3s ease-in-out infinite;
-        }
-        
-        @keyframes textShimmer {
-          0%, 100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-        
-        /* Reduced motion foydalanuvchilar uchun animatsiyalarni o'chirib qo'yamiz */
-        @media (prefers-reduced-motion: reduce) {
-          .anim-base,
-          .anim-slower,
-          .anim-card,
-          .anim-stagger,
-          .water-wave-button,
-          .water-wave-overlay {
-            animation: none !important;
-          }
+        .simple-button:hover {
+          background-color: rgba(255, 255, 255, 0.1);
         }
       `}</style>
 
@@ -650,7 +552,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
       />
 
       {/* Back Navigation (sekinsiz emas, lekin ozgina yumshoq anim beramiz) */}
-      <div className="bg-none backdrop-blur border-b border-none shadow-lg anim-base" style={{ animationDelay: '40ms' }}>
+      <div className="bg-none backdrop-blur border-b border-none shadow-lg">
         <div className="container mx-auto px-4 py-4">
           <button
             onClick={() => onNavigate('catalog')}
@@ -669,8 +571,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
             <div className="space-y-4">
               {/* Product Image */}
               <div
-                className="bg-white/0 backdrop-blur-sm rounded-2xl p-3 border border-white/0 shadow-lg aspect-square flex items-center justify-center anim-slower"
-                style={{ animationDelay: '100ms' }}
+                className="bg-white/0 backdrop-blur-sm rounded-2xl p-3 border border-white/0 shadow-lg aspect-square flex items-center justify-center"
               >
                 <ImageWithFallback
                   src={product.image}
@@ -681,8 +582,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
               {/* Technical Drawing */}
               <div
-                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0 anim-base"
-                style={{ animationDelay: '160ms' }}
+                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0"
               >
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Ruler className="h-5 w-5 text-white" />
@@ -702,24 +602,23 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
             <div className="space-y-6">
               {/* Product Details */}
               <div
-                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0 anim-base"
-                style={{ animationDelay: '120ms' }}
+                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0"
               >
                 <h1 className="text-3xl font-bold text-white mb-4">
                   {product.name}
                 </h1>
 
-                <div className="text-2xl font-bold text-white mb-6 anim-stagger" style={{ animationDelay: '180ms' }}>
+                <div className="text-2xl font-bold text-white mb-6">
                   {product.price}
                 </div>
 
-                <p className="text-gray-300 mb-6 leading-relaxed anim-stagger" style={{ animationDelay: '220ms' }}>
+                <p className="text-gray-300 mb-6 leading-relaxed">
                   {product.description}
                 </p>
 
                 {/* Key Features */}
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2 anim-stagger" style={{ animationDelay: '240ms' }}>
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
                     <Shield className="h-5 w-5 text-white" />
                     {t('product.key_features')}
                   </h3>
@@ -727,8 +626,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                     {product.features.map((feature: string, index: number) => (
                       <li
                         key={index}
-                        className="flex items-start gap-2 text-gray-300 anim-stagger"
-                        style={{ animationDelay: `${260 + index * 60}ms` }} // ketma-ket sekin
+                        className="flex items-start gap-2 text-gray-300"
                       >
                         <div className="w-2 h-2 bg-white rounded-full mt-2 flex-shrink-0" />
                         {feature}
@@ -741,10 +639,9 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
               {/* Specifications */}
               <div
-                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0 anim-base"
-                style={{ animationDelay: '180ms' }}
+                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/0"
               >
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2 anim-stagger" style={{ animationDelay: '220ms' }}>
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Award className="h-5 w-5 text-white" />
                   {t('product.technical_specs')}
                 </h3>
@@ -752,8 +649,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                   {product.specifications.map((spec: any, index: number) => (
                     <div
                       key={index}
-                      className="flex justify-between items-center py-2 border-b border-white/10 anim-stagger"
-                      style={{ animationDelay: `${240 + index * 60}ms` }} // ketma-ket
+                      className="flex justify-between items-center py-2 border-b border-white/10"
                     >
                       <span className="text-gray-300">{spec.label}:</span>
                       <span className="font-medium text-white">{spec.value}</span>
@@ -764,10 +660,9 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
               {/* Installation Info */}
               <div
-                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 border border-white/0 shadow-2xl anim-base"
-                style={{ animationDelay: '220ms' }}
+                className="bg-white/0 backdrop-blur-sm rounded-2xl p-6 border border-white/0 shadow-2xl"
               >
-                <h3 className="text-lg font-semibold text-white mb-3 anim-stagger" style={{ animationDelay: '260ms' }}>
+                <h3 className="text-lg font-semibold text-white mb-3">
                   {t('product.installation_tips')}
                 </h3>
                 <ul className="space-y-2 text-gray-300">
@@ -779,8 +674,6 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                   ].map((tip, i) => (
                     <li
                       key={i}
-                      className="anim-stagger"
-                      style={{ animationDelay: `${280 + i * 60}ms` }}
                     >
                       {tip}
                     </li>
@@ -811,25 +704,10 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               onNavigate('contact');
               window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             }}
-            className="w-full bg-transparent text-white py-5 px-6 rounded-none font-semibold transition-all duration-500 flex items-center justify-center gap-3 border-t border-white/10 shadow-2xl relative overflow-hidden"
-            style={{
-              animation: 'float 2.4s ease-in-out infinite'
-            }}
+            className="w-full bg-white/20 text-white py-5 px-6 rounded-none font-semibold simple-button flex items-center justify-center gap-3 border-t border-white/10 shadow-2xl"
           >
-            {/* WebGL 3D water overlay (with mobile-safe fallback inside) */}
-            <WaterWaveAdaptive
-              className="absolute -inset-1 pointer-events-none"
-              speedSec={6.5}
-              amplitude={0.18}
-              frequency={1.5}
-              shallowColor="#45c0ff"
-              deepColor="#0b5f9a"
-              foamColor="#ffffff"
-              forceVideo={false}
-            />
-            
             {/* Button content */}
-            <div className="relative z-10 flex items-center gap-3 drop-shadow-[0_3px_6px_rgba(0,0,0,0.35)]">
+            <div className="flex items-center gap-3">
               <Phone className="h-6 w-6" />
               <span className="text-lg font-bold">
                 Ushbu {product.model} ga buyurtma berish
