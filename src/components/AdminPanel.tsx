@@ -29,14 +29,6 @@ export default function AdminPanel() {
   // Admin paroli - bu yerdan o'zgartiring
   const ADMIN_PASSWORD = 'eurodoor2025';
 
-  // LocalStorage ni tozalash funksiyasi
-  const clearLocalStorage = () => {
-    localStorage.removeItem('adminProducts');
-    localStorage.removeItem('orders');
-    localStorage.removeItem('lastOrder');
-    localStorage.removeItem('selectedProduct');
-    console.log('🧹 LocalStorage cleared');
-  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -279,9 +271,9 @@ export default function AdminPanel() {
       const errorMessage = error instanceof Error ? error.message : 'Noma\'lum xatolik';
       
       if (errorMessage.includes('Supabase error')) {
-        alert('Server bilan bog\'lanishda xatolik! Mahsulot mahalliy saqlanadi. Sahifani yangilang.\n\nConsole da xatolikni ko\'ring: F12 > Console');
+        alert('Server bilan bog\'lanishda xatolik! Iltimos, qaytadan urinib ko\'ring.\n\nConsole da xatolikni ko\'ring: F12 > Console');
       } else if (errorMessage.includes('Connection error')) {
-        alert('Internet aloqasi yo\'q! Mahsulot mahalliy saqlanadi. Internet qayta ulangandan keyin qaytadan urinib ko\'ring.');
+        alert('Internet aloqasi yo\'q! Internet qayta ulangandan keyin qaytadan urinib ko\'ring.');
       } else {
         alert('Mahsulot qo\'shishda xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring.\n\nConsole da xatolikni ko\'ring: F12 > Console');
       }
@@ -428,14 +420,6 @@ export default function AdminPanel() {
                 <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Mahsulot qo'shish</span>
                 <span className="sm:hidden">Qo'shish</span>
-              </button>
-              <button
-                onClick={clearLocalStorage}
-                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 bg-yellow-500/20 text-yellow-300 rounded-lg hover:bg-yellow-500/30 transition-colors text-xs sm:text-sm"
-              >
-                <Package className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">Tozalash</span>
-                <span className="sm:hidden">Tozalash</span>
               </button>
               <button
                 onClick={handleLogout}
