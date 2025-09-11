@@ -58,7 +58,11 @@
   
   <script>
     // Admin panelga yo'naltirish
-    window.location.href = '/admin';
+    setTimeout(() => {
+      // URL ni o'zgartirish
+      window.history.replaceState({}, '', '/admin');
+      window.location.reload();
+    }, 1000);
   </script>
 </body>
 </html>

@@ -2,8 +2,9 @@
   "name": "Eurodoor Admin Panel",
   "short_name": "Eurodoor Admin",
   "start_url": "/admin.html",
-  "scope": "/",
+  "scope": "/admin.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#1a1a1a",
   "theme_color": "#1a1a1a",
   "icons": [
@@ -11,13 +12,13 @@
       "src": "https://iili.io/K2WCLJV.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "https://iili.io/K2WCLJV.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
