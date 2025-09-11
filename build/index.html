@@ -37,6 +37,7 @@
     <meta name="application-name" content="Eurodoor" />
     <meta name="theme-color" content="#0f172a" />
     <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
 
     <!-- =================== Icons / Manifest =================== -->
     <link rel="icon" href="https://iili.io/Fy0g33Q.png" type="image/png" sizes="any" />
@@ -47,7 +48,7 @@
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="preconnect" href="https://mc.yandex.ru" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="image" href="https://eurodoor.uz/og-image.jpg" imagesrcset="https://eurodoor.uz/og-image.jpg 1x" imagesizes="(max-width: 1200px) 100vw, 1200px" />
+    <link rel="preload" as="image" href="https://eurodoor.uz/og-image.jpg" imagesrcset="https://eurodoor.uz/og-image.jpg 1x" imagesizes="(max-width: 1200px) 100vw, 1200px" fetchpriority="high" />
 
     <!-- =================== Open Graph / Twitter =================== -->
     <meta property="og:site_name" content="Eurodoor" />
@@ -254,14 +255,26 @@
     <!-- =================== Inline CSS for immediate loading =================== -->
     <style>
       html, body {
-        background: transparent !important;
+        background: #0f172a !important;
         margin: 0 !important;
         padding: 0 !important;
-        font-family: 'Geist Mono', monospace !important;
+        font-family: 'TT Firs Neue', 'Geist Mono', monospace !important;
+        color: #ffffff !important;
       }
       #root {
-        background: transparent !important;
+        background: #0f172a !important;
         min-height: 100vh !important;
+        color: #ffffff !important;
+      }
+      /* Loading fallback */
+      .loading {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-family: 'TT Firs Neue', sans-serif;
       }
     </style>
 
