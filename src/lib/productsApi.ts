@@ -23,7 +23,7 @@ export interface Product {
 }
 
 // Fallback uchun localStorage flag
-const USE_LOCALSTORAGE_FALLBACK = true;
+const USE_LOCALSTORAGE_FALLBACK = false; // Supabase ishlayotgani uchun o'chirildi
 
 // Supabase API funksiyalari
 export const productsApi = {
