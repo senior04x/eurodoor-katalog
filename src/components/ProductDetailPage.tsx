@@ -20,8 +20,11 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
     const loadProduct = async () => {
       try {
         setLoading(true);
+        console.log('🔍 ProductDetailPage: Loading product with ID:', productId);
         const products = await productsApi.getAllProducts();
+        console.log('🔍 ProductDetailPage: All products:', products);
         const foundProduct = products.find((p: any) => p.id === productId);
+        console.log('🔍 ProductDetailPage: Found product:', foundProduct);
         
         if (foundProduct) {
           setProduct({
