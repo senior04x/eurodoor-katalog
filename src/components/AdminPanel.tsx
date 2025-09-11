@@ -24,6 +24,7 @@ export default function AdminPanel() {
     description: '',
     image: ''
   });
+  const [isAddingProduct, setIsAddingProduct] = useState(false);
 
   // Admin paroli - bu yerdan o'zgartiring
   const ADMIN_PASSWORD = 'eurodoor2025';
@@ -195,6 +196,10 @@ export default function AdminPanel() {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (isAddingProduct) return; // Agar qo'shish jarayoni davom etsa, qayta ishlamasin
+    
+    setIsAddingProduct(true);
+    
     try {
       // Yangi mahsulot ID yaratish
       const productId = `euro-model${Date.now()}`;
@@ -260,7 +265,19 @@ export default function AdminPanel() {
       
     } catch (error) {
       console.error('Error adding product:', error);
-      alert('Mahsulot qo\'shishda xatolik yuz berdi!');
+      
+      // Foydalanuvchiga aniqroq xabar berish
+      const errorMessage = error instanceof Error ? error.message : 'Noma\'lum xatolik';
+      
+      if (errorMessage.includes('Supabase error')) {
+        alert('Server bilan bog\'lanishda xatolik! Mahsulot mahalliy saqlanadi. Sahifani yangilang.');
+      } else if (errorMessage.includes('Connection error')) {
+        alert('Internet aloqasi yo\'q! Mahsulot mahalliy saqlanadi. Internet qayta ulangandan keyin qaytadan urinib ko\'ring.');
+      } else {
+        alert('Mahsulot qo\'shishda xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring.');
+      }
+    } finally {
+      setIsAddingProduct(false);
     }
   };
 
@@ -837,9 +854,10 @@ export default function AdminPanel() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-3 bg-green-500/20 text-green-300 rounded-lg hover:bg-green-500/30 transition-colors"
+                  disabled={isAddingProduct}
+                  className="flex-1 px-4 py-3 bg-green-500/20 text-green-300 rounded-lg hover:bg-green-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Mahsulot qo'shish
+                  {isAddingProduct ? 'Qo\'shilmoqda...' : 'Mahsulot qo\'shish'}
                 </button>
               </div>
             </form>
