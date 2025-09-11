@@ -9,7 +9,6 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      selfDestroying: true,
       manifest: {
         name: 'Eurodoor',
         short_name: 'Eurodoor',

@@ -1,6 +1,5 @@
 import React from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import WaterWaveAdaptive from './ui/WaterWaveAdaptive';
 import { ArrowLeft, Shield, Ruler, Award, Phone } from 'lucide-react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useMemo } from 'react';
@@ -794,8 +793,8 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
       </div>
 
       {/* Order Button - Suv akvarium effektli past panel (safe-area bilan) */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 px-0 pt-0 pb-0" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        <div className="w-full">
+      <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pt-2" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 8px)' }}>
+        <div className="container mx-auto">
           <button
             onClick={() => {
               // Product ma'lumotini localStorage ga saqlash
@@ -811,12 +810,81 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               onNavigate('contact');
               window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             }}
-            className="w-full bg-transparent text-white py-5 px-6 rounded-none font-semibold transition-all duration-500 flex items-center justify-center gap-3 border-t border-white/10 shadow-2xl relative overflow-hidden"
+            className="w-full bg-transparent backdrop-blur-2xl text-white py-5 px-6 rounded-t-3xl rounded-b-none font-semibold transition-all duration-500 flex items-center justify-center gap-3 border border-white/20 shadow-2xl relative overflow-hidden"
             style={{
               animation: 'float 2.4s ease-in-out infinite'
             }}
           >
-            {/* Button content - 3D water wave olib tashlandi */}
+            {/* Realistic sea wave (crest + foam) inside the button */}
+            <svg className="absolute inset-0 pointer-events-none" viewBox="0 0 1200 220" preserveAspectRatio="none" aria-hidden>
+              <defs>
+                <linearGradient id="gWaterBtn" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#57c1ff"/>
+                  <stop offset="55%" stopColor="#2390d9"/>
+                  <stop offset="100%" stopColor="#0b5f9a"/>
+                </linearGradient>
+                <filter id="fRipplesBtn">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.004 0.009" numOctaves="3" seed="7">
+                    <animate attributeName="baseFrequency" values="0.004 0.009;0.006 0.014;0.004 0.009" dur="12s" repeatCount="indefinite"/>
+                  </feTurbulence>
+                  <feDisplacementMap in="SourceGraphic" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+                </filter>
+                <filter id="fFoamBtn" x="-20%" y="-20%" width="140%" height="140%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="4" seed="3"/>
+                  <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 3 -1.2"/>
+                  <feGaussianBlur stdDeviation="0.7"/>
+                </filter>
+                <clipPath id="clipWaveBtn">
+                  <path d="M0,140 C220,130 300,115 420,105 C640,86 770,80 860,95 C955,110 1005,140 1000,165 C995,185 955,200 900,205 C920,190 890,180 845,175 C800,170 760,182 735,195 C690,215 595,220 470,220 L0,220 Z"/>
+                </clipPath>
+                <clipPath id="clipCrestBtn">
+                  <path d="M600,82 C720,70 820,72 885,86 C940,97 980,120 980,145 C965,137 920,132 870,132 C810,132 755,142 720,158 C695,170 665,182 640,190 Z"/>
+                </clipPath>
+                <linearGradient id="gGlassTop" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ffffff" stopOpacity="0.35"/>
+                  <stop offset="35%" stopColor="#ffffff" stopOpacity="0.10"/>
+                  <stop offset="100%" stopColor="#ffffff" stopOpacity="0.00"/>
+                </linearGradient>
+              </defs>
+
+              {/* Wave body flowing horizontally */}
+              <g clipPath="url(#clipWaveBtn)" filter="url(#fRipplesBtn)">
+                <rect x="0" y="0" width="1200" height="220" fill="url(#gWaterBtn)">
+                  <animate attributeName="x" from="0" to="-600" dur="12s" repeatCount="indefinite"/>
+                </rect>
+                <rect x="1200" y="0" width="1200" height="220" fill="url(#gWaterBtn)">
+                  <animate attributeName="x" from="1200" to="600" dur="12s" repeatCount="indefinite"/>
+                </rect>
+              </g>
+
+              {/* Crest foam */}
+              <g clipPath="url(#clipCrestBtn)" opacity="0.9">
+                <rect x="540" y="40" width="460" height="160" fill="#ffffff" filter="url(#fFoamBtn)" opacity="0.9">
+                  <animate attributeName="x" values="540;560;540" dur="6s" repeatCount="indefinite"/>
+                </rect>
+              </g>
+
+              {/* Spray droplets */}
+              <g fill="#ffffff" opacity="0.6">
+                <circle cx="880" cy="50" r="2">
+                  <animate attributeName="cx" values="880;900;880" dur="6s" repeatCount="indefinite"/>
+                  <animate attributeName="cy" values="50;40;50" dur="6s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="892" cy="44" r="1.6">
+                  <animate attributeName="cx" values="892;905;892" dur="6s" repeatCount="indefinite"/>
+                  <animate attributeName="cy" values="44;35;44" dur="6s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="868" cy="46" r="1.9">
+                  <animate attributeName="cx" values="868;885;868" dur="6s" repeatCount="indefinite"/>
+                  <animate attributeName="cy" values="46;38;46" dur="6s" repeatCount="indefinite"/>
+                </circle>
+              </g>
+
+              {/* Top glass gloss */}
+              <rect x="0" y="0" width="1200" height="70" fill="url(#gGlassTop)"/>
+            </svg>
+            
+            {/* Button content */}
             <div className="relative z-10 flex items-center gap-3 drop-shadow-[0_3px_6px_rgba(0,0,0,0.35)]">
               <Phone className="h-6 w-6" />
               <span className="text-lg font-bold">

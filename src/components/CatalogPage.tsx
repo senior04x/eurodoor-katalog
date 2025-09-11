@@ -278,7 +278,6 @@ const getMaterialKey = (m: string, t: any) => {
                               src={door.image}
                               alt={door.name}
                               loading="lazy"
-                              decoding="async"
                               className="w-full h-full object-cover"
                             />
                           </div>

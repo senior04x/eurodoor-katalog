@@ -70,11 +70,10 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
       opacity: 1,
       x: 0,
       transition: {
-        type: 'spring',
-        stiffness: 420,
-        damping: 34,
-        mass: 0.7,
-        staggerChildren: 0.05,
+        type: 'tween',
+        ease: 'easeOut',
+        duration: 0.6,
+        staggerChildren: 0.1,
         when: 'beforeChildren'
       }
     },
@@ -91,10 +90,9 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
       opacity: 1,
       x: 0,
       transition: {
-        type: 'spring',
-        stiffness: 500,
-        damping: 30,
-        mass: 0.6
+        type: 'tween',
+        ease: 'easeOut',
+        duration: 0.35
       }
     },
     exit: { opacity: 0, x: 12, transition: { duration: 0.01 } }
@@ -116,6 +114,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
       initial="hidden"
       animate="show"
       className="bg-white/3 backdrop-blur-sm border border-white/20 sticky top-0 z-50 shadow-lg m-4 rounded-md"
+      style={{ top: 'env(safe-area-inset-top)' }}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20 md:h-15">
