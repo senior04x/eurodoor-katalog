@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import HomePage from './components/HomePage';
 import CatalogPage from './components/CatalogPage';
@@ -26,20 +26,41 @@ export default function App() {
       setCurrentPage('admin');
     } else if (savedPage === 'order-success') {
       setCurrentPage('order-success');
-    } else if (savedPage) {
+    } else if (savedPage && savedPage !== 'admin') {
       setCurrentPage(savedPage);
+    } else {
+      // Agar admin sahifada bo'lmasa, home sahifaga o'tish
+      setCurrentPage('home');
     }
     
     if (savedProductId) {
       setSelectedProductId(savedProductId);
     }
     
+    // Browser back/forward tugmalarini qo'llab-quvvatlash
+    const handlePopState = () => {
+      const currentPath = window.location.pathname;
+      if (currentPath.includes('/admin')) {
+        setCurrentPage('admin');
+      } else if (currentPath === '/') {
+        setCurrentPage('home');
+      } else {
+        const page = currentPath.substring(1); // / ni olib tashlash
+        setCurrentPage(page);
+      }
+    };
+    
+    window.addEventListener('popstate', handlePopState);
+    
     // Loading ni o'chirish
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 100);
     
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, []);
 
   // Til o'zgarishi paytida current state ni saqlash
@@ -57,6 +78,17 @@ export default function App() {
 
   const handleNavigate = (page: string, productId?: string) => {
     setCurrentPage(page);
+    
+    // Admin sahifasiga o'tganda URL ni o'zgartirish
+    if (page === 'admin') {
+      window.history.pushState({}, '', '/admin');
+    } else if (page === 'home') {
+      window.history.pushState({}, '', '/');
+    } else {
+      // Boshqa sahifalar uchun URL ni o'zgartirish
+      window.history.pushState({}, '', `/${page}`);
+    }
+    
     localStorage.setItem('currentPage', page);
     if (productId) {
       setSelectedProductId(productId);
