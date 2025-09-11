@@ -9,26 +9,6 @@ import { motion } from 'framer-motion';
 export default function AdminPanel() {
   const { t } = useLanguage();
 
-  // Admin panel uchun PWA manifest qo'shish
-  useEffect(() => {
-    const existingManifest = document.querySelector('link[rel="manifest"]');
-    if (existingManifest) {
-      existingManifest.setAttribute('href', '/admin-manifest.webmanifest');
-    } else {
-      const manifestLink = document.createElement('link');
-      manifestLink.rel = 'manifest';
-      manifestLink.href = '/admin-manifest.webmanifest';
-      document.head.appendChild(manifestLink);
-    }
-
-    // Cleanup funksiyasi
-    return () => {
-      const adminManifest = document.querySelector('link[rel="manifest"][href="/admin-manifest.webmanifest"]');
-      if (adminManifest) {
-        adminManifest.setAttribute('href', '/site.webmanifest');
-      }
-    };
-  }, []);
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
