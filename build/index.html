@@ -37,7 +37,7 @@
     <meta name="application-name" content="Eurodoor" />
     <meta name="theme-color" content="#0f172a" />
     <meta name="format-detection" content="telephone=no" />
-    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Eurodoor" />
 
@@ -50,7 +50,7 @@
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="preconnect" href="https://mc.yandex.ru" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="image" href="https://eurodoor.uz/og-image.jpg" imagesrcset="https://eurodoor.uz/og-image.jpg 1x" imagesizes="(max-width: 1200px) 100vw, 1200px" fetchpriority="high" />
+    <link rel="preload" as="image" href="https://eurodoor.uz/og-image.jpg" imagesrcset="https://eurodoor.uz/og-image.jpg 1x" imagesizes="(max-width: 1200px) 100vw, 1200px" />
 
     <!-- =================== Open Graph / Twitter =================== -->
     <meta property="og:site_name" content="Eurodoor" />
@@ -99,7 +99,9 @@
       });
     </script>
 
-    <!-- Tailwind CDN removed: app ships compiled CSS -->
+    <!-- =================== Tailwind CDN (remove if using PostCSS) =================== -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> tailwind.config = { darkMode: ["class"] };</script>
 
     <!-- =================== JSON-LD: WebSite + SearchAction =================== -->
     <script type="application/ld+json">
@@ -238,8 +240,8 @@
         ]
       }
     </script>
-    <script type="module" crossorigin src="/assets/index-CKDWvRnZ.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-B4en3gOs.css">
+    <script type="module" crossorigin src="/assets/index-DyNtemKo.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-B4NOWi1g.css">
   <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
 
   <body class="m-0 antialiased" style="background: transparent !important; margin: 0; padding: 0;">
@@ -255,26 +257,14 @@
     <!-- =================== Inline CSS for immediate loading =================== -->
     <style>
       html, body {
-        background: #0f172a !important;
+        background: transparent !important;
         margin: 0 !important;
         padding: 0 !important;
-        font-family: 'TT Firs Neue', 'Geist Mono', monospace !important;
-        color: #ffffff !important;
+        font-family: 'Geist Mono', monospace !important;
       }
       #root {
-        background: #0f172a !important;
+        background: transparent !important;
         min-height: 100vh !important;
-        color: #ffffff !important;
-      }
-      /* Loading fallback */
-      .loading {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-family: 'TT Firs Neue', sans-serif;
       }
     </style>
 
