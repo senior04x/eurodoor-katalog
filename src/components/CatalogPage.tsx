@@ -1,5 +1,5 @@
-import { Eye, Layers } from 'lucide-react';
-import { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { Eye, Layers, Package } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLanguage } from '../hooks/useLanguage';
 
@@ -21,29 +21,23 @@ type GroupMode = 'material' | 'size';
 
 export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   const { t } = useLanguage();
-  const doors: DoorProduct[] = [
-    { id: 'euro-model1',  name: 'EURO Model-558 Metal Door',     image: 'https://iili.io/KqcGK21.jpg', material: 'Metall + MDF',                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 100mm',  description: t('catalog.product1_desc') },
-    { id: 'euro-model2',  name: 'EURO Model-556 Metal Door',     image: 'https://iili.io/KqcGqkg.jpg', material: 'Metall + MDF + Oyna',                   security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 100mm',  description: t('catalog.product2_desc') },
-    { id: 'euro-model3',  name: 'EURO Model-555 Metal Door',     image: 'https://iili.io/KqcGBpa.jpg', material: 'Metall + MDF + Oyna',                   security: 'A sinf',  dimensions: '2050x860mm + 2050x960mm + 100mm',  description: t('catalog.product3_desc') },
-    { id: 'euro-model4',  name: 'EURO Model-557 Metal Door',     image: 'https://iili.io/KqcGnTJ.jpg', material: 'Metall + MDF',                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 100mm',  description: t('catalog.product4_desc') },
-    { id: 'euro-model5',  name: 'EURO Model-516 Metal Door',     image: 'https://iili.io/KqcGu4I.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm',  description: t('catalog.product5_desc') },
-    { id: 'euro-model6',  name: 'EURO Model-020 MDF Door',       image: 'https://iili.io/KqcGR2t.jpg', material: 'MDF + MDF',                             security: 'Premium', dimensions: '2300x860mm',  description: t('catalog.product6_desc') },
-    { id: 'euro-model7',  name: 'EURO Model-513 Metal Door',     image: 'https://iili.io/KqcG5YX.jpg', material: 'Metall + MDF + Oyna',                   security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: t('catalog.product7_desc') },
-    { id: 'euro-model8',  name: 'EURO Model-588 Metal Door',     image: 'https://iili.io/KqcG7vn.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 80mm',  description: t('catalog.product8_desc') },
-    { id: 'euro-model9',  name: 'EURO Model-514 Metal Door',     image: 'https://iili.io/KqcGljf.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: t('catalog.product9_desc') },
-    { id: 'euro-model10', name: 'EURO Model-111 Metal Door',     image: 'https://iili.io/KqcGECl.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: t('catalog.product10_desc') },
-    { id: 'euro-model11', name: 'EURO Model-512 Metal Door',     image: 'https://iili.io/KqcGM4S.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm',  description: t('catalog.product11_desc') },
-    { id: 'euro-model12', name: 'EURO Model-599 Metal Door',     image: 'https://iili.io/KqcGW37.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 80mm', description: t('catalog.product11_desc') },
-    { id: 'euro-model13', name: 'EURO Model-511 Metal Door',     image: 'https://iili.io/KqcGhve.jpg', material: "Metall + MDF + Oyna",                   security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm', description: t('catalog.product11_desc') },
-    { id: 'euro-model14', name: 'EURO Model-112 Metal Door',     image: 'https://iili.io/KqcGjyu.jpg', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm', description: t('catalog.product11_desc') },
-    { id: 'euro-model15', name: 'EURO Model-710 MDF Door',       image: 'https://iili.io/KqcGNTb.jpg', material: "MDF + MDF",                             security: 'B+ sinf', dimensions: '2050x860mm + 2050x960mm', description: t('catalog.product11_desc') },
-    { id: 'euro-model16', name: 'EURO Model-601 MDF Door',       image: 'https://iili.io/KqcGOjj.jpg', material: "MDF + MDF",                             security: 'B+ sinf', dimensions: '2050x860mm', description: t('catalog.product11_desc') },
-    { id: 'euro-model17', name: 'EURO Model-600 MDF Door',       image: 'https://iili.io/KqcGS6B.jpg', material: "MDF + MDF",                             security: 'B+ sinf', dimensions: '2050x860mm', description: t('catalog.product11_desc') },
-    { id: 'euro-model18', name: 'EURO Model-515 Metal Door',     image: 'https://iili.io/KqM7TKB.png', material: "Metall + Metall",                       security: 'A+ sinf', dimensions: '2050x860mm + 2050x960mm + 90mm', description: t('catalog.product11_desc') },
-    { id: 'euro-model19', name: 'EURO Model-517 Metal Door',     image: 'https://iili.io/KqM7oox.png', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm', description: t('catalog.product11_desc') },
-    { id: 'euro-model20', name: 'EURO Model-518 Metal Door',     image: 'https://iili.io/KqM7f9e.png', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm', description: t('catalog.product11_desc') },
-    { id: 'euro-model21', name: 'EURO Model-519 Metal Door',     image: 'https://iili.io/KqM7zPV.png', material: "Metall + MDF",                          security: 'A+ sinf', dimensions: '2050x860mm + 90mm', description: t('catalog.product11_desc') }
-  ];
+  
+  // Faqat admin tomonidan qo'shilgan mahsulotlarni olish
+  const adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+  
+  // Admin mahsulotlarini asosiy formatga o'tkazish
+  const convertedAdminProducts: DoorProduct[] = adminProducts.map((product: any) => ({
+    id: product.id,
+    name: product.name,
+    image: product.image,
+    material: product.material,
+    security: product.security,
+    dimensions: product.dimensions,
+    description: product.description
+  }));
+
+  // Faqat admin mahsulotlari
+  const doors: DoorProduct[] = convertedAdminProducts;
 
   // --- Helperlar ---
   // sinonimlarni yagona formatga o‘tkazamiz:
@@ -217,7 +211,7 @@ const getMaterialKey = (m: string, t: any) => {
         </div>
       </section>
 
-      {/* Accordion Bo‘limlar */}
+      {/* Accordion Bo'limlar */}
       <section className="py-12">
         <motion.div
           className="container mx-auto px-4 space-y-6"
@@ -225,7 +219,42 @@ const getMaterialKey = (m: string, t: any) => {
           initial="hidden"
           animate="show"
         >
-          {grouped.map(([key, list]) => {
+          {/* Mahsulotlar yo'q bo'lganda */}
+          {doors.length === 0 ? (
+            <motion.div
+              variants={sectionHeaderVariants}
+              className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl overflow-hidden"
+            >
+              <div className="text-center py-16 px-6">
+                <div className="mb-6">
+                  <div className="mx-auto w-20 h-20 bg-white/20 border border-white/30 rounded-full flex items-center justify-center mb-4">
+                    <Package className="h-10 w-10 text-white/60" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    Mahsulotlar hali qo'shilmagan
+                  </h3>
+                  <p className="text-gray-300 text-lg max-w-md mx-auto">
+                    Admin panel orqali yangi mahsulotlar qo'shing va ular bu yerda ko'rinadi
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={() => window.open('/admin', '_blank')}
+                    className="bg-blue-500/20 text-blue-300 px-6 py-3 rounded-lg font-semibold hover:bg-blue-500/30 transition-colors border border-blue-500/30"
+                  >
+                    Admin Panel ga o'tish
+                  </button>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="bg-white/20 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/30 transition-colors border border-white/30"
+                  >
+                    Sahifani yangilash
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            grouped.map(([key, list]) => {
             const isOpen = openKey === key;
             return (
               <motion.div
@@ -314,7 +343,8 @@ const getMaterialKey = (m: string, t: any) => {
                 )}
               </motion.div>
             );
-          })}
+          })
+          )}
         </motion.div>
       </section>
     </div>

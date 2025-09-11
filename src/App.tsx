@@ -134,7 +134,10 @@ export default function App() {
 
       {/* ===== Kontent (ustki qatlam) ===== */}
       <div className="relative z-10">
-        <Header currentPage={currentPage} onNavigate={handleNavigate} />
+        {/* Admin panel uchun header ko'rsatilmaydi */}
+        {currentPage !== 'admin' && (
+          <Header currentPage={currentPage} onNavigate={handleNavigate} />
+        )}
         {renderCurrentPage()}
       </div>
     </div>
