@@ -41,6 +41,9 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
     message: ''
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -95,7 +98,17 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
       }
     } catch (error) {
       console.error('❌ Error saving order to backend:', error);
-      alert('Xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring.');
+      
+      // Foydalanuvchiga aniqroq xabar berish
+      const errorMessage = error instanceof Error ? error.message : 'Noma\'lum xatolik';
+      
+      if (errorMessage.includes('Supabase error')) {
+        alert('Server bilan bog\'lanishda xatolik! Zakaz mahalliy saqlanadi. Admin panel orqali ko\'rishingiz mumkin.');
+      } else if (errorMessage.includes('Connection error')) {
+        alert('Internet aloqasi yo\'q! Zakaz mahalliy saqlanadi. Internet qayta ulangandan keyin qaytadan urinib ko\'ring.');
+      } else {
+        alert('Xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring yoki telefon orqali bog\'laning.');
+      }
     }
   };
 
