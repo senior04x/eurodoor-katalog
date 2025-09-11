@@ -2,6 +2,7 @@ import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { Eye, Layers, Package } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLanguage } from '../hooks/useLanguage';
+import { productsApi } from '../lib/productsApi';
 
 interface CatalogPageProps {
   onNavigate: (page: string, productId?: string) => void;
@@ -22,22 +23,35 @@ type GroupMode = 'material' | 'size';
 export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   const { t } = useLanguage();
   
-  // Faqat admin tomonidan qo'shilgan mahsulotlarni olish
-  const adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
-  
-  // Admin mahsulotlarini asosiy formatga o'tkazish
-  const convertedAdminProducts: DoorProduct[] = adminProducts.map((product: any) => ({
-    id: product.id,
-    name: product.name,
-    image: product.image,
-    material: product.material,
-    security: product.security,
-    dimensions: product.dimensions,
-    description: product.description
-  }));
+  // Faqat Supabase dan mahsulotlarni olish
+  const [doors, setDoors] = useState<DoorProduct[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Faqat admin mahsulotlari
-  const doors: DoorProduct[] = convertedAdminProducts;
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        const products = await productsApi.getAllProducts();
+        const convertedProducts: DoorProduct[] = products.map((product: any) => ({
+          id: product.id,
+          name: product.name,
+          image: product.image,
+          material: product.material,
+          security: product.security,
+          dimensions: product.dimensions,
+          description: product.description
+        }));
+        setDoors(convertedProducts);
+      } catch (error) {
+        console.error('Error loading products:', error);
+        setDoors([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   // --- Helperlar ---
   // sinonimlarni yagona formatga o‘tkazamiz:

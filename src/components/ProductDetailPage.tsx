@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ArrowLeft, Shield, Ruler, Award, Phone, Package } from 'lucide-react';
 import { useLanguage } from '../hooks/useLanguage';
-import { useMemo } from 'react';
+import { productsApi } from '../lib/productsApi';
 
 interface ProductDetailPageProps {
   productId: string;
@@ -12,45 +12,98 @@ interface ProductDetailPageProps {
 export default function ProductDetailPage({ productId, onNavigate }: ProductDetailPageProps) {
   const { t } = useLanguage();
   
-  // Faqat admin mahsulotlarini olish
-  const getProductData = (id: string) => {
-    // Admin tomonidan qo'shilgan mahsulotlarni tekshirish
-    const adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
-    const adminProduct = adminProducts.find((p: any) => p.id === id);
-    
-    if (adminProduct) {
-      return {
-        name: adminProduct.name,
-        model: adminProduct.name.split(' ')[1] || 'Custom',
-        image: adminProduct.image,
-        material: adminProduct.material,
-        security: adminProduct.security,
-        dimensions: adminProduct.dimensions,
-        price: "Narx so'rang",
-        description: adminProduct.description,
-        features: [
-          t('product.galvanized_corpus'),
-          t('product.inner_mdf_panel'),
-          t('product.three_point_lock'),
-          t('product.heat_sound_insulation'),
-          t('product.uv_resistant_paint')
-        ],
-        specifications: [
-          { label: t('product.material'), value: adminProduct.material },
-          { label: t('product.thickness'), value: "≈100mm" },
-          { label: t('product.lock'), value: "3-nuqtali" },
-          { label: t('product.hinges'), value: "4 ta" },
-          { label: t('product.insulation'), value: "Mineral paxta" },
-          { label: t('product.warranty'), value: "5 yil" }
-        ]
-      };
-    }
+  // Faqat Supabase dan mahsulot olish
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-    // Mahsulot topilmadi
-    return null;
-  };
+  useEffect(() => {
+    const loadProduct = async () => {
+      try {
+        setLoading(true);
+        const products = await productsApi.getAllProducts();
+        const foundProduct = products.find((p: any) => p.id === productId);
+        
+        if (foundProduct) {
+          setProduct({
+            name: foundProduct.name,
+            model: foundProduct.name.split(' ')[1] || 'Custom',
+            image: foundProduct.image,
+            material: foundProduct.material,
+            security: foundProduct.security,
+            dimensions: foundProduct.dimensions,
+            price: "Narx so'rang",
+            description: foundProduct.description,
+            features: [
+              t('product.galvanized_corpus'),
+              t('product.inner_mdf_panel'),
+              t('product.three_point_lock'),
+              t('product.heat_sound_insulation'),
+              t('product.uv_resistant_paint')
+            ],
+            specifications: [
+              { label: t('product.material'), value: foundProduct.material },
+              { label: t('product.thickness'), value: "≈100mm" },
+              { label: t('product.lock'), value: "3-nuqtali" },
+              { label: t('product.hinges'), value: "4 ta" },
+              { label: t('product.insulation'), value: "Mineral paxta" },
+              { label: t('product.warranty'), value: "5 yil" }
+            ]
+          });
+        } else {
+          setProduct(null);
+        }
+      } catch (error) {
+        console.error('Error loading product:', error);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const product = useMemo(() => getProductData(productId), [productId, t]);
+    loadProduct();
+  }, [productId, t]);
+
+  // Loading holatini ko'rsatish
+  if (loading) {
+    return (
+      <div className="relative min-h-screen">
+        {/* Fixed background */}
+        <div
+          className="fixed inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }}
+        />
+        <div className="fixed inset-0 bg-black/30" />
+
+        {/* Back button */}
+        <div className="relative z-10 p-4">
+          <button
+            onClick={() => onNavigate('catalog')}
+            className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            {t('product.back_to_catalog')}
+          </button>
+        </div>
+
+        {/* Loading message */}
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="mb-6">
+              <div className="mx-auto w-20 h-20 bg-white/20 border border-white/30 rounded-full flex items-center justify-center mb-4">
+                <Package className="h-10 w-10 text-white/60 animate-pulse" />
+              </div>
+              <h1 className="text-3xl font-bold text-white mb-2">
+                Yuklanmoqda...
+              </h1>
+              <p className="text-gray-300 text-lg max-w-md mx-auto">
+                Mahsulot ma'lumotlari yuklanmoqda
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Mahsulot topilmadi bo'lsa
   if (!product) {
