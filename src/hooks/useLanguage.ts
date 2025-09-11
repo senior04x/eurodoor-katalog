@@ -966,6 +966,11 @@ const translations: Translations = {
     uz: 'Professional jamoa tomonidan sifatli o\'rnatish',
     ru: 'Качественная установка профессиональной командой',
     en: 'Quality installation by professional team'
+  },
+  'home.contact_button': {
+    uz: 'Aloqaga chiqish',
+    ru: 'Связаться с нами',
+    en: 'Contact Us'
   }
 };
 

@@ -105,7 +105,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   }}
   className="bg-white/20 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 border border-white/30 shadow-lg hover:shadow-xl"
 >
-  Aloqaga chiqish
+  {t('home.contact_button')}
 </button>
 
       </div>
