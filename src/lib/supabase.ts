@@ -6,7 +6,7 @@ const supabaseUrl = 'https://oathybjrmhtubbemjeyy.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdGh5YmpybWh0dWJiZW1qZXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MjMzOTIsImV4cCI6MjA3Mjk5OTM5Mn0.GlKHHQj1nhDGwF78Fr7zlKytRxEwXwlyRTlgEX6d4io'
 
 // Real backend uchun ham ishonchli UX: Supabase ishlamasa localStorage fallback yoqiladi
-const USE_LOCALSTORAGE_FALLBACK = false // Supabase ishlayotgani uchun o'chirildi
+const USE_LOCALSTORAGE_FALLBACK = true // Supabase xatoligi uchun qayta yoqildi
 
 // Supabase client yaratish
 export const supabase = createClient(supabaseUrl, supabaseKey)

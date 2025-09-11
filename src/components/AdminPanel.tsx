@@ -279,11 +279,11 @@ export default function AdminPanel() {
       const errorMessage = error instanceof Error ? error.message : 'Noma\'lum xatolik';
       
       if (errorMessage.includes('Supabase error')) {
-        alert('Server bilan bog\'lanishda xatolik! Mahsulot mahalliy saqlanadi. Sahifani yangilang.');
+        alert('Server bilan bog\'lanishda xatolik! Mahsulot mahalliy saqlanadi. Sahifani yangilang.\n\nConsole da xatolikni ko\'ring: F12 > Console');
       } else if (errorMessage.includes('Connection error')) {
         alert('Internet aloqasi yo\'q! Mahsulot mahalliy saqlanadi. Internet qayta ulangandan keyin qaytadan urinib ko\'ring.');
       } else {
-        alert('Mahsulot qo\'shishda xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring.');
+        alert('Mahsulot qo\'shishda xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring.\n\nConsole da xatolikni ko\'ring: F12 > Console');
       }
     } finally {
       setIsAddingProduct(false);
