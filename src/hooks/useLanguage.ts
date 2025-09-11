@@ -971,6 +971,43 @@ const translations: Translations = {
     uz: 'Aloqaga chiqish',
     ru: 'Связаться с нами',
     en: 'Contact Us'
+  },
+  
+  // Loading states
+  'loading.loading': {
+    uz: 'Yuklanmoqda...',
+    ru: 'Загрузка...',
+    en: 'Loading...'
+  },
+  'loading.loading_products': {
+    uz: 'Mahsulotlar yuklanmoqda...',
+    ru: 'Загрузка продуктов...',
+    en: 'Loading products...'
+  },
+  'loading.loading_product_details': {
+    uz: 'Mahsulot ma\'lumotlari yuklanmoqda...',
+    ru: 'Загрузка информации о продукте...',
+    en: 'Loading product details...'
+  },
+  'loading.no_products': {
+    uz: 'Mahsulotlar hali qo\'shilmagan',
+    ru: 'Продукты еще не добавлены',
+    en: 'No products added yet'
+  },
+  'loading.no_products_desc': {
+    uz: 'Admin panel orqali yangi mahsulotlar qo\'shing va ular bu yerda ko\'rinadi',
+    ru: 'Добавьте новые продукты через админ-панель, и они появятся здесь',
+    en: 'Add new products through admin panel and they will appear here'
+  },
+  'loading.product_not_found': {
+    uz: 'Mahsulot topilmadi',
+    ru: 'Продукт не найден',
+    en: 'Product not found'
+  },
+  'loading.product_not_found_desc': {
+    uz: 'Bu mahsulot mavjud emas yoki o\'chirilgan bo\'lishi mumkin',
+    ru: 'Этот продукт не существует или был удален',
+    en: 'This product does not exist or has been deleted'
   }
 };
 

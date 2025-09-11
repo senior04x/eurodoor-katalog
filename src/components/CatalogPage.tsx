@@ -51,7 +51,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     };
 
     loadProducts();
-  }, []);
+  }, []); // Faqat bir marta yuklash
 
   // --- Helperlar ---
   // sinonimlarni yagona formatga o‘tkazamiz:
@@ -242,29 +242,31 @@ const getMaterialKey = (m: string, t: any) => {
               <div className="text-center py-16 px-6">
                 <div className="mb-6">
                   <div className="mx-auto w-20 h-20 bg-white/20 border border-white/30 rounded-full flex items-center justify-center mb-4">
-                    <Package className="h-10 w-10 text-white/60" />
+                    <Package className={`h-10 w-10 text-white/60 ${loading ? 'animate-pulse' : ''}`} />
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-2">
-                    Mahsulotlar hali qo'shilmagan
+                    {loading ? t('loading.loading_products') : t('loading.no_products')}
                   </h3>
                   <p className="text-gray-300 text-lg max-w-md mx-auto">
-                    Admin panel orqali yangi mahsulotlar qo'shing va ular bu yerda ko'rinadi
+                    {loading ? t('loading.loading') : t('loading.no_products_desc')}
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button
-                    onClick={() => window.open('/admin', '_blank')}
-                    className="bg-blue-500/20 text-blue-300 px-6 py-3 rounded-lg font-semibold hover:bg-blue-500/30 transition-colors border border-blue-500/30"
-                  >
-                    Admin Panel ga o'tish
-                  </button>
-                  <button
-                    onClick={() => window.location.reload()}
-                    className="bg-white/20 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/30 transition-colors border border-white/30"
-                  >
-                    Sahifani yangilash
-                  </button>
-                </div>
+                {!loading && (
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button
+                      onClick={() => window.open('/admin', '_blank')}
+                      className="bg-blue-500/20 text-blue-300 px-6 py-3 rounded-lg font-semibold hover:bg-blue-500/30 transition-colors border border-blue-500/30"
+                    >
+                      Admin Panel ga o'tish
+                    </button>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="bg-white/20 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/30 transition-colors border border-white/30"
+                    >
+                      Sahifani yangilash
+                    </button>
+                  </div>
+                )}
               </div>
             </motion.div>
           ) : (
