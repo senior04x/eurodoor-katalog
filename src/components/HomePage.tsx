@@ -32,7 +32,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     {/* Fixed background (hamma qurilmalarda ishlaydi) */}
     <div
       className="fixed inset-0 bg-cover bg-center"
-      style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }}
+      style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
     />
     <div className="fixed inset-0 bg-black/30" />
 

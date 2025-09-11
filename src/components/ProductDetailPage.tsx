@@ -1,4 +1,6 @@
+import React from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import WaterWaveAdaptive from './ui/WaterWaveAdaptive';
 import { ArrowLeft, Shield, Ruler, Award, Phone } from 'lucide-react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useMemo } from 'react';
@@ -791,9 +793,9 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
         </div>
       </div>
 
-      {/* Order Button - Sahifaning eng pastida */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 z-50">
-        <div className="container mx-auto">
+      {/* Order Button - Suv akvarium effektli past panel (safe-area bilan) */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 px-0 pt-0 pb-0" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <div className="w-full">
           <button
             onClick={() => {
               // Product ma'lumotini localStorage ga saqlash
@@ -809,16 +811,25 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               onNavigate('contact');
               window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             }}
-            className="w-full bg-gradient-to-r from-blue-500/80 to-purple-600/80 backdrop-blur-xl text-white py-4 px-6 rounded-2xl font-semibold hover:from-blue-600/90 hover:to-purple-700/90 transition-all duration-500 flex items-center justify-center gap-3 border border-white/30 shadow-2xl hover:shadow-3xl relative overflow-hidden water-wave-button"
+            className="w-full bg-transparent text-white py-5 px-6 rounded-none font-semibold transition-all duration-500 flex items-center justify-center gap-3 border-t border-white/10 shadow-2xl relative overflow-hidden"
             style={{
-              animation: 'waterWave 3s ease-in-out infinite, float 2s ease-in-out infinite'
+              animation: 'float 2.4s ease-in-out infinite'
             }}
           >
-            {/* Water wave effect */}
-            <div className="absolute inset-0 water-wave-overlay"></div>
+            {/* WebGL 3D water overlay (with mobile-safe fallback inside) */}
+            <WaterWaveAdaptive
+              className="absolute -inset-1 pointer-events-none"
+              speedSec={6.5}
+              amplitude={0.18}
+              frequency={1.5}
+              shallowColor="#45c0ff"
+              deepColor="#0b5f9a"
+              foamColor="#ffffff"
+              forceVideo={false}
+            />
             
             {/* Button content */}
-            <div className="relative z-10 flex items-center gap-3">
+            <div className="relative z-10 flex items-center gap-3 drop-shadow-[0_3px_6px_rgba(0,0,0,0.35)]">
               <Phone className="h-6 w-6" />
               <span className="text-lg font-bold">
                 Ushbu {product.model} ga buyurtma berish

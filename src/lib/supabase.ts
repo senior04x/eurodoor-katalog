@@ -5,8 +5,8 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = 'https://oathybjrmhtubbemjeyy.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdGh5YmpybWh0dWJiZW1qZXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MjMzOTIsImV4cCI6MjA3Mjk5OTM5Mn0.GlKHHQj1nhDGwF78Fr7zlKytRxEwXwlyRTlgEX6d4io'
 
-// Real backend uchun - localStorage fallback o'chirilgan
-const USE_LOCALSTORAGE_FALLBACK = false
+// Real backend uchun ham ishonchli UX: Supabase ishlamasa localStorage fallback yoqiladi
+const USE_LOCALSTORAGE_FALLBACK = true
 
 // Supabase client yaratish
 export const supabase = createClient(supabaseUrl, supabaseKey)
@@ -50,6 +50,11 @@ export const ordersApi = {
       
       if (error) {
         console.error('❌ Supabase error fetching orders:', error)
+        if (USE_LOCALSTORAGE_FALLBACK && typeof window !== 'undefined') {
+          const local = JSON.parse(localStorage.getItem('orders') || '[]') as Order[]
+          console.warn('➡️ Falling back to localStorage orders:', local.length)
+          return local
+        }
         throw new Error(`Supabase error: ${error.message}`)
       }
       
@@ -57,6 +62,11 @@ export const ordersApi = {
       return data || []
     } catch (error) {
       console.error('❌ Supabase connection error:', error)
+      if (USE_LOCALSTORAGE_FALLBACK && typeof window !== 'undefined') {
+        const local = JSON.parse(localStorage.getItem('orders') || '[]') as Order[]
+        console.warn('➡️ Falling back to localStorage orders after connection error:', local.length)
+        return local
+      }
       throw new Error(`Connection error: ${error}`)
     }
   },
@@ -73,6 +83,14 @@ export const ordersApi = {
       
       if (error) {
         console.error('❌ Supabase error creating order:', error)
+        if (USE_LOCALSTORAGE_FALLBACK && typeof window !== 'undefined') {
+          const existing = JSON.parse(localStorage.getItem('orders') || '[]') as Order[]
+          const saved = { ...order } as Order
+          existing.push(saved)
+          localStorage.setItem('orders', JSON.stringify(existing))
+          console.warn('➡️ Saved to localStorage as fallback')
+          return saved
+        }
         throw new Error(`Supabase error: ${error.message}`)
       }
       
@@ -80,6 +98,14 @@ export const ordersApi = {
       return data
     } catch (error) {
       console.error('❌ Supabase connection error:', error)
+      if (USE_LOCALSTORAGE_FALLBACK && typeof window !== 'undefined') {
+        const existing = JSON.parse(localStorage.getItem('orders') || '[]') as Order[]
+        const saved = { ...order } as Order
+        existing.push(saved)
+        localStorage.setItem('orders', JSON.stringify(existing))
+        console.warn('➡️ Saved to localStorage after connection error')
+        return saved
+      }
       throw new Error(`Connection error: ${error}`)
     }
   },
@@ -95,6 +121,13 @@ export const ordersApi = {
       
       if (error) {
         console.error('❌ Supabase error deleting order:', error)
+        if (USE_LOCALSTORAGE_FALLBACK && typeof window !== 'undefined') {
+          const existing = JSON.parse(localStorage.getItem('orders') || '[]') as Order[]
+          const updated = existing.filter(o => o.id !== orderId)
+          localStorage.setItem('orders', JSON.stringify(updated))
+          console.warn('➡️ Deleted from localStorage as fallback')
+          return true
+        }
         throw new Error(`Supabase error: ${error.message}`)
       }
       
@@ -102,6 +135,13 @@ export const ordersApi = {
       return true
     } catch (error) {
       console.error('❌ Supabase connection error:', error)
+      if (USE_LOCALSTORAGE_FALLBACK && typeof window !== 'undefined') {
+        const existing = JSON.parse(localStorage.getItem('orders') || '[]') as Order[]
+        const updated = existing.filter(o => o.id !== orderId)
+        localStorage.setItem('orders', JSON.stringify(updated))
+        console.warn('➡️ Deleted from localStorage after connection error')
+        return true
+      }
       throw new Error(`Connection error: ${error}`)
     }
   },
@@ -117,6 +157,13 @@ export const ordersApi = {
       
       if (error) {
         console.error('❌ Supabase error updating order status:', error)
+        if (USE_LOCALSTORAGE_FALLBACK && typeof window !== 'undefined') {
+          const existing = JSON.parse(localStorage.getItem('orders') || '[]') as Order[]
+          const updated = existing.map(o => o.id === orderId ? { ...o, status } : o)
+          localStorage.setItem('orders', JSON.stringify(updated))
+          console.warn('➡️ Updated in localStorage as fallback')
+          return true
+        }
         throw new Error(`Supabase error: ${error.message}`)
       }
       
@@ -124,6 +171,13 @@ export const ordersApi = {
       return true
     } catch (error) {
       console.error('❌ Supabase connection error:', error)
+      if (USE_LOCALSTORAGE_FALLBACK && typeof window !== 'undefined') {
+        const existing = JSON.parse(localStorage.getItem('orders') || '[]') as Order[]
+        const updated = existing.map(o => o.id === orderId ? { ...o, status } : o)
+        localStorage.setItem('orders', JSON.stringify(updated))
+        console.warn('➡️ Updated in localStorage after connection error')
+        return true
+      }
       throw new Error(`Connection error: ${error}`)
     }
   }
