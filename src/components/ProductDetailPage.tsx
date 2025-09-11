@@ -48,14 +48,24 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
     const name = rawProduct[`name_${language}`] || rawProduct.name;
     const material = rawProduct[`material_${language}`] || rawProduct.material;
     const security = rawProduct[`security_${language}`] || rawProduct.security;
-    const description = rawProduct[`description_${language}`] || rawProduct.description;
+    const dimensions = rawProduct[`dimensions_${language}`] || rawProduct.dimensions;
+    // Qulf bosqichlari uchun faqat sonni olish
+    const lockStagesNumber = rawProduct.lock_stages;
+    const lockStages = lockStagesNumber || (rawProduct[`lock_stages_${language}`] || rawProduct.lock_stages);
+    const price = rawProduct.price;
+    const currency = rawProduct.currency;
+    const thickness = rawProduct.thickness;
 
     return {
       ...rawProduct,
       name: name,
       material: material,
       security: security,
-      description: description
+      dimensions: dimensions,
+      lockStages: lockStages,
+      price: price,
+      currency: currency,
+      thickness: thickness
     };
   }, [rawProduct, language]);
 
@@ -181,12 +191,9 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
       <div className="relative z-10 container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Product Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{product.name}</h1>
-            <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-              {product.description}
-            </p>
-          </div>
+                  <div className="text-center mb-8">
+                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{product.name}</h1>
+                  </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Product Image - Left Column */}
@@ -208,10 +215,21 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                   <div className="bg-green-500/30 border border-green-500/50 rounded-full p-2">
                     <Award className="h-5 w-5 text-green-300" />
                   </div>
-                  <h3 className="text-xl font-bold text-white">Narx</h3>
+                  <h3 className="text-xl font-bold text-white">{t('product.price')}</h3>
                 </div>
-                <p className="text-2xl font-bold text-green-300 mb-1">Narx so'rang</p>
-                <p className="text-gray-300 text-sm">Batafsil narx uchun biz bilan bog'laning</p>
+                {product.price ? (
+                  <div className="mb-2">
+                    <p className="text-3xl font-bold text-green-300">
+                      {product.price.toLocaleString()} {product.currency === 'USD' ? '$' : 'S'}
+                    </p>
+                    <p className="text-gray-300 text-sm">
+                      {product.currency === 'USD' ? 'Dollar' : 'Sum'}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-2xl font-bold text-green-300 mb-1">{t('product.ask_for_price')}</p>
+                )}
+                <p className="text-gray-300 text-sm">{t('product.contact_for_price')}</p>
               </div>
 
               {/* Technical Specs */}
@@ -220,32 +238,28 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                   <div className="bg-blue-500/30 border border-blue-500/50 rounded-full p-2">
                     <Ruler className="h-5 w-5 text-blue-300" />
                   </div>
-                  <h3 className="text-xl font-bold text-white">Texnik xususiyatlar</h3>
+                  <h3 className="text-xl font-bold text-white">{t('product.technical_specs')}</h3>
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className="text-gray-300 font-medium">Material:</span>
+                    <span className="text-gray-300 font-medium">{t('product.material')}:</span>
                     <span className="text-white font-semibold">{product.material}</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className="text-gray-300 font-medium">Xavfsizlik:</span>
+                    <span className="text-gray-300 font-medium">{t('product.security')}:</span>
                     <span className="text-white font-semibold">{product.security}</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className="text-gray-300 font-medium">O'lchamlar:</span>
+                    <span className="text-gray-300 font-medium">{t('product.dimensions')}:</span>
                     <span className="text-white font-semibold">{product.dimensions}</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className="text-gray-300 font-medium">Qalinlik:</span>
-                    <span className="text-white font-semibold">≈100mm</span>
+                    <span className="text-gray-300 font-medium">{t('product.thickness')}:</span>
+                    <span className="text-white font-semibold">{product.thickness}mm</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-white/10">
-                    <span className="text-gray-300 font-medium">Qulf:</span>
-                    <span className="text-white font-semibold">3-nuqtali</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-300 font-medium">Garantiya:</span>
-                    <span className="text-white font-semibold">5 yil</span>
+                    <span className="text-gray-300 font-medium">{t('product.lock')}:</span>
+                    <span className="text-white font-semibold">{product.lockStages}</span>
                   </div>
                 </div>
               </div>
@@ -256,28 +270,20 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                   <div className="bg-purple-500/30 border border-purple-500/50 rounded-full p-2">
                     <Shield className="h-5 w-5 text-purple-300" />
                   </div>
-                  <h3 className="text-xl font-bold text-white">Xususiyatlar</h3>
+                  <h3 className="text-xl font-bold text-white">{t('product.features')}</h3>
                 </div>
                 <ul className="space-y-2">
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
-                    <span className="text-gray-300">Galvanizlangan korpus</span>
+                    <span className="text-gray-300">{t('product.galvanized_body')}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
-                    <span className="text-gray-300">Ichki MDF panel</span>
+                    <span className="text-gray-300">{t('product.heat_sound_insulation')}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
-                    <span className="text-gray-300">3-nuqtali qulf tizimi</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
-                    <span className="text-gray-300">Issiqlik va ovoz izolyatsiyasi</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
-                    <span className="text-gray-300">UV ga chidamli bo'yoq</span>
+                    <span className="text-gray-300">{t('product.uv_resistant_paint')}</span>
                   </li>
                 </ul>
               </div>
@@ -288,19 +294,23 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
           <div className="mt-8">
             <div className="bg-gradient-to-r from-blue-500/20 to-indigo-500/20 backdrop-blur-sm rounded-2xl p-8 border border-blue-500/30 shadow-xl">
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-white mb-4">
-                  Mahsulot haqida batafsil ma'lumot
-                </h3>
-                <p className="text-gray-300 mb-6 text-lg">
-                  Bu mahsulot haqida batafsil ma'lumot olish uchun biz bilan bog'laning
-                </p>
-                <button
-                  onClick={() => onNavigate('contact')}
-                  className="w-full md:w-auto bg-blue-500/30 text-blue-300 py-4 px-8 rounded-xl font-bold hover:bg-blue-500/40 transition-all duration-300 border border-blue-500/50 flex items-center justify-center gap-3 text-lg shadow-lg hover:shadow-xl mx-auto"
-                >
-                  <Phone className="h-5 w-5" />
-                  Bog'lanish
-                </button>
+                        <h3 className="text-2xl font-bold text-white mb-4">
+                          {t('product.detailed_info')}
+                        </h3>
+                        <p className="text-gray-300 mb-6 text-lg">
+                          {t('product.contact_description')}
+                        </p>
+                        <button
+                          onClick={() => {
+                            // Product ma'lumotini localStorage ga saqlash
+                            localStorage.setItem('selectedProduct', JSON.stringify(product));
+                            onNavigate('contact');
+                          }}
+                          className="w-full md:w-auto bg-blue-500/30 text-blue-300 py-4 px-8 rounded-xl font-bold hover:bg-blue-500/40 transition-all duration-300 border border-blue-500/50 flex items-center justify-center gap-3 text-lg shadow-lg hover:shadow-xl mx-auto"
+                        >
+                          <Phone className="h-5 w-5" />
+                          {t('product.contact_button')}
+                        </button>
               </div>
             </div>
           </div>

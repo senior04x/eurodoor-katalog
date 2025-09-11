@@ -1,12 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
-import { Package, User, Phone, MessageCircle, Calendar, Eye, Trash2, Lock, Plus, LogOut, ExternalLink, Edit, EyeOff } from 'lucide-react';
+import { Package, User, Phone, MessageCircle, Calendar, Eye, Trash2, Lock, Plus, LogOut, ExternalLink, Edit, EyeOff, Upload, Image as ImageIcon, DollarSign } from 'lucide-react';
 import { ordersApi, Order } from '../lib/supabase';
 import { productsApi, Product } from '../lib/productsApi';
+import { uploadImageToImgBB, formatFileSize } from '../lib/imageUpload';
 import { motion } from 'framer-motion';
 
 export default function AdminPanel() {
   const { t } = useLanguage();
+
+  // Admin panel uchun PWA manifest qo'shish
+  useEffect(() => {
+    const existingManifest = document.querySelector('link[rel="manifest"]');
+    if (existingManifest) {
+      existingManifest.setAttribute('href', '/admin-manifest.webmanifest');
+    } else {
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = '/admin-manifest.webmanifest';
+      document.head.appendChild(manifestLink);
+    }
+
+    // Cleanup funksiyasi
+    return () => {
+      const adminManifest = document.querySelector('link[rel="manifest"][href="/admin-manifest.webmanifest"]');
+      if (adminManifest) {
+        adminManifest.setAttribute('href', '/site.webmanifest');
+      }
+    };
+  }, []);
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -21,14 +43,27 @@ export default function AdminPanel() {
     security: '',
     dimensions: '',
     customDimensions: '',
-    description: '',
+    lockStages: '',
+    thickness: '',
+    price: '',
+    currency: 'USD',
     image: ''
   });
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Admin paroli - bu yerdan o'zgartiring
   const ADMIN_PASSWORD = 'eurodoor2025';
 
+  // Parolni localStorage dan yuklash
+  useEffect(() => {
+    const savedPassword = localStorage.getItem('admin_password');
+    if (savedPassword === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+    }
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -64,6 +99,8 @@ export default function AdminPanel() {
       setIsAuthenticated(true);
       setError('');
       setPassword('');
+      // Parolni localStorage ga saqlash
+      localStorage.setItem('admin_password', ADMIN_PASSWORD);
     } else {
       setError('Noto\'g\'ri parol!');
       setPassword('');
@@ -74,6 +111,8 @@ export default function AdminPanel() {
     setIsAuthenticated(false);
     setPassword('');
     setError('');
+    // Parolni localStorage dan o'chirish
+    localStorage.removeItem('admin_password');
   };
 
   const deleteOrder = async (orderId: string) => {
@@ -149,8 +188,27 @@ export default function AdminPanel() {
 
   // Avtomatik tarjima funksiyasi
   const translateText = async (text: string, targetLang: string) => {
-    // Bu yerda haqiqiy tarjima API ishlatilishi mumkin
-    // Hozircha oddiy mapping qilamiz
+    // Agar matn bo'sh bo'lsa, bo'sh qaytarish
+    if (!text || text.trim() === '') return text;
+    
+    // Agar til o'zbek bo'lsa, o'zini qaytarish
+    if (targetLang === 'uz') return text;
+    
+    try {
+      // Google Translate API dan foydalanish (bepul)
+      const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=uz&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data[0] && data[0][0] && data[0][0][0]) {
+          return data[0][0][0];
+        }
+      }
+    } catch (error) {
+      console.log('Translation API error, using fallback:', error);
+    }
+    
+    // Fallback: oddiy mapping
     const translations: { [key: string]: { [key: string]: string } } = {
       'A+ sinf': {
         'ru': 'Класс A+',
@@ -193,11 +251,61 @@ export default function AdminPanel() {
     return translations[text]?.[targetLang] || text;
   };
 
+  // Rasm yuklash funksiyasi
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    setUploadProgress(0);
+
+    try {
+      // Progress simulation
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
+      const result = await uploadImageToImgBB(file);
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      if (result.success && result.url) {
+        setNewProduct(prev => ({ ...prev, image: result.url! }));
+        alert('Rasm muvaffaqiyatli yuklandi!');
+      } else {
+        alert(`Rasm yuklanmadi: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Image upload error:', error);
+      alert('Rasm yuklashda xatolik yuz berdi');
+    } finally {
+      setIsUploadingImage(false);
+      setUploadProgress(0);
+      // File input ni tozalash
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   // Mahsulot qo'shish funksiyasi
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (isAddingProduct) return; // Agar qo'shish jarayoni davom etsa, qayta ishlamasin
+    
+    // Validation
+    if (!newProduct.name || !newProduct.material || !newProduct.security || !newProduct.dimensions || !newProduct.lockStages || !newProduct.thickness || !newProduct.price) {
+      alert('Barcha maydonlarni to\'ldiring!');
+      return;
+    }
     
     setIsAddingProduct(true);
     
@@ -212,11 +320,17 @@ export default function AdminPanel() {
       const materialEn = await translateText(newProduct.material, 'en');
       const securityRu = await translateText(newProduct.security, 'ru');
       const securityEn = await translateText(newProduct.security, 'en');
-      const descriptionRu = await translateText(newProduct.description, 'ru');
-      const descriptionEn = await translateText(newProduct.description, 'en');
+      // Qulf bosqichlari uchun to'liq matn yaratish
+      const lockStagesText = `${newProduct.lockStages}-nuqtali`;
+      const lockStagesRu = await translateText(lockStagesText, 'ru');
+      const lockStagesEn = await translateText(lockStagesText, 'en');
       
       // O'lchamlarni aniqlash
       const finalDimensions = newProduct.dimensions === 'custom' ? newProduct.customDimensions : newProduct.dimensions;
+      
+      // O'lchamlar uchun tarjima
+      const dimensionsRu = await translateText(finalDimensions, 'ru');
+      const dimensionsEn = await translateText(finalDimensions, 'en');
       
       // Yangi mahsulot obyekti (Supabase format)
       const product = {
@@ -232,9 +346,14 @@ export default function AdminPanel() {
         security_ru: securityRu,
         security_en: securityEn,
         dimensions: finalDimensions,
-        description: newProduct.description,
-        description_ru: descriptionRu,
-        description_en: descriptionEn,
+        dimensions_ru: dimensionsRu,
+        dimensions_en: dimensionsEn,
+        lock_stages: newProduct.lockStages,
+        lock_stages_ru: lockStagesRu,
+        lock_stages_en: lockStagesEn,
+        thickness: newProduct.thickness,
+        price: parseFloat(newProduct.price),
+        currency: newProduct.currency,
         is_active: true
       };
 
@@ -255,7 +374,10 @@ export default function AdminPanel() {
         security: '',
         dimensions: '',
         customDimensions: '',
-        description: '',
+        lockStages: '',
+        thickness: '',
+        price: '',
+        currency: 'USD',
         image: ''
       });
       
@@ -270,8 +392,8 @@ export default function AdminPanel() {
       // Foydalanuvchiga aniqroq xabar berish
       const errorMessage = error instanceof Error ? error.message : 'Noma\'lum xatolik';
       
-      if (errorMessage.includes('Supabase error')) {
-        alert('Server bilan bog\'lanishda xatolik! Iltimos, qaytadan urinib ko\'ring.\n\nConsole da xatolikni ko\'ring: F12 > Console');
+      if (errorMessage.includes('currency') || errorMessage.includes('lock_stages') || errorMessage.includes('dimensions_en')) {
+        alert('Server bilan bog\'lanishda xatolik! Iltimos, qaytadan urinib ko\'ring.\n\nConsole da xatolikni ko\'ring: F12 > Console\n\nSupabase da kerakli ustunlar mavjud emas. complete-database-update.sql scriptini ishga tushiring.');
       } else if (errorMessage.includes('Connection error')) {
         alert('Internet aloqasi yo\'q! Internet qayta ulangandan keyin qaytadan urinib ko\'ring.');
       } else {
@@ -708,12 +830,12 @@ export default function AdminPanel() {
 
       {/* Add Product Modal */}
       {showAddProduct && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start justify-center p-4 z-50 overflow-y-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 max-w-md w-full"
+            className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 max-w-2xl w-full mt-8 mb-8"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">Yangi mahsulot qo'shish</h2>
@@ -817,31 +939,162 @@ export default function AdminPanel() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Tavsif (O'zbek tilida)
+                  Qulf bosqichlari
                 </label>
-                <textarea
-                  rows={3}
-                  value={newProduct.description}
-                  onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-white/40 transition-colors resize-none"
-                  placeholder="Mahsulot tavsifini kiriting"
+                <select 
+                  value={newProduct.lockStages}
+                  onChange={(e) => setNewProduct({...newProduct, lockStages: e.target.value})}
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40 transition-colors"
                   required
-                />
+                >
+                  <option value="">Qulf bosqichlarini tanlang</option>
+                  <option value="3">3-nuqtali</option>
+                  <option value="4">4-nuqtali</option>
+                  <option value="5">5-nuqtali</option>
+                  <option value="6">6-nuqtali</option>
+                  <option value="7">7-nuqtali</option>
+                  <option value="8">8-nuqtali</option>
+                  <option value="9">9-nuqtali</option>
+                  <option value="10">10-nuqtali</option>
+                </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Rasm URL (ixtiyoriy)
+                  Esik qalinligi
                 </label>
-                <input
-                  type="url"
-                  value={newProduct.image}
-                  onChange={(e) => setNewProduct({...newProduct, image: e.target.value})}
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-white/40 transition-colors"
-                  placeholder="https://example.com/image.jpg (bo'sh qoldirilsa default rasm ishlatiladi)"
-                />
+                <select 
+                  value={newProduct.thickness}
+                  onChange={(e) => setNewProduct({...newProduct, thickness: e.target.value})}
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40 transition-colors"
+                  required
+                >
+                  <option value="">Qalinlikni tanlang</option>
+                  <option value="80">80mm</option>
+                  <option value="90">90mm</option>
+                  <option value="100">100mm</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Narx
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                    className="w-full px-4 py-3 pr-20 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-white/40 transition-colors"
+                    placeholder="Narxni kiriting"
+                    required
+                  />
+                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setNewProduct({...newProduct, currency: 'USD'})}
+                      className={`p-1 rounded transition-colors ${
+                        newProduct.currency === 'USD' 
+                          ? 'bg-green-500/30 text-green-300' 
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                      title="Dollar"
+                    >
+                      <DollarSign className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNewProduct({...newProduct, currency: 'UZS'})}
+                      className={`p-1 rounded transition-colors ${
+                        newProduct.currency === 'UZS' 
+                          ? 'bg-blue-500/30 text-blue-300' 
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                      title="Sum"
+                    >
+                      <span className="text-xs font-bold">S</span>
+                    </button>
+                  </div>
+                </div>
                 <p className="text-xs text-gray-400 mt-1">
-                  💡 Rasm joylasa avtomatik link qilib saqlanadi
+                  Valyutani tanlang: {newProduct.currency === 'USD' ? 'Dollar ($)' : 'Sum (S)'}
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Mahsulot rasmi
+                </label>
+                
+                {/* Rasm yuklash tugmasi */}
+                <div className="mb-4">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={isUploadingImage}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingImage}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 hover:bg-blue-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isUploadingImage ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-300"></div>
+                        Yuklanmoqda... {uploadProgress}%
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4" />
+                        Rasm yuklash (JPG, PNG, WebP)
+                      </>
+                    )}
+                  </button>
+                  
+                  {/* Progress bar */}
+                  {isUploadingImage && (
+                    <div className="mt-2 w-full bg-gray-700 rounded-full h-2">
+                      <div 
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Yuklangan rasm ko'rsatish */}
+                {newProduct.image && (
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <ImageIcon className="h-4 w-4 text-green-400" />
+                      <span className="text-sm text-green-400">Rasm yuklandi</span>
+                    </div>
+                    <div className="relative">
+                      <img
+                        src={newProduct.image}
+                        alt="Preview"
+                        className="w-full h-32 object-cover rounded-lg border border-white/20"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setNewProduct(prev => ({ ...prev, image: '' }))}
+                        className="absolute top-2 right-2 bg-red-500/80 text-white rounded-full p-1 hover:bg-red-500 transition-colors"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                
+                <p className="text-xs text-gray-400 mt-2">
+                  💡 Rasm yuklang. Maksimal hajm: 32MB
                 </p>
               </div>
               

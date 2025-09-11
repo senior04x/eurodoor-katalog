@@ -581,6 +581,83 @@ const translations: Translations = {
     ru: 'Минеральная вата/ПУ наполнитель',
     en: 'Mineral cotton/PU filler'
   },
+
+  // Product Detail Page specific translations
+  'product.price': {
+    uz: 'Narx',
+    ru: 'Цена',
+    en: 'Price'
+  },
+  'product.ask_for_price': {
+    uz: 'Narx so\'rang',
+    ru: 'Узнать цену',
+    en: 'Ask for price'
+  },
+  'product.contact_for_price': {
+    uz: 'Batafsil narx uchun biz bilan bog\'laning',
+    ru: 'Свяжитесь с нами для подробной цены',
+    en: 'Contact us for detailed price'
+  },
+  'product.security': {
+    uz: 'Xavfsizlik',
+    ru: 'Безопасность',
+    en: 'Security'
+  },
+  'product.features': {
+    uz: 'Xususiyatlar',
+    ru: 'Характеристики',
+    en: 'Features'
+  },
+  'product.detailed_info': {
+    uz: 'Mahsulot haqida batafsil ma\'lumot',
+    ru: 'Подробная информация о продукте',
+    en: 'Detailed product information'
+  },
+  'product.contact_description': {
+    uz: 'Bu mahsulot haqida batafsil ma\'lumot olish uchun biz bilan bog\'laning',
+    ru: 'Свяжитесь с нами для получения подробной информации об этом продукте',
+    en: 'Contact us for detailed information about this product'
+  },
+  'product.contact_button': {
+    uz: 'Bog\'lanish',
+    ru: 'Связаться',
+    en: 'Contact'
+  },
+  'product.galvanized_body': {
+    uz: 'Galvanizlangan korpus',
+    ru: 'Оцинкованный корпус',
+    en: 'Galvanized body'
+  },
+  'product.inner_mdf_panel': {
+    uz: 'Ichki MDF panel',
+    ru: 'Внутренняя МДФ панель',
+    en: 'Inner MDF panel'
+  },
+  'product.three_point_lock_system': {
+    uz: '3-nuqtali qulf tizimi',
+    ru: '3-точечная система замка',
+    en: '3-point lock system'
+  },
+  'product.heat_sound_insulation': {
+    uz: 'Issiqlik va ovoz izolyatsiyasi',
+    ru: 'Тепло- и звукоизоляция',
+    en: 'Heat and sound insulation'
+  },
+  'product.uv_resistant_paint': {
+    uz: 'UV ga chidamli bo\'yoq',
+    ru: 'УФ-стойкая краска',
+    en: 'UV resistant paint'
+  },
+  'product.lock_stages': {
+    uz: 'nuqtali',
+    ru: 'точечный',
+    en: 'point'
+  },
+  'product.lock': {
+    uz: 'Qulf',
+    ru: 'Замок',
+    en: 'Lock'
+  },
   
   // Catalog Product Descriptions
   'catalog.product1_desc': {
