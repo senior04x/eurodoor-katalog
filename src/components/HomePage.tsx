@@ -1,6 +1,7 @@
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ArrowRight, Shield, Award, Clock } from 'lucide-react';
-import { useLanguage } from '../hooks/useLanguage';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useEffect } from 'react';
 
 interface HomePageProps {
   onNavigate: (page: string) => void;
@@ -8,6 +9,7 @@ interface HomePageProps {
 
 export default function HomePage({ onNavigate }: HomePageProps) {
   const { t } = useLanguage();
+
   
   const features = [
     {
@@ -39,16 +41,16 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     {/* Hero Section */}
   <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
   <div className="relative container mx-auto px-4 h-full flex items-center justify-center">
-    <div className="max-w-2xl text-white bg-none rounded-2xl p-8 border border-none text-center">
-      <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+    <div className="max-w-2xl text-white bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20 text-center shadow-2xl">
+      <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
         {t('home.hero_title')}
       </h1>
-      <p className="text-xl mb-8 opacity-90">
+      <p className="text-xl mb-8 opacity-90 text-gray-100">
         {t('home.hero_subtitle')}
       </p>
       <button 
         onClick={() => onNavigate('catalog')}
-        className="bg-white/5 backdrop-blur-sm text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/10 transition-all duration-300 flex items-center gap-2 group border border-white/30 shadow-lg hover:shadow-xl mx-auto"
+        className="bg-gradient-to-r from-blue-500/30 to-purple-500/30 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:from-blue-500/40 hover:to-purple-500/40 transition-all duration-300 flex items-center gap-2 group border border-blue-500/50 shadow-lg hover:shadow-xl mx-auto transform hover:scale-105"
       >
         {t('home.view_catalog')}
         <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -62,7 +64,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     <section className="py-20 bg-gradient-to-b from-white/0 to-white/0 backdrop-blur-md">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-white mb-4">
+          <h2 className="text-3xl font-bold text-white mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
             {t('home.why_eurodoor')}
           </h2>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
@@ -74,15 +76,15 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="text-center p-8 rounded-2xl hover:shadow-2xl transition-all duration-300 bg-white/10 backdrop-blur-md border border-white/20 shadow-lg hover:scale-105"
+              className="text-center p-8 rounded-3xl hover:shadow-2xl transition-all duration-500 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 shadow-lg hover:scale-105 hover:border-blue-500/50 group"
             >
-              <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-6 border border-white/30">
-                <feature.icon className="h-10 w-10 text-white" />
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500/30 to-purple-500/30 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-6 border border-white/30 group-hover:border-blue-500/50 transition-all duration-300">
+                <feature.icon className="h-10 w-10 text-white group-hover:text-blue-200 transition-colors duration-300" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-4">
+              <h3 className="text-xl font-semibold text-white mb-4 group-hover:text-blue-100 transition-colors duration-300">
                 {feature.title}
               </h3>
-              <p className="text-gray-200">{feature.description}</p>
+              <p className="text-gray-200 group-hover:text-gray-100 transition-colors duration-300">{feature.description}</p>
             </div>
           ))}
         </div>
@@ -90,12 +92,12 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     </section>
 
     {/* CTA Section */}
-    <section className="py-16 bg-gradient-to-r from-black/30 to-black/15 backdrop-blur-md text-white">
+    <section className="py-16 bg-gradient-to-r from-slate-900/50 via-purple-900/50 to-slate-900/50 backdrop-blur-xl text-white">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold mb-6">
+        <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
           {t('home.free_consultation')}
         </h2>
-        <p className="text-lg mb-8 opacity-90">
+        <p className="text-lg mb-8 opacity-90 text-gray-100">
           {t('home.specialists_help')}
         </p>
        <button
@@ -103,7 +105,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     onNavigate('contact');
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
   }}
-  className="bg-white/20 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 border border-white/30 shadow-lg hover:shadow-xl"
+  className="bg-gradient-to-r from-blue-500/30 to-purple-500/30 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:from-blue-500/40 hover:to-purple-500/40 transition-all duration-300 border border-blue-500/50 shadow-lg hover:shadow-xl transform hover:scale-105"
 >
   {t('home.contact_button')}
 </button>

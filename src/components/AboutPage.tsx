@@ -1,6 +1,7 @@
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Shield, Award, Users, MapPin } from 'lucide-react';
-import { useLanguage } from '../hooks/useLanguage';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useEffect } from 'react';
 
 interface AboutPageProps {
   onNavigate: (page: string) => void;
@@ -8,6 +9,7 @@ interface AboutPageProps {
 
 export default function AboutPage({ onNavigate }: AboutPageProps) {
   const { t } = useLanguage();
+
   
   const stats = [
     { number: '10+', label: t('about.experience') },

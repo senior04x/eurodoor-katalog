@@ -1,7 +1,9 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { Eye, Layers, Package } from 'lucide-react';
+import { Eye, Layers, Package, ShoppingCart } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useLanguage } from '../hooks/useLanguage';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useCart } from '../contexts/CartContext';
+import { useToast } from '../contexts/ToastContext';
 import { productsApi } from '../lib/productsApi';
 
 interface CatalogPageProps {
@@ -22,7 +24,10 @@ type GroupMode = 'material' | 'size';
 
 export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   const { t } = useLanguage();
+  const { addToCart } = useCart();
+  const { showSuccess } = useToast();
   
+
   // Faqat Supabase dan mahsulotlarni olish
   const [doors, setDoors] = useState<DoorProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -192,10 +197,10 @@ const getMaterialKey = (m: string, t: any) => {
       <div className="fixed inset-0 bg-black/30" />
 
       {/* Header */}
-      <section className="bg-none backdrop-blur-xl py-16">
+      <section className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl py-16 mx-4 rounded-3xl border border-white/20 shadow-2xl">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-4">{t('catalog.title')}</h1>
+            <h1 className="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">{t('catalog.title')}</h1>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
               {t('catalog.description')}
             </p>
@@ -316,7 +321,7 @@ const getMaterialKey = (m: string, t: any) => {
                         <motion.div
                           key={door.id}
                           variants={cardVariants}
-                          className="bg-white/10 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-white/20"
+                          className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl shadow-xl overflow-hidden border border-white/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-105 group"
                         >
                           <div className="relative aspect-square overflow-hidden">
                             <img
@@ -335,22 +340,45 @@ const getMaterialKey = (m: string, t: any) => {
                             </div>
                             <p className="text-gray-300 text-sm mb-4">{door.description}</p>
 
-                            <button
-                              type="button"
-                              disabled={isNavigating}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                if (isNavigating) return;
-                                setIsNavigating(true);
-                                onNavigate('product', door.id);
-                                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-                              }}
-                              className="w-full bg-white/20 backdrop-blur-md text-white py-3 px-4 rounded-xl font-semibold hover:bg-white/30 disabled:opacity-60 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 border border-white/30 shadow-lg"
-                  >
-                    <Eye className="h-4 w-4" />
-                              {isNavigating ? t('catalog.opening') : t('catalog.view_details')}
-                  </button>
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                disabled={isNavigating}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  if (isNavigating) return;
+                                  setIsNavigating(true);
+                                  onNavigate('product', door.id);
+                                  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                                }}
+                                className="flex-1 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white py-3 px-4 rounded-xl font-semibold hover:from-white/30 hover:to-white/20 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 border border-white/30 shadow-lg hover:shadow-xl group-hover:border-blue-500/50"
+                              >
+                                <Eye className="h-4 w-4" />
+                                {isNavigating ? t('catalog.opening') : t('catalog.view_details')}
+                              </button>
+                              
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  addToCart({
+                                    id: door.id,
+                                    name: door.name,
+                                    price: 0, // Price will be set in product detail
+                                    image: door.image,
+                                    dimensions: door.dimensions,
+                                    material: door.material
+                                  });
+                                  showSuccess('Mahsulot qo\'shildi!', `${door.name} korzinkaga qo\'shildi`);
+                                }}
+                                className="bg-gradient-to-r from-blue-500/30 to-purple-500/30 backdrop-blur-md text-blue-300 py-3 px-3 rounded-xl font-semibold hover:from-blue-500/40 hover:to-purple-500/40 transition-all duration-300 flex items-center justify-center border border-blue-500/50 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                title="Korzinkaga qo'shish"
+                              >
+                                <ShoppingCart className="h-5 w-5" />
+                              </button>
+                            </div>
                 </div>
                         </motion.div>
             ))}

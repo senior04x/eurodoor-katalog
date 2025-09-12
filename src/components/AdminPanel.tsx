@@ -72,6 +72,7 @@ const AdminPanel = () => {
   const [currentPage, setCurrentPage] = useState('dashboard')
   const [products, setProducts] = useState([])
   const [orders, setOrders] = useState([])
+  const [users, setUsers] = useState([])
   const [dashboardStats, setDashboardStats] = useState({
     totalProducts: 0,
     totalOrders: 0,
@@ -110,6 +111,7 @@ const AdminPanel = () => {
     await Promise.all([
       loadProducts(),
       loadOrders(),
+      loadUsers(),
       loadDashboardStats()
     ])
   }
@@ -139,6 +141,20 @@ const AdminPanel = () => {
       setOrders(data || [])
     } catch (error) {
       console.error('Error loading orders:', error)
+    }
+  }
+
+  const loadUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      setUsers(data || [])
+    } catch (error) {
+      console.error('Error loading users:', error)
     }
   }
 
@@ -730,8 +746,8 @@ const AdminPanel = () => {
                           <ShoppingCart className="w-5 h-5 text-blue-400" />
                         </div>
                         <div>
-                          <p className="text-white font-medium">{order.customer.name}</p>
-                          <p className="text-gray-400 text-sm">{order.product.name}</p>
+                          <p className="text-white font-medium">{order.customer_name || 'Noma\'lum mijoz'}</p>
+                          <p className="text-gray-400 text-sm">{order.products?.[0]?.name || 'Mahsulot'}</p>
                         </div>
                       </div>
                       <div className="text-right">
@@ -920,30 +936,32 @@ const AdminPanel = () => {
                     <thead className="bg-white/5">
                       <tr>
                         <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Ism</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Email</th>
                         <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Telefon</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Ro'yxatdan o'tgan</th>
                         <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Buyurtmalar soni</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">So'nggi buyurtma</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/10">
-                      {Array.from(new Set(orders.map(order => order.customer.phone))).map((phone, index) => {
-                        const customerOrders = orders.filter(order => order.customer.phone === phone)
-                        const customer = customerOrders[0].customer
-                        const lastOrder = customerOrders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
+                      {users.map((user) => {
+                        const userOrders = orders.filter(order => order.user_id === user.id)
                         
                         return (
-                          <tr key={phone} className="hover:bg-white/5">
+                          <tr key={user.id} className="hover:bg-white/5">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-white">{customer.name}</div>
+                              <div className="text-sm font-medium text-white">{user.name || 'Noma\'lum'}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                              {phone}
+                              {user.email}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                              {user.phone || 'Noma\'lum'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                              {new Date(user.created_at).toLocaleDateString('uz-UZ')}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                              {customerOrders.length}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                              {new Date(lastOrder.created_at).toLocaleDateString('uz-UZ')}
+                              {userOrders.length}
                             </td>
                           </tr>
                         )

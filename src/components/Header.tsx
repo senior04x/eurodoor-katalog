@@ -1,28 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, LogOut, LogIn, UserPlus } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLanguage } from '../hooks/useLanguage';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import LanguageSwitcher from './LanguageSwitcher';
+import CartSidebar from './CartSidebar';
 
 interface HeaderProps {
   currentPage: string;
   onNavigate: (page: string) => void;
+  onShowAuthModal: (mode: 'login' | 'register') => void;
 }
 
-export default function Header({ currentPage, onNavigate }: HeaderProps) {
+export default function Header({ currentPage, onNavigate, onShowAuthModal }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const { t } = useLanguage();
+  const { totalItems, isCartOpen, setIsCartOpen } = useCart();
+  const { user, signOut } = useAuth();
+  const { showSuccess } = useToast();
 
   // Body scrollni bloklash (mobil menyu ochilganda)
   useEffect(() => {
     if (isMenuOpen) {
       document.body.classList.add('overflow-hidden');
+      document.body.style.overflow = 'hidden';
+      
+      // Faqat scroll bloklash - click outside event larni o'chirib tashladik
+      // Cleanup function
+      return () => {
+        document.body.classList.remove('overflow-hidden');
+        document.body.style.overflow = 'auto';
+      };
     } else {
       document.body.classList.remove('overflow-hidden');
+      document.body.style.overflow = 'auto';
     }
-    return () => document.body.classList.remove('overflow-hidden');
   }, [isMenuOpen]);
 
   // Maxsus kombinatsiya uchun event listener
@@ -63,39 +80,63 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
     ...(showAdmin ? [{ name: 'Admin', id: 'admin' }] : [])
   ];
 
-  // Animatsiya variantlar (mobil menyu)
+  // Animatsiya variantlar (mobil menyu) - sekinroq va oddiyroq
   const mobileMenuVariants = {
-    hidden: { opacity: 0, x: 24 },
+    hidden: { 
+      opacity: 0, 
+      y: -20,
+      scale: 0.95
+    },
     show: {
       opacity: 1,
-      x: 0,
+      y: 0,
+      scale: 1,
       transition: {
         type: 'tween',
         ease: 'easeOut',
-        duration: 0.6,
-        staggerChildren: 0.1,
+        duration: 0.3,
+        staggerChildren: 0.05,
         when: 'beforeChildren'
       }
     },
     exit: {
       opacity: 0,
-      x: 16,
-      transition: { duration: 0.01 }
+      y: -5,
+      scale: 0.98,
+      transition: { 
+        duration: 0.4,
+        ease: 'easeInOut',
+        staggerChildren: 0.03,
+        when: 'afterChildren'
+      }
     }
   };
 
   const mobileItemVariants = {
-    hidden: { opacity: 0, x: 28 },
+    hidden: { 
+      opacity: 0, 
+      y: 10,
+      scale: 0.9
+    },
     show: {
       opacity: 1,
-      x: 0,
+      y: 0,
+      scale: 1,
       transition: {
         type: 'tween',
         ease: 'easeOut',
-        duration: 0.35
+        duration: 0.25
       }
     },
-    exit: { opacity: 0, x: 12, transition: { duration: 0.01 } }
+    exit: { 
+      opacity: 0, 
+      y: 3, 
+      scale: 0.95,
+      transition: { 
+        duration: 0.3,
+        ease: 'easeInOut'
+      } 
+    }
   };
 
   // Headerning mayin paydo bo‘lishi (ilk render)
@@ -113,7 +154,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
       variants={headerVariants}
       initial="hidden"
       animate="show"
-      className="bg-white/3 backdrop-blur-sm border border-white/20 sticky top-0 z-50 shadow-lg m-4 rounded-md"
+      className="bg-white/3 backdrop-blur-sm border border-white/20 sticky top-0 z-40 shadow-lg m-4 rounded-md overflow-visible"
       style={{ top: 'env(safe-area-inset-top)' }}
     >
       <div className="container mx-auto px-4">
@@ -139,7 +180,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-6">
             {navigation.map((item) => {
               const active = currentPage === item.id;
               return (
@@ -153,28 +194,118 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
                   className={[
                     'text-sm font-medium transition-colors hover:text-white',
                     'border-b-2 border-transparent pb-1',
-                    active ? 'text-white border-white' : 'text-gray-300'
+                    active ? 'text-white border-white' : 'text-white'
                   ].join(' ')}
                 >
                   {item.name}
                 </button>
               );
             })}
+            
+            {/* Auth buttons in nav */}
+            {user ? (
+              <div className="flex items-center space-x-2 ml-4">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center space-x-1 px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-md transition-colors"
+                >
+                  <User className="h-4 w-4" />
+                  <span className="text-sm">{user.name || user.email}</span>
+                </button>
+                
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        onNavigate('profile');
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      {t('header.profile')}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        onNavigate('orders');
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      {t('header.orders')}
+                    </button>
+                    <hr className="my-1" />
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        signOut();
+                        showSuccess('Tizimdan chiqildi!', 'Muvaffaqiyatli tizimdan chiqdingiz');
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      {t('header.logout')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2 ml-4">
+                <button
+                  onClick={() => onShowAuthModal('login')}
+                  className="flex items-center space-x-1 px-3 py-1 text-sm text-white hover:text-gray-200 transition-colors"
+                >
+                  <LogIn className="h-4 w-4" />
+                  <span>{t('header.login')}</span>
+                </button>
+                <button
+                  onClick={() => onShowAuthModal('register')}
+                  className="flex items-center space-x-1 px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-md transition-colors"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  <span>{t('header.register')}</span>
+                </button>
+              </div>
+            )}
+            
+            {/* Korzinka tugmasi */}
+            <button
+              onClick={() => setIsCartOpen(!isCartOpen)}
+              className="relative p-2 text-white hover:text-gray-200 transition-colors"
+            >
+              <ShoppingCart className="h-6 w-6" />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
+            </button>
+
             <LanguageSwitcher />
           </nav>
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-2 transition-all duration-300 hover:bg-white/10 rounded-lg"
             aria-expanded={isMenuOpen}
             aria-controls="mobile-nav"
+            data-burger-button
             onClick={() => setIsMenuOpen((v) => !v)}
           >
-            {isMenuOpen ? (
-              <X className="h-6 w-6 text-white" />
-            ) : (
-              <Menu className="h-6 w-6 text-white" />
-            )}
+            <motion.div
+              key={isMenuOpen ? 'close' : 'menu'}
+              initial={{ opacity: 0, rotate: -90 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 90 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              {isMenuOpen ? (
+                <X className="h-6 w-6 text-white" />
+              ) : (
+                <Menu className="h-6 w-6 text-white" />
+              )}
+            </motion.div>
           </button>
         </div>
 
@@ -189,6 +320,7 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
               animate="show"
               exit="exit"
               className="md:hidden py-4 border-t border-white/10"
+              data-mobile-menu
             >
               <nav className="flex flex-col space-y-3">
                 {navigation.map((item) => {
@@ -212,6 +344,85 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
                     </motion.button>
                   );
                 })}
+                
+                {/* Mobil korzinka va foydalanuvchi tugmalari */}
+                <div className="px-2 py-2 border-t border-white/10 mt-4 pt-4">
+                  <button
+                    onClick={() => {
+                      setIsCartOpen(!isCartOpen);
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                  >
+                    <ShoppingCart className="h-5 w-5 mr-3" />
+                    <span>{t('header.cart')}</span>
+                    {totalItems > 0 && (
+                      <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {totalItems}
+                      </span>
+                    )}
+                  </button>
+                  
+                  {user ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          onNavigate('profile');
+                          setIsMenuOpen(false);
+                        }}
+                        className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                      >
+                        <User className="h-5 w-5 mr-3" />
+                        <span>{t('header.profile')}</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          onNavigate('orders');
+                          setIsMenuOpen(false);
+                        }}
+                        className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                      >
+                        <ShoppingCart className="h-5 w-5 mr-3" />
+                        <span>{t('header.orders')}</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          signOut();
+                          setIsMenuOpen(false);
+                          showSuccess('Tizimdan chiqildi!', 'Muvaffaqiyatli tizimdan chiqdingiz');
+                        }}
+                        className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                      >
+                        <LogOut className="h-5 w-5 mr-3" />
+                        <span>{t('header.logout')}</span>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => {
+                          onShowAuthModal('login');
+                          setIsMenuOpen(false);
+                        }}
+                        className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                      >
+                        <LogIn className="h-5 w-5 mr-3" />
+                        <span>{t('header.login')}</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          onShowAuthModal('register');
+                          setIsMenuOpen(false);
+                        }}
+                        className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                      >
+                        <UserPlus className="h-5 w-5 mr-3" />
+                        <span>{t('header.register')}</span>
+                      </button>
+                    </>
+                  )}
+                </div>
+                
                 <div className="px-2 py-2">
                   <LanguageSwitcher />
                 </div>
@@ -220,6 +431,9 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
           )}
         </AnimatePresence>
       </div>
+      
+      {/* Cart Sidebar */}
+      <CartSidebar onNavigate={onNavigate} />
     </motion.header>
   );
 }

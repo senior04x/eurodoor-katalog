@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { ArrowLeft, Shield, Ruler, Award, Phone, Package } from 'lucide-react';
-import { useLanguage } from '../hooks/useLanguage';
+import { ArrowLeft, Shield, Ruler, Award, Package, ShoppingCart, Plus, Minus } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useCart } from '../contexts/CartContext';
+import { useToast } from '../contexts/ToastContext';
 import { productsApi } from '../lib/productsApi';
 
 interface ProductDetailPageProps {
@@ -11,10 +13,17 @@ interface ProductDetailPageProps {
 
 export default function ProductDetailPage({ productId, onNavigate }: ProductDetailPageProps) {
   const { t, language } = useLanguage();
+  const { addToCart } = useCart();
+  const { showSuccess } = useToast();
   
+
   // Faqat Supabase dan mahsulot olish
   const [rawProduct, setRawProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedDimensions, setSelectedDimensions] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
+  const [customDimensions, setCustomDimensions] = useState('');
 
   // Mahsulot ma'lumotlarini yuklash
   useEffect(() => {
@@ -39,6 +48,28 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
     loadProduct();
   }, [productId]); // Faqat productId o'zgarganida
+
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      dimensions: selectedDimensions || customDimensions,
+      color: selectedColor,
+      material: product.material
+    };
+
+    // Har bir miqdor uchun alohida qo'shish
+    for (let i = 0; i < quantity; i++) {
+      addToCart(cartItem);
+    }
+
+    // Muvaffaqiyat xabari
+    showSuccess('Mahsulot qo\'shildi!', `${quantity} ta ${product.name} korzinkaga qo'shildi`);
+  };
 
   // Tilga mos mahsulot ma'lumotlarini hisoblash
   const product = useMemo(() => {
@@ -68,6 +99,9 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
       thickness: thickness
     };
   }, [rawProduct, language]);
+
+  // Debug log
+  console.log('🔍 ProductDetailPage - productId:', productId, 'loading:', loading, 'product:', product);
 
   // Loading holatini ko'rsatish
   if (loading) {
@@ -180,7 +214,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
       <div className="relative z-10 p-4">
         <button
           onClick={() => onNavigate('catalog')}
-          className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors"
+          className="flex items-center gap-2 text-white hover:text-gray-300 transition-all duration-300 bg-white/10 backdrop-blur-xl px-4 py-2 rounded-xl border border-white/20 hover:border-blue-500/50 hover:bg-white/20"
         >
           <ArrowLeft className="h-5 w-5" />
           {t('product.back_to_catalog')}
@@ -192,13 +226,13 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
         <div className="max-w-6xl mx-auto">
           {/* Product Header */}
                   <div className="text-center mb-8">
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{product.name}</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">{product.name}</h1>
                   </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Product Image - Left Column */}
             <div className="lg:col-span-1">
-              <div className="aspect-square rounded-3xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 shadow-2xl">
+              <div className="aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 shadow-2xl hover:border-blue-500/50 transition-all duration-300">
                 <ImageWithFallback
                   src={product.image}
                   alt={product.name}
@@ -232,8 +266,86 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                 <p className="text-gray-300 text-sm">{t('product.contact_for_price')}</p>
               </div>
 
+              {/* Add to Cart Section */}
+              <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-xl hover:border-blue-500/50 transition-all duration-300">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5" />
+                  Korzinkaga qo'shish
+                </h3>
+                
+                {/* Quantity Selector */}
+                <div className="mb-4">
+                  <label className="block text-gray-300 font-medium mb-2">Miqdor:</label>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors"
+                    >
+                      <Minus className="h-4 w-4 text-white" />
+                    </button>
+                    <span className="w-16 text-center text-white font-semibold">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors"
+                    >
+                      <Plus className="h-4 w-4 text-white" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Dimensions Selector */}
+                <div className="mb-4">
+                  <label className="block text-gray-300 font-medium mb-2">O'lcham:</label>
+                  <select
+                    value={selectedDimensions}
+                    onChange={(e) => setSelectedDimensions(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
+                  >
+                    <option value="">Standart o'lcham</option>
+                    <option value="2000x800">2000x800 mm</option>
+                    <option value="2100x900">2100x900 mm</option>
+                    <option value="2200x1000">2200x1000 mm</option>
+                    <option value="custom">Boshqa o'lcham</option>
+                  </select>
+                  {selectedDimensions === 'custom' && (
+                    <input
+                      type="text"
+                      value={customDimensions}
+                      onChange={(e) => setCustomDimensions(e.target.value)}
+                      placeholder="Masalan: 1900x750"
+                      className="w-full mt-2 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40"
+                    />
+                  )}
+                </div>
+
+                {/* Color Selector */}
+                <div className="mb-6">
+                  <label className="block text-gray-300 font-medium mb-2">Rang:</label>
+                  <select
+                    value={selectedColor}
+                    onChange={(e) => setSelectedColor(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
+                  >
+                    <option value="">Standart rang</option>
+                    <option value="oq">Oq</option>
+                    <option value="qora">Qora</option>
+                    <option value="kulrang">Kulrang</option>
+                    <option value="jigarrang">Jigarrang</option>
+                  </select>
+                </div>
+
+                {/* Add to Cart Button */}
+                <button
+                  onClick={handleAddToCart}
+                  className="w-full bg-gradient-to-r from-blue-500/30 to-purple-500/30 text-blue-300 py-3 px-6 rounded-xl font-semibold hover:from-blue-500/40 hover:to-purple-500/40 transition-all duration-300 flex items-center justify-center gap-2 border border-blue-500/50 shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  Korzinkaga qo'shish
+                </button>
+              </div>
+
               {/* Technical Specs */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
+              <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-xl hover:border-blue-500/50 transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="bg-blue-500/30 border border-blue-500/50 rounded-full p-2">
                     <Ruler className="h-5 w-5 text-blue-300" />
@@ -290,30 +402,6 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
             </div>
           </div>
 
-          {/* Contact Section - Bottom */}
-          <div className="mt-8">
-            <div className="bg-gradient-to-r from-blue-500/20 to-indigo-500/20 backdrop-blur-sm rounded-2xl p-8 border border-blue-500/30 shadow-xl">
-              <div className="text-center">
-                        <h3 className="text-2xl font-bold text-white mb-4">
-                          {t('product.detailed_info')}
-                        </h3>
-                        <p className="text-gray-300 mb-6 text-lg">
-                          {t('product.contact_description')}
-                        </p>
-                        <button
-                          onClick={() => {
-                            // Product ma'lumotini localStorage ga saqlash
-                            localStorage.setItem('selectedProduct', JSON.stringify(product));
-                            onNavigate('contact');
-                          }}
-                          className="w-full md:w-auto bg-blue-500/30 text-blue-300 py-4 px-8 rounded-xl font-bold hover:bg-blue-500/40 transition-all duration-300 border border-blue-500/50 flex items-center justify-center gap-3 text-lg shadow-lg hover:shadow-xl mx-auto"
-                        >
-                          <Phone className="h-5 w-5" />
-                          {t('product.contact_button')}
-                        </button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

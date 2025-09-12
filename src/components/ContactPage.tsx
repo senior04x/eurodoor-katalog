@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, MessageCircle, Instagram, MapPin, Clock, Mail, Package, ArrowLeft } from 'lucide-react';
+import { Phone, MessageCircle, Instagram, MapPin, Clock, Mail, Package, ArrowLeft, ShoppingCart } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useLanguage } from '../hooks/useLanguage';
-import { ordersApi } from '../lib/supabase';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 interface ContactPageProps {
   onNavigate?: (page: string, productId?: string) => void;
 }
 
-export default function ContactPage({ onNavigate }: ContactPageProps) {
+export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Element {
   const prefersReduced = useReducedMotion();
   const { t } = useLanguage();
+  const { items: cartItems, totalPrice, clearCart } = useCart();
+  const { user } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+
 
   // localStorage dan selected product ni o'qish
   useEffect(() => {
@@ -35,10 +40,12 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
   }, []);
 
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
+    name: user?.name || '',
+    phone: user?.phone || '',
+    email: user?.email || '',
     product: '',
-    message: ''
+    message: '',
+    delivery_address: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,56 +53,108 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Zakaz ma'lumotlarini yaratish
-    const order = {
-      id: Date.now().toString(),
-      timestamp: new Date().toISOString(),
-      customer: {
-        name: formData.name,
-        phone: formData.phone,
-        message: formData.message
-      },
-      product: selectedProduct ? {
-        id: selectedProduct.id,
-        name: selectedProduct.name,
-        material: selectedProduct.material,
-        security: selectedProduct.security,
-        dimensions: selectedProduct.dimensions,
-        price: selectedProduct.price
-      } : {
-        name: formData.product
-      },
-      status: 'new'
-    };
+    setIsSubmitting(true);
     
     try {
+      // Buyurtma raqamini yaratish
+      const orderNumber = `EURO-${Date.now().toString().slice(-6)}`;
+      
+      // Zakaz ma'lumotlarini yaratish
+      const order = {
+        order_number: orderNumber,
+        user_id: user?.id || null, // Foydalanuvchi ID sini qo'shish
+        customer_name: formData.name,
+        customer_phone: formData.phone,
+        customer_email: formData.email,
+        delivery_address: formData.delivery_address,
+        notes: formData.message,
+        total_amount: cartItems.length > 0 ? totalPrice : (selectedProduct?.price || 0),
+        products: cartItems.length > 0 ? cartItems : (selectedProduct ? [{
+          name: selectedProduct.name,
+          price: selectedProduct.price,
+          quantity: 1,
+          image: selectedProduct.image,
+          dimensions: selectedProduct.dimensions,
+          color: selectedProduct.color,
+          material: selectedProduct.material
+        }] : []),
+        status: 'pending',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+    
       // Supabase backend ga zakaz yuborish
       console.log('Sending order to Supabase backend:', order);
-      const savedOrder = await ordersApi.createOrder(order);
       
-      if (savedOrder) {
-        // LocalStorage ga ham so'nggi zakazni saqlaymiz (OrderSuccessPage o'qiydi)
-        try {
-          const existing = JSON.parse(localStorage.getItem('orders') || '[]');
-          const updated = Array.isArray(existing) ? existing.concat(savedOrder) : [savedOrder];
-          localStorage.setItem('orders', JSON.stringify(updated));
-          localStorage.setItem('lastOrder', JSON.stringify(savedOrder));
-        } catch {}
-        // Muvaffaqiyatli saqlangan
-        console.log('✅ Order saved to Supabase backend:', savedOrder);
-        
-        // Form ma'lumotlarini tozalash
-        setFormData({ name: '', phone: '', product: '', message: '' });
-        setSelectedProduct(null);
-        localStorage.removeItem('selectedProduct');
-        
-        // Order success sahifasiga yo'naltirish
-        if (onNavigate) {
-          onNavigate('order-success');
-          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-        }
+      // Avval jadval mavjudligini tekshirish
+      const { data: testData, error: testError } = await supabase
+        .from('orders')
+        .select('id')
+        .limit(1);
+      
+      if (testError) {
+        console.error('❌ Orders table error:', testError);
+        alert(`Orders jadvali mavjud emas yoki RLS policy muammosi: ${testError.message}`);
+        return;
       }
+      
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([order]);
+      
+      if (error) {
+        console.error('❌ Supabase error:', error);
+        alert(`Buyurtma saqlashda xatolik: ${error.message}`);
+        return;
+      }
+      
+      // Muvaffaqiyatli saqlangan (data bo'lsa ham, bo'lmasa ham)
+      console.log('✅ Order saved to Supabase backend:', data);
+      
+      // LocalStorage ga ham so'nggi zakazni saqlaymiz (OrderSuccessPage o'qiydi)
+      try {
+        const orderData = data && data[0] ? data[0] : order; // Agar data bo'lmasa, order ni ishlatamiz
+        const existing = JSON.parse(localStorage.getItem('orders') || '[]');
+        const updated = Array.isArray(existing) ? existing.concat(orderData) : [orderData];
+        localStorage.setItem('orders', JSON.stringify(updated));
+        localStorage.setItem('lastOrder', JSON.stringify(orderData));
+        console.log('✅ Order saved to localStorage:', orderData);
+      } catch (error) {
+        console.error('❌ Error saving to localStorage:', error);
+      }
+      
+      // Muvaffaqiyat xabari
+      alert(`🎉 Buyurtma muvaffaqiyatli qabul qilindi!\n\nBuyurtma raqami: ${orderNumber}\n\nTez orada siz bilan bog'lanamiz!`);
+      
+      // Form ma'lumotlarini tozalash
+      setFormData({ 
+        name: user?.name || '', 
+        phone: user?.phone || '', 
+        email: user?.email || '', 
+        product: '', 
+        message: '', 
+        delivery_address: '' 
+      });
+      setSelectedProduct(null);
+      localStorage.removeItem('selectedProduct');
+      
+      // Korzinkani tozalash
+      clearCart();
+      
+      // Order success sahifasiga yo'naltirish
+      console.log('🔄 Navigating to order-success page...');
+      
+      // Kechikish bilan sahifani o'zgartirish
+      setTimeout(() => {
+        if (onNavigate) {
+          console.log('✅ onNavigate function exists, calling it...');
+          onNavigate('order-success');
+        } else {
+          console.log('❌ onNavigate function is not available');
+          // Qo'lda sahifani o'zgartirish
+          window.location.href = '#order-success';
+        }
+      }, 1000);
     } catch (error) {
       console.error('❌ Error saving order to backend:', error);
       
@@ -109,6 +168,8 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
       } else {
         alert('Xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring yoki telefon orqali bog\'laning.');
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -213,37 +274,89 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
           </motion.section>
         )}
 
-        {/* Selected Product Info */}
-        {selectedProduct && (
+        {/* Cart Items or Selected Product Info */}
+        {(cartItems.length > 0 || selectedProduct) && (
           <section className="py-8">
             <div className="container mx-auto px-4">
               <div className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl p-6 border border-white/20 shadow-2xl">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Package className="h-5 w-5 text-white" />
-                      <h4 className="font-semibold text-white">{selectedProduct.name}</h4>
-                    </div>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-300">{t('contact.product_material')}:</span>
-                        <span className="text-white">{selectedProduct.material}</span>
+                <div className="flex items-center gap-2 mb-4">
+                  <ShoppingCart className="h-5 w-5 text-white" />
+                  <h4 className="font-semibold text-white">
+                    {cartItems.length > 0 ? `Korzinkadagi mahsulotlar (${cartItems.length})` : 'Tanlangan mahsulot'}
+                  </h4>
+                </div>
+                
+                {cartItems.length > 0 ? (
+                  <div className="space-y-4">
+                    {cartItems.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <ImageWithFallback
+                            src={item.image}
+                            alt={item.name}
+                            className="w-12 h-12 object-cover rounded-md"
+                          />
+                          <div>
+                            <p className="text-white font-medium">{item.name}</p>
+                            <p className="text-gray-300 text-sm">
+                              {item.dimensions && `O'lcham: ${item.dimensions}`}
+                              {item.color && ` | Rang: ${item.color}`}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-white font-semibold">
+                            {new Intl.NumberFormat('uz-UZ', {
+                              style: 'currency',
+                              currency: 'UZS',
+                              minimumFractionDigits: 0
+                            }).format(item.price * item.quantity)}
+                          </p>
+                          <p className="text-gray-300 text-sm">Miqdor: {item.quantity}</p>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-300">{t('contact.product_security')}:</span>
-                        <span className="text-white">{selectedProduct.security}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-300">{t('contact.product_dimensions')}:</span>
-                        <span className="text-white">{selectedProduct.dimensions}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-300">{t('contact.product_price')}:</span>
-                        <span className="text-white font-semibold">{selectedProduct.price}</span>
+                    ))}
+                    <div className="border-t border-white/20 pt-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-semibold text-white">Jami:</span>
+                        <span className="text-xl font-bold text-blue-400">
+                          {new Intl.NumberFormat('uz-UZ', {
+                            style: 'currency',
+                            currency: 'UZS',
+                            minimumFractionDigits: 0
+                          }).format(totalPrice)}
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
+                ) : selectedProduct ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Package className="h-5 w-5 text-white" />
+                        <h4 className="font-semibold text-white">{selectedProduct.name}</h4>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">{t('contact.product_material')}:</span>
+                          <span className="text-white">{selectedProduct.material}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">{t('contact.product_security')}:</span>
+                          <span className="text-white">{selectedProduct.security}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">{t('contact.product_dimensions')}:</span>
+                          <span className="text-white">{selectedProduct.dimensions}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">{t('contact.product_price')}:</span>
+                          <span className="text-white font-semibold">{selectedProduct.price}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
           </section>
@@ -286,6 +399,28 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
                   </div>
                   <div>
                     <input
+                      type="email"
+                      placeholder="Email manzilingiz"
+                      value={formData.email}
+                      onChange={(e) => handleChange(e)}
+                      name="email"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-white/40 transition-colors"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Yetkazib berish manzili"
+                      value={formData.delivery_address}
+                      onChange={(e) => handleChange(e)}
+                      name="delivery_address"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-white/40 transition-colors"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <input
                       type="text"
                       placeholder={t('contact.product_placeholder')}
                       value={formData.product}
@@ -306,10 +441,11 @@ export default function ContactPage({ onNavigate }: ContactPageProps) {
                   </div>
                   <button
                     type="submit"
-                    className="w-full bg-white/20 text-white py-3 px-6 rounded-lg font-semibold hover:bg-white/30 transition-colors duration-300 flex items-center justify-center gap-2"
+                    disabled={isSubmitting}
+                    className="w-full bg-white/20 text-white py-3 px-6 rounded-lg font-semibold hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 flex items-center justify-center gap-2"
                   >
                     <MessageCircle className="h-5 w-5" />
-                    {selectedProduct ? t('contact.order_button') : t('contact.send_button')}
+                    {isSubmitting ? 'Yuborilmoqda...' : (cartItems.length > 0 ? 'Buyurtma berish' : selectedProduct ? t('contact.order_button') : t('contact.send_button'))}
                   </button>
                 </form>
               </motion.div>
