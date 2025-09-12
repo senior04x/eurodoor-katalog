@@ -198,10 +198,12 @@ export default function OrderTracking() {
 
                 {/* Status Progress */}
                 <div className="mb-6">
+                  {/* Status Icons - Mobile: Only icons, Desktop: Icons with labels */}
                   <div className="flex items-center justify-between mb-4 overflow-x-auto pb-2">
                     {statusSteps.map((step, index) => {
                       const currentIndex = getStatusIndex(order.status)
                       const isActive = index <= currentIndex
+                      const isCurrentStatus = index === currentIndex
                       const Icon = step.icon
                       
                       return (
@@ -211,9 +213,16 @@ export default function OrderTracking() {
                           }`}>
                             <Icon className={`h-4 w-4 md:h-5 md:w-5 ${isActive ? 'text-white' : 'text-gray-400'}`} />
                           </div>
-                          <span className={`text-xs text-center leading-tight ${isActive ? 'text-white' : 'text-gray-400'}`}>
+                          {/* Mobile: Only show label for current status, Desktop: Show all labels */}
+                          <span className={`text-xs text-center leading-tight hidden md:block ${isActive ? 'text-white' : 'text-gray-400'}`}>
                             {step.label}
                           </span>
+                          {/* Mobile: Show current status label below icons */}
+                          {isCurrentStatus && (
+                            <span className="text-xs text-center leading-tight text-blue-400 font-medium md:hidden mt-1">
+                              {step.label}
+                            </span>
+                          )}
                         </div>
                       )
                     })}
