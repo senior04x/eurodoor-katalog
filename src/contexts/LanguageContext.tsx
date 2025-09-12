@@ -646,6 +646,76 @@ const translations: Translations = {
     uz: 'UV chidamli bo\'yoq',
     ru: 'УФ-стойкая краска',
     en: 'UV Resistant Paint'
+  },
+  'product.add_to_cart': {
+    uz: 'Korzinkaga qo\'shish',
+    ru: 'Добавить в корзину',
+    en: 'Add to Cart'
+  },
+  'product.quantity': {
+    uz: 'Miqdor:',
+    ru: 'Количество:',
+    en: 'Quantity:'
+  },
+  'product.size': {
+    uz: 'O\'lcham:',
+    ru: 'Размер:',
+    en: 'Size:'
+  },
+  'product.color': {
+    uz: 'Rang:',
+    ru: 'Цвет:',
+    en: 'Color:'
+  },
+  'product.standard_size': {
+    uz: 'Standart o\'lcham',
+    ru: 'Стандартный размер',
+    en: 'Standard size'
+  },
+  'product.standard_color': {
+    uz: 'Standart rang',
+    ru: 'Стандартный цвет',
+    en: 'Standard color'
+  },
+  'product.custom_size': {
+    uz: 'Boshqa o\'lcham',
+    ru: 'Другой размер',
+    en: 'Custom size'
+  },
+  'product.size_placeholder': {
+    uz: 'Masalan: 1900x750',
+    ru: 'Например: 1900x750',
+    en: 'Example: 1900x750'
+  },
+  'product.color_white': {
+    uz: 'Oq',
+    ru: 'Белый',
+    en: 'White'
+  },
+  'product.color_black': {
+    uz: 'Qora',
+    ru: 'Черный',
+    en: 'Black'
+  },
+  'product.color_gray': {
+    uz: 'Kulrang',
+    ru: 'Серый',
+    en: 'Gray'
+  },
+  'product.color_brown': {
+    uz: 'Jigarrang',
+    ru: 'Коричневый',
+    en: 'Brown'
+  },
+  'home.why_eurodoor': {
+    uz: 'Nima uchun Eurodoor?',
+    ru: 'Почему Eurodoor?',
+    en: 'Why Eurodoor?'
+  },
+  'home.experience_text': {
+    uz: 'Bizning tajribamiz va sifatimiz bilan eshiklar olamida yangi standartlar o\'rnatamiz',
+    ru: 'Мы устанавливаем новые стандарты в мире дверей с нашим опытом и качеством',
+    en: 'We set new standards in the world of doors with our experience and quality'
   }
 };
 

@@ -270,12 +270,12 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
               <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-xl hover:border-blue-500/50 transition-all duration-300">
                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
-                  Korzinkaga qo'shish
+                  {t('product.add_to_cart')}
                 </h3>
                 
                 {/* Quantity Selector */}
                 <div className="mb-4">
-                  <label className="block text-gray-300 font-medium mb-2">Miqdor:</label>
+                  <label className="block text-gray-300 font-medium mb-2">{t('product.quantity')}</label>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -295,24 +295,24 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
                 {/* Dimensions Selector */}
                 <div className="mb-4">
-                  <label className="block text-gray-300 font-medium mb-2">O'lcham:</label>
+                  <label className="block text-gray-300 font-medium mb-2">{t('product.size')}</label>
                   <select
                     value={selectedDimensions}
                     onChange={(e) => setSelectedDimensions(e.target.value)}
                     className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
                   >
-                    <option value="">Standart o'lcham</option>
+                    <option value="">{t('product.standard_size')}</option>
                     <option value="2000x800">2000x800 mm</option>
                     <option value="2100x900">2100x900 mm</option>
                     <option value="2200x1000">2200x1000 mm</option>
-                    <option value="custom">Boshqa o'lcham</option>
+                    <option value="custom">{t('product.custom_size')}</option>
                   </select>
                   {selectedDimensions === 'custom' && (
                     <input
                       type="text"
                       value={customDimensions}
                       onChange={(e) => setCustomDimensions(e.target.value)}
-                      placeholder="Masalan: 1900x750"
+                      placeholder={t('product.size_placeholder')}
                       className="w-full mt-2 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40"
                     />
                   )}
@@ -320,17 +320,17 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
                 {/* Color Selector */}
                 <div className="mb-6">
-                  <label className="block text-gray-300 font-medium mb-2">Rang:</label>
+                  <label className="block text-gray-300 font-medium mb-2">{t('product.color')}</label>
                   <select
                     value={selectedColor}
                     onChange={(e) => setSelectedColor(e.target.value)}
                     className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
                   >
-                    <option value="">Standart rang</option>
-                    <option value="oq">Oq</option>
-                    <option value="qora">Qora</option>
-                    <option value="kulrang">Kulrang</option>
-                    <option value="jigarrang">Jigarrang</option>
+                    <option value="">{t('product.standard_color')}</option>
+                    <option value="oq">{t('product.color_white')}</option>
+                    <option value="qora">{t('product.color_black')}</option>
+                    <option value="kulrang">{t('product.color_gray')}</option>
+                    <option value="jigarrang">{t('product.color_brown')}</option>
                   </select>
                 </div>
 
@@ -340,7 +340,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                   className="w-full bg-gradient-to-r from-blue-500/30 to-purple-500/30 text-blue-300 py-3 px-6 rounded-xl font-semibold hover:from-blue-500/40 hover:to-purple-500/40 transition-all duration-300 flex items-center justify-center gap-2 border border-blue-500/50 shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  Korzinkaga qo'shish
+                  {t('product.add_to_cart')}
                 </button>
               </div>
 
