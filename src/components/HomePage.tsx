@@ -42,7 +42,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
   <div className="relative container mx-auto px-4 h-full flex items-center justify-center">
     <div className="max-w-2xl text-white bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20 text-center shadow-2xl">
-      <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 leading-tight bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
         {t('home.hero_title')}
       </h1>
       <p className="text-xl mb-8 opacity-90 text-gray-100">
@@ -64,7 +64,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     <section className="py-20 bg-gradient-to-b from-white/0 to-white/0 backdrop-blur-md">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-white mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+          <h2 className="text-xl md:text-2xl font-bold text-white mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
             {t('home.why_eurodoor')}
           </h2>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
@@ -81,7 +81,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
               <div className="w-20 h-20 bg-gradient-to-br from-blue-500/30 to-purple-500/30 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-6 border border-white/30 group-hover:border-blue-500/50 transition-all duration-300">
                 <feature.icon className="h-10 w-10 text-white group-hover:text-blue-200 transition-colors duration-300" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-4 group-hover:text-blue-100 transition-colors duration-300">
+              <h3 className="text-lg font-semibold text-white mb-4 group-hover:text-blue-100 transition-colors duration-300">
                 {feature.title}
               </h3>
               <p className="text-gray-200 group-hover:text-gray-100 transition-colors duration-300">{feature.description}</p>
@@ -94,7 +94,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     {/* CTA Section */}
     <section className="py-16 bg-gradient-to-r from-slate-900/50 via-purple-900/50 to-slate-900/50 backdrop-blur-xl text-white">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+        <h2 className="text-xl md:text-2xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
           {t('home.free_consultation')}
         </h2>
         <p className="text-lg mb-8 opacity-90 text-gray-100">

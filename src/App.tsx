@@ -9,7 +9,6 @@ import ProductDetailPage from './components/ProductDetailPage'
 import OrderSuccessPage from './components/OrderSuccessPage'
 import OrderTracking from './components/OrderTracking'
 import ProfilePage from './components/ProfilePage'
-import AdminPanel from './components/AdminPanel'
 import AppLoader from './components/AppLoader'
 import { CartProvider } from './contexts/CartContext'
 import { AuthProvider } from './contexts/AuthContext'
@@ -27,7 +26,7 @@ function App() {
 
   useEffect(() => {
     // Telegram WebApp ni aniqlash
-    const isTelegram = window.Telegram?.WebApp || 
+    const isTelegram = (window as any).Telegram?.WebApp || 
                       window.location.href.includes('t.me') ||
                       window.location.href.includes('telegram.me') ||
                       navigator.userAgent.includes('TelegramBot');
@@ -128,7 +127,9 @@ function App() {
       case 'profile':
         return <ProfilePage onNavigate={handleNavigate} />
       case 'admin':
-        return <AdminPanel />
+        // Admin panel alohida saytda: http://localhost:3000
+        window.open('http://localhost:5175', '_blank')
+        return <HomePage onNavigate={handleNavigate} />
       default:
         return <HomePage onNavigate={handleNavigate} />
     }

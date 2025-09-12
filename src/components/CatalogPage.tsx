@@ -14,10 +14,10 @@ interface DoorProduct {
   id: string;
   name: string;
   image: string;
-  material: string;
-  security: string;
-  dimensions: string; // "2000x900mm"
-  description: string;
+  material?: string;
+  security?: string;
+  dimensions?: string; // "2000x900mm"
+  description?: string;
 }
 
 type GroupMode = 'material' | 'size';
@@ -61,17 +61,21 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   // --- Helperlar ---
   // sinonimlarni yagona formatga o‘tkazamiz:
   // temir -> metall, po'lat -> metall, yog'och/yogoch -> mdf, shisha -> oyna
-// sinonimlarni bir xil ko‘rinishga keltirish
-const norm = (s: string) =>
-  s
+// sinonimlarni bir xil ko'rinishga keltirish
+const norm = (s: string | undefined | null) => {
+  if (!s) return '';
+  return s
     .toLowerCase()
-    .replace(/’/g, "'")
+    .replace(/'/g, "'")
     .replace(/temir/g, 'metall')
     .replace(/po'lat/g, 'metall')
     .replace(/yog'och|yogoch/g, 'mdf')
     .replace(/shisha/g, 'oyna');
+};
 
-const getMaterialKey = (m: string, t: any) => {
+const getMaterialKey = (m: string | undefined | null, t: any) => {
+  if (!m) return t('catalog.material_other');
+  
   const x = norm(m);
   const hasMetall = x.includes('metall');
   const hasMdf = x.includes('mdf');
@@ -93,12 +97,15 @@ const getMaterialKey = (m: string, t: any) => {
 };
 
 
-  const parseHeight = (d: string) => {
+  const parseHeight = (d: string | undefined | null) => {
+    if (!d) return NaN;
     const m = d.match(/(\d+)\s*x\s*\d+/i);
     return m ? parseInt(m[1], 10) : NaN;
   };
 
-  const getSizeKey = (d: string, t: any) => {
+  const getSizeKey = (d: string | undefined | null, t: any) => {
+    if (!d) return t('catalog.size_other');
+    
     const h = parseHeight(d);
     if (isNaN(h)) return t('catalog.size_other');
     if (h <= 2000) return t('catalog.size_2050_series');
@@ -259,7 +266,7 @@ const getMaterialKey = (m: string, t: any) => {
                 {!loading && (
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <button
-                      onClick={() => window.open('/admin', '_blank')}
+                      onClick={() => window.open('http://localhost:5175', '_blank')}
                       className="bg-blue-500/20 text-blue-300 px-6 py-3 rounded-lg font-semibold hover:bg-blue-500/30 transition-colors border border-blue-500/30"
                     >
                       Admin Panel ga o'tish
@@ -334,11 +341,11 @@ const getMaterialKey = (m: string, t: any) => {
                           <div className="p-5">
                             <h3 className="text-lg font-semibold text-white mb-2">{door.name}</h3>
                             <div className="space-y-1 mb-3 text-sm text-gray-300">
-                              <div><span className="font-medium">{t('catalog.material')}:</span> {door.material}</div>
-                              <div><span className="font-medium">{t('catalog.security')}:</span> {door.security}</div>
-                              <div><span className="font-medium">{t('catalog.dimensions')}:</span> {door.dimensions}</div>
+                              {door.material && <div><span className="font-medium">{t('catalog.material')}:</span> {door.material}</div>}
+                              {door.security && <div><span className="font-medium">{t('catalog.security')}:</span> {door.security}</div>}
+                              {door.dimensions && <div><span className="font-medium">{t('catalog.dimensions')}:</span> {door.dimensions}</div>}
                             </div>
-                            <p className="text-gray-300 text-sm mb-4">{door.description}</p>
+                            {door.description && <p className="text-gray-300 text-sm mb-4">{door.description}</p>}
 
                             <div className="flex gap-2">
                               <button
@@ -368,8 +375,8 @@ const getMaterialKey = (m: string, t: any) => {
                                     name: door.name,
                                     price: 0, // Price will be set in product detail
                                     image: door.image,
-                                    dimensions: door.dimensions,
-                                    material: door.material
+                                    dimensions: door.dimensions || '',
+                                    material: door.material || ''
                                   });
                                   showSuccess('Mahsulot qo\'shildi!', `${door.name} korzinkaga qo\'shildi`);
                                 }}

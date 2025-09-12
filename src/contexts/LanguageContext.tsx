@@ -396,6 +396,41 @@ const translations: Translations = {
     ru: 'Металл + МДФ + Стекло',
     en: 'Metal + MDF + Glass'
   },
+  'catalog.material_metall_metall': {
+    uz: 'Metall + Metall',
+    ru: 'Металл + Металл',
+    en: 'Metal + Metal'
+  },
+  'catalog.material_metall_kompozit': {
+    uz: 'Metall + Kompozit',
+    ru: 'Металл + Композит',
+    en: 'Metal + Composite'
+  },
+  'catalog.material_other': {
+    uz: 'Boshqa materiallar',
+    ru: 'Другие материалы',
+    en: 'Other Materials'
+  },
+  'catalog.size_2050_series': {
+    uz: '2050 seriyasi',
+    ru: 'Серия 2050',
+    en: '2050 Series'
+  },
+  'catalog.size_2100_series': {
+    uz: '2100 seriyasi',
+    ru: 'Серия 2100',
+    en: '2100 Series'
+  },
+  'catalog.size_2300_series': {
+    uz: '2300 seriyasi',
+    ru: 'Серия 2300',
+    en: '2300 Series'
+  },
+  'catalog.size_other': {
+    uz: 'Boshqa o\'lchamlar',
+    ru: 'Другие размеры',
+    en: 'Other Sizes'
+  },
   'catalog.view_details': {
     uz: 'Batafsil',
     ru: 'Подробнее',

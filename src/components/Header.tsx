@@ -27,7 +27,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
 
   // Telegram WebApp ni aniqlash
   useEffect(() => {
-    const isTelegram = window.Telegram?.WebApp || 
+    const isTelegram = (window as any).Telegram?.WebApp || 
                       window.location.href.includes('t.me') ||
                       window.location.href.includes('telegram.me') ||
                       navigator.userAgent.includes('TelegramBot');
