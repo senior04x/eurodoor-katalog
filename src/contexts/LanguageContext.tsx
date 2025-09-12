@@ -174,6 +174,68 @@ const translations: Translations = {
     en: 'Checkout'
   },
 
+  // Order Success Page
+  'orderSuccess.title': {
+    uz: 'Buyurtma muvaffaqiyatli qabul qilindi!',
+    ru: 'Заказ успешно принят!',
+    en: 'Order Successfully Accepted!'
+  },
+  'orderSuccess.subtitle': {
+    uz: 'Sizning buyurtmangiz qabul qilindi va tez orada siz bilan bog\'lanamiz.',
+    ru: 'Ваш заказ принят, и мы свяжемся с вами в ближайшее время.',
+    en: 'Your order has been accepted and we will contact you soon.'
+  },
+  'orderSuccess.orderDetails': {
+    uz: 'Buyurtma ma\'lumotlari',
+    ru: 'Детали заказа',
+    en: 'Order Details'
+  },
+  'orderSuccess.orderNumber': {
+    uz: 'Buyurtma raqami:',
+    ru: 'Номер заказа:',
+    en: 'Order Number:'
+  },
+  'orderSuccess.customerName': {
+    uz: 'Mijoz:',
+    ru: 'Клиент:',
+    en: 'Customer:'
+  },
+  'orderSuccess.phone': {
+    uz: 'Telefon:',
+    ru: 'Телефон:',
+    en: 'Phone:'
+  },
+  'orderSuccess.totalAmount': {
+    uz: 'Jami summa:',
+    ru: 'Общая сумма:',
+    en: 'Total Amount:'
+  },
+  'orderSuccess.contactInfo': {
+    uz: 'Bog\'lanish ma\'lumotlari',
+    ru: 'Контактная информация',
+    en: 'Contact Information'
+  },
+  'orderSuccess.contactText': {
+    uz: 'Bizning mutaxassislarimiz 24 soat ichida siz bilan bog\'lanadi va buyurtmangizni batafsil muhokama qiladi.',
+    ru: 'Наши специалисты свяжутся с вами в течение 24 часов и подробно обсудят ваш заказ.',
+    en: 'Our specialists will contact you within 24 hours and discuss your order in detail.'
+  },
+  'orderSuccess.goHome': {
+    uz: 'Bosh sahifaga qaytish',
+    ru: 'Вернуться на главную',
+    en: 'Return to Home'
+  },
+  'orderSuccess.newOrder': {
+    uz: 'Yangi buyurtma',
+    ru: 'Новый заказ',
+    en: 'New Order'
+  },
+  'orderSuccess.thankYou': {
+    uz: 'Eurodoor jamoasi nomidan rahmat! Sizning ishonchingiz biz uchun juda muhim.',
+    ru: 'Спасибо от команды Eurodoor! Ваше доверие очень важно для нас.',
+    en: 'Thank you from the Eurodoor team! Your trust is very important to us.'
+  },
+
   // Auth translations
   'auth.login': {
     uz: 'Kirish',
@@ -594,6 +656,126 @@ const translations: Translations = {
     uz: 'Ish vaqti',
     ru: 'Время работы',
     en: 'Working Hours'
+  },
+  'contact.back_to_product': {
+    uz: 'Mahsulotga qaytish',
+    ru: 'Вернуться к товару',
+    en: 'Back to Product'
+  },
+  'contact.cart_items': {
+    uz: 'Korzinkadagi mahsulotlar',
+    ru: 'Товары в корзине',
+    en: 'Cart Items'
+  },
+  'contact.selected_product': {
+    uz: 'Tanlangan mahsulot',
+    ru: 'Выбранный товар',
+    en: 'Selected Product'
+  },
+  'contact.dimensions': {
+    uz: 'O\'lcham',
+    ru: 'Размер',
+    en: 'Dimensions'
+  },
+  'contact.color': {
+    uz: 'Rang',
+    ru: 'Цвет',
+    en: 'Color'
+  },
+  'contact.quantity': {
+    uz: 'Miqdor',
+    ru: 'Количество',
+    en: 'Quantity'
+  },
+  'contact.total': {
+    uz: 'Jami',
+    ru: 'Итого',
+    en: 'Total'
+  },
+  'contact.material': {
+    uz: 'Material',
+    ru: 'Материал',
+    en: 'Material'
+  },
+  'contact.security': {
+    uz: 'Xavfsizlik',
+    ru: 'Безопасность',
+    en: 'Security'
+  },
+  'contact.price': {
+    uz: 'Narx',
+    ru: 'Цена',
+    en: 'Price'
+  },
+  'contact.order_form': {
+    uz: 'Buyurtma formasi',
+    ru: 'Форма заказа',
+    en: 'Order Form'
+  },
+  'contact.name_placeholder': {
+    uz: 'Ismingiz',
+    ru: 'Ваше имя',
+    en: 'Your Name'
+  },
+  'contact.phone_placeholder': {
+    uz: 'Telefon raqamingiz',
+    ru: 'Ваш номер телефона',
+    en: 'Your Phone Number'
+  },
+  'contact.email_placeholder': {
+    uz: 'Email manzilingiz',
+    ru: 'Ваш email адрес',
+    en: 'Your Email Address'
+  },
+  'contact.delivery_address_placeholder': {
+    uz: 'Yetkazib berish manzili',
+    ru: 'Адрес доставки',
+    en: 'Delivery Address'
+  },
+  'contact.sending': {
+    uz: 'Yuborilmoqda...',
+    ru: 'Отправка...',
+    en: 'Sending...'
+  },
+  'contact.place_order': {
+    uz: 'Buyurtma berish',
+    ru: 'Разместить заказ',
+    en: 'Place Order'
+  },
+  'contact.send_message': {
+    uz: 'Xabar yuborish',
+    ru: 'Отправить сообщение',
+    en: 'Send Message'
+  },
+  'contact.address_street': {
+    uz: 'Bunyodkor ko\'chasi, 1-uy',
+    ru: 'Улица Бунёдкор, дом 1',
+    en: 'Bunyodkor street, house 1'
+  },
+  'contact.working_hours_weekdays': {
+    uz: 'Dushanba - Shanba: 9:00 - 19:00',
+    ru: 'Понедельник - Суббота: 9:00 - 19:00',
+    en: 'Monday - Saturday: 9:00 - 19:00'
+  },
+  'contact.working_hours_weekend': {
+    uz: 'Yakshanba: 10:00 - 17:00',
+    ru: 'Воскресенье: 10:00 - 17:00',
+    en: 'Sunday: 10:00 - 17:00'
+  },
+  'contact.telegram_handle': {
+    uz: '@eurodoor_uz',
+    ru: '@eurodoor_uz',
+    en: '@eurodoor_uz'
+  },
+  'contact.instagram_handle': {
+    uz: '@eurodoor.uz',
+    ru: '@eurodoor.uz',
+    en: '@eurodoor.uz'
+  },
+  'contact.email_address': {
+    uz: 'info@eurodoor.uz',
+    ru: 'info@eurodoor.uz',
+    en: 'info@eurodoor.uz'
   },
   'contact.product_placeholder': {
     uz: 'Mahsulot haqida qo\'shimcha ma\'lumot',
