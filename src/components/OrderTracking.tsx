@@ -198,20 +198,20 @@ export default function OrderTracking() {
 
                 {/* Status Progress */}
                 <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-4 overflow-x-auto pb-2">
                     {statusSteps.map((step, index) => {
                       const currentIndex = getStatusIndex(order.status)
                       const isActive = index <= currentIndex
                       const Icon = step.icon
                       
                       return (
-                        <div key={step.key} className="flex flex-col items-center">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
+                        <div key={step.key} className="flex flex-col items-center min-w-0 flex-1">
+                          <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center mb-2 ${
                             isActive ? 'bg-blue-600' : 'bg-gray-600'
                           }`}>
-                            <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-gray-400'}`} />
+                            <Icon className={`h-4 w-4 md:h-5 md:w-5 ${isActive ? 'text-white' : 'text-gray-400'}`} />
                           </div>
-                          <span className={`text-xs text-center ${isActive ? 'text-white' : 'text-gray-400'}`}>
+                          <span className={`text-xs text-center leading-tight ${isActive ? 'text-white' : 'text-gray-400'}`}>
                             {step.label}
                           </span>
                         </div>
@@ -220,7 +220,7 @@ export default function OrderTracking() {
                   </div>
                   
                   {/* Progress Line */}
-                  <div className="relative">
+                  <div className="relative hidden md:block">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gray-600 rounded-full"></div>
                     <div 
                       className="absolute top-0 left-0 h-1 bg-blue-600 rounded-full transition-all duration-500"
