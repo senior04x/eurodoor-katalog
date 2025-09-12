@@ -1,198 +1,151 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { Eye, Layers, Package, ShoppingCart } from 'lucide-react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { Eye, ShoppingCart, Search, Filter, Package, Ruler } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from '../contexts/CartContext';
 import { useToast } from '../contexts/ToastContext';
 import { productsApi } from '../lib/productsApi';
+import { Product } from '../lib/supabase';
 
 interface CatalogPageProps {
   onNavigate: (page: string, productId?: string) => void;
 }
 
-interface DoorProduct {
-  id: string;
-  name: string;
-  image: string;
-  material?: string;
-  security?: string;
-  dimensions?: string; // "2000x900mm"
-  description?: string;
-}
-
-type GroupMode = 'material' | 'size';
-
 export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   const { t } = useLanguage();
   const { addToCart } = useCart();
   const { showSuccess } = useToast();
+  const prefersReduced = useReducedMotion();
   
-
-  // Faqat Supabase dan mahsulotlarni olish
-  const [doors, setDoors] = useState<DoorProduct[]>([]);
+  // Real Supabase products
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDimensions, setSelectedDimensions] = useState<string>('all');
+  const [selectedMaterial, setSelectedMaterial] = useState<string>('all');
 
   useEffect(() => {
     const loadProducts = async () => {
       try {
         setLoading(true);
-        const products = await productsApi.getAllProducts();
-        const convertedProducts: DoorProduct[] = products.map((product: any) => ({
-          id: product.id,
-          name: product.name,
-          image: product.image,
-          material: product.material,
-          security: product.security,
-          dimensions: product.dimensions,
-          description: product.description
-        }));
-        setDoors(convertedProducts);
+        const fetchedProducts = await productsApi.getAllProducts();
+        setProducts(fetchedProducts);
+        console.log('✅ Products loaded:', fetchedProducts.length);
       } catch (error) {
-        console.error('Error loading products:', error);
-        setDoors([]);
+        console.error('❌ Error loading products:', error);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
     };
 
     loadProducts();
-  }, []); // Faqat bir marta yuklash
 
-  // --- Helperlar ---
-  // sinonimlarni yagona formatga o‘tkazamiz:
-  // temir -> metall, po'lat -> metall, yog'och/yogoch -> mdf, shisha -> oyna
-// sinonimlarni bir xil ko'rinishga keltirish
-const norm = (s: string | undefined | null) => {
-  if (!s) return '';
-  return s
-    .toLowerCase()
-    .replace(/'/g, "'")
-    .replace(/temir/g, 'metall')
-    .replace(/po'lat/g, 'metall')
-    .replace(/yog'och|yogoch/g, 'mdf')
-    .replace(/shisha/g, 'oyna');
-};
-
-const getMaterialKey = (m: string | undefined | null, t: any) => {
-  if (!m) return t('catalog.material_other');
-  
-  const x = norm(m);
-  const hasMetall = x.includes('metall');
-  const hasMdf = x.includes('mdf');
-  const hasOyna = x.includes('oyna');
-  const hasKompozit = x.includes('kompozit');
-  const hasNatural = x.includes('natural');
-
-  // 1) Avval uchlik kombinatsiya
-  if (hasMetall && hasMdf && hasOyna) return t('catalog.material_metall_mdf_oyna');
-
-  // 2) Keyin qolganlari
-  if (hasMetall && hasMdf) return t('catalog.material_metall_mdf');
-  if (hasMdf && !hasMetall) return t('catalog.material_mdf_mdf');
-  if (hasMetall && !hasMdf && !hasOyna && !hasKompozit && !hasNatural) return t('catalog.material_metall_metall');
-  if (hasMetall && hasOyna) return t('catalog.material_metall_mdf_oyna');
-  if (hasMetall && hasKompozit) return t('catalog.material_metall_kompozit');
-
-  return t('catalog.material_other');
-};
-
-
-  const parseHeight = (d: string | undefined | null) => {
-    if (!d) return NaN;
-    const m = d.match(/(\d+)\s*x\s*\d+/i);
-    return m ? parseInt(m[1], 10) : NaN;
-  };
-
-  const getSizeKey = (d: string | undefined | null, t: any) => {
-    if (!d) return t('catalog.size_other');
-    
-    const h = parseHeight(d);
-    if (isNaN(h)) return t('catalog.size_other');
-    if (h <= 2000) return t('catalog.size_2050_series');
-    if (h <= 2100) return t('catalog.size_2050_series');
-    return t('catalog.size_2300_series');
-  };
-
-  const [mode, setMode] = useState<GroupMode>('material');
-  const [openKey, setOpenKey] = useState<string | null>(null);
-  const [isNavigating, setIsNavigating] = useState(false);
-
-  // Ref: har bo‘lim uchun (scrollga)
-  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-  // Animatsiya uchun: foydalanuvchi "reduced motion" yoqganmi?
-  const prefersReduced = useReducedMotion();
-
-  // Guruhlash
-  const grouped = useMemo(() => {
-    const map = new Map<string, DoorProduct[]>();
-    for (const d of doors) {
-      const key = mode === 'material' ? getMaterialKey(d.material, t) : getSizeKey(d.dimensions, t);
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(d);
-    }
-
-    const order =
-      mode === 'material'
-        ? [t('catalog.material_metall_mdf'), t('catalog.material_mdf_mdf'), t('catalog.material_metall_metall'), t('catalog.material_metall_mdf_oyna'), t('catalog.material_metall_kompozit'), t('catalog.material_other')]
-        : [t('catalog.size_2050_series'), t('catalog.size_2300_series'), t('catalog.size_2100_series'), t('catalog.size_other')];
-
-    return Array.from(map.entries()).sort((a, b) => {
-      const ai = order.indexOf(a[0]);
-      const bi = order.indexOf(b[0]);
-      return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+    // Real-time subscription
+    const subscription = productsApi.subscribeToProducts((payload) => {
+      console.log('🔄 Products updated:', payload);
+      loadProducts(); // Reload products when changes occur
     });
-  }, [doors, mode]);
 
-  // Yangi bo‘lim ochilganda shu bo‘lim tepaga kelsin
-  useEffect(() => {
-    if (openKey && sectionRefs.current[openKey]) {
-      sectionRefs.current[openKey]!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Filter products based on search, dimensions, and material
+  const filteredProducts = useMemo(() => {
+    let filtered = products;
+
+    // Search filter
+    if (searchQuery) {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.material.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
-  }, [openKey]);
 
-  // ---- ANIMATSIYA VARIANTLAR ----
-  const containerVariants = {
-    hidden: {},
-    show: {
-      transition: {
-        staggerChildren: prefersReduced ? 0 : 0.2,
-      },
-    },
+    // Dimensions filter
+    if (selectedDimensions !== 'all') {
+      filtered = filtered.filter(product => 
+        product.dimensions?.toLowerCase().includes(selectedDimensions.toLowerCase())
+      );
+    }
+
+    // Material filter
+    if (selectedMaterial !== 'all') {
+      filtered = filtered.filter(product => 
+        product.material.toLowerCase().includes(selectedMaterial.toLowerCase())
+      );
+    }
+
+    return filtered;
+  }, [products, searchQuery, selectedDimensions, selectedMaterial]);
+
+  // Get unique dimensions and materials
+  const dimensions = useMemo(() => {
+    const dims = ['all', ...new Set(products.map(p => p.dimensions).filter(Boolean))];
+    return dims;
+  }, [products]);
+
+  const materials = useMemo(() => {
+    const mats = ['all', ...new Set(products.map(p => p.material))];
+    return mats;
+  }, [products]);
+
+  // Add to cart handler
+  const handleAddToCart = (product: Product) => {
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image || product.image_url || '',
+      dimensions: product.dimensions,
+      material: product.material
+    };
+
+    addToCart(cartItem);
+    showSuccess('Mahsulot qo\'shildi!', `${product.name} korzinkaga qo'shildi`);
   };
 
-  const sectionHeaderVariants = {
-    hidden: { opacity: 0, y: 40 },
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      y: 0,
-      transition: prefersReduced
-        ? { duration: 0 }
-        : { type: 'spring', stiffness: 600, damping: 28, mass: 0.5 },
-    },
-  };
-
-  const cardsContainerVariants = {
-    hidden: {},
-    show: {
       transition: {
-        staggerChildren: prefersReduced ? 0 : 0.1,
-      },
-    },
+        staggerChildren: 0.1,
+        delayChildren: 0.1
+      }
+    }
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 36, scale: 0.98 },
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
     show: {
       opacity: 1,
       y: 0,
       scale: 1,
       transition: prefersReduced
         ? { duration: 0 }
-        : { type: 'spring', stiffness: 550, damping: 26, mass: 0.6 },
-    },
-    exit: { opacity: 0, y: 10, scale: 0.98, transition: { duration: 0.15 } },
+        : { type: 'spring', stiffness: 300, damping: 20 }
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="relative min-h-screen">
+        <div className="fixed inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }} />
+        <div className="fixed inset-0 bg-black/30" />
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-white text-lg">Mahsulotlar yuklanmoqda...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen">
@@ -207,196 +160,163 @@ const getMaterialKey = (m: string | undefined | null, t: any) => {
       <section className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl py-16 mx-4 rounded-3xl border border-white/20 shadow-2xl">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">{t('catalog.title')}</h1>
+            <h1 className="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+              {t('catalog.title')}
+            </h1>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
               {t('catalog.description')}
             </p>
-
-            {/* Rejim tanlash */}
-            <div className="mt-6 inline-flex rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl overflow-hidden">
-              <button
-                type="button"
-                onClick={() => { setMode('material'); setOpenKey(null); }}
-                className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 border-transparent pb-1 ${
-                  mode === 'material' ? 'bg-white/25 text-white' : 'text-gray-200 hover:bg-white/10'
-                }`}
-              >
-                {t('catalog.group_by_material')}
-              </button>
-              <button
-                type="button"
-                onClick={() => { setMode('size'); setOpenKey(null); }}
-                className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 border-transparent pb-1 ${
-                  mode === 'size' ? 'bg-white/25 text-white' : 'text-gray-200 hover:bg-white/10'
-                }`}
-              >
-                {t('catalog.group_by_size')}
-              </button>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Accordion Bo'limlar */}
-      <section className="py-12">
+      {/* Filters */}
+      <section className="container mx-auto px-4 py-8">
+        <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Mahsulot qidirish..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              />
+            </div>
+
+            {/* Dimensions Filter */}
+            <div className="relative">
+              <Ruler className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <select
+                value={selectedDimensions}
+                onChange={(e) => setSelectedDimensions(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none"
+              >
+                {dimensions.map(dimension => (
+                  <option key={dimension} value={dimension} className="bg-gray-800 text-white">
+                    {dimension === 'all' ? 'Barcha o\'lchamlar' : dimension}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Material Filter */}
+            <div className="relative">
+              <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <select
+                value={selectedMaterial}
+                onChange={(e) => setSelectedMaterial(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none"
+              >
+                {materials.map(material => (
+                  <option key={material} value={material} className="bg-gray-800 text-white">
+                    {material === 'all' ? 'Barcha materiallar' : material}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+          </div>
+
+          {/* Results count */}
+          <div className="mt-4 text-center">
+            <p className="text-gray-300">
+              {filteredProducts.length} ta mahsulot topildi
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Products Grid */}
+      <section className="container mx-auto px-4 pb-16">
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8">
+              <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Mahsulot topilmadi</h3>
+              <p className="text-gray-300">Qidiruv shartlarini o'zgartiring yoki boshqa kategoriyani tanlang</p>
+            </div>
+          </div>
+        ) : (
         <motion.div
-          className="container mx-auto px-4 space-y-6"
           variants={containerVariants}
           initial="hidden"
           animate="show"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {/* Mahsulotlar yo'q bo'lganda */}
-          {doors.length === 0 ? (
+            {filteredProducts.map((product) => (
             <motion.div
-              variants={sectionHeaderVariants}
-              className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl overflow-hidden"
-            >
-              <div className="text-center py-16 px-6">
-                <div className="mb-6">
-                  <div className="mx-auto w-20 h-20 bg-white/20 border border-white/30 rounded-full flex items-center justify-center mb-4">
-                    <Package className={`h-10 w-10 text-white/60 ${loading ? 'animate-pulse' : ''}`} />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">
-                    {loading ? t('loading.loading_products') : t('loading.no_products')}
-                  </h3>
-                  <p className="text-gray-300 text-lg max-w-md mx-auto">
-                    {loading ? t('loading.loading') : t('loading.no_products_desc')}
-                  </p>
-                </div>
-                {!loading && (
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <button
-                      onClick={() => window.open('http://localhost:5175', '_blank')}
-                      className="bg-blue-500/20 text-blue-300 px-6 py-3 rounded-lg font-semibold hover:bg-blue-500/30 transition-colors border border-blue-500/30"
-                    >
-                      Admin Panel ga o'tish
-                    </button>
-                    <button
-                      onClick={() => window.location.reload()}
-                      className="bg-white/20 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/30 transition-colors border border-white/30"
-                    >
-                      Sahifani yangilash
-                    </button>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          ) : (
-            grouped.map(([key, list]) => {
-            const isOpen = openKey === key;
-            return (
-              <motion.div
-                key={key}
-                ref={(el) => { sectionRefs.current[key] = el; }}
-                variants={sectionHeaderVariants}
-                className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl overflow-hidden"
+                key={product.id}
+                variants={cardVariants}
+                className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl shadow-xl overflow-hidden border border-white/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-105 group"
               >
-                {/* Sarlavha */}
-                <button
-                  type="button"
-                  aria-expanded={isOpen}
-                  onClick={() => setOpenKey(isOpen ? null : key)}
-                  className="w-full flex items-center justify-between px-6 py-4 text-left"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="bg-white/20 border border-white/30 rounded-full p-2">
-                      <Layers className="h-4 w-4 text-white" />
+                {/* Product Image */}
+                <div className="relative aspect-square overflow-hidden">
+                  <img
+                    src={product.image || product.image_url || 'https://picsum.photos/400/300?random=1'}
+                    alt={product.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+
+                {/* Product Info */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">
+                    {product.name}
+                  </h3>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm text-gray-300">
+                      <span className="font-medium">Material:</span>
+                      <span className="ml-2">{product.material}</span>
+                </div>
+                    <div className="flex items-center text-sm text-gray-300">
+                      <span className="font-medium">Xavfsizlik:</span>
+                      <span className="ml-2">{product.security}</span>
                     </div>
-                    <div>
-                      <div className="text-white font-semibold">{key}</div>
-                      <div className="text-xs text-gray-300">{list.length} ta model</div>
+                    <div className="flex items-center text-sm text-gray-300">
+                      <span className="font-medium">O'lcham:</span>
+                      <span className="ml-2">{product.dimensions}</span>
                     </div>
                   </div>
-                  <svg
-                    className={`h-5 w-5 text-white transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
 
-                {/* Kontent */}
-                {isOpen && (
-                  <motion.div
-                    className="px-6 pb-6"
-                    variants={cardsContainerVariants}
-                    initial="hidden"
-                    animate="show"
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {list.map((door) => (
-                        <motion.div
-                          key={door.id}
-                          variants={cardVariants}
-                          className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl shadow-xl overflow-hidden border border-white/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-105 group"
-                        >
-                          <div className="relative aspect-square overflow-hidden">
-                            <img
-                              src={door.image}
-                              alt={door.name}
-                              loading="lazy"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="p-5">
-                            <h3 className="text-lg font-semibold text-white mb-2">{door.name}</h3>
-                            <div className="space-y-1 mb-3 text-sm text-gray-300">
-                              {door.material && <div><span className="font-medium">{t('catalog.material')}:</span> {door.material}</div>}
-                              {door.security && <div><span className="font-medium">{t('catalog.security')}:</span> {door.security}</div>}
-                              {door.dimensions && <div><span className="font-medium">{t('catalog.dimensions')}:</span> {door.dimensions}</div>}
-                            </div>
-                            {door.description && <p className="text-gray-300 text-sm mb-4">{door.description}</p>}
+                  {product.description && (
+                    <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                      {product.description}
+                    </p>
+                  )}
 
-                            <div className="flex gap-2">
-                              <button
-                                type="button"
-                                disabled={isNavigating}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  if (isNavigating) return;
-                                  setIsNavigating(true);
-                                  onNavigate('product', door.id);
-                                  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-                                }}
-                                className="flex-1 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white py-3 px-4 rounded-xl font-semibold hover:from-white/30 hover:to-white/20 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 border border-white/30 shadow-lg hover:shadow-xl group-hover:border-blue-500/50"
-                              >
-                                <Eye className="h-4 w-4" />
-                                {isNavigating ? t('catalog.opening') : t('catalog.view_details')}
-                              </button>
-                              
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  addToCart({
-                                    id: door.id,
-                                    name: door.name,
-                                    price: 0, // Price will be set in product detail
-                                    image: door.image,
-                                    dimensions: door.dimensions || '',
-                                    material: door.material || ''
-                                  });
-                                  showSuccess('Mahsulot qo\'shildi!', `${door.name} korzinkaga qo\'shildi`);
-                                }}
-                                className="bg-gradient-to-r from-blue-500/30 to-purple-500/30 backdrop-blur-md text-blue-300 py-3 px-3 rounded-xl font-semibold hover:from-blue-500/40 hover:to-purple-500/40 transition-all duration-300 flex items-center justify-center border border-blue-500/50 shadow-lg hover:shadow-xl transform hover:scale-105"
-                                title="Korzinkaga qo'shish"
-                              >
-                                <ShoppingCart className="h-5 w-5" />
-                              </button>
+                  <div className="flex items-center justify-between">
+                    <div className="text-2xl font-bold text-white">
+                      {product.price.toLocaleString()} {product.currency}
                             </div>
+                    
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => onNavigate('product', product.id)}
+                        className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+                        title="Batafsil ko'rish"
+                      >
+                        <Eye className="w-5 h-5 text-white" />
+                      </button>
+                            <button
+                        onClick={() => handleAddToCart(product)}
+                        className="p-2 bg-blue-500/20 hover:bg-blue-500/30 rounded-lg transition-colors"
+                        title="Korzinkaga qo'shish"
+                      >
+                        <ShoppingCart className="w-5 h-5 text-white" />
+                  </button>
+                    </div>
+                  </div>
                 </div>
                         </motion.div>
             ))}
-          </div>
                   </motion.div>
                 )}
-              </motion.div>
-            );
-          })
-          )}
-        </motion.div>
       </section>
     </div>
   );
