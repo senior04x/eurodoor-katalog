@@ -23,8 +23,16 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
+  const [isTelegramWebApp, setIsTelegramWebApp] = useState(false)
 
   useEffect(() => {
+    // Telegram WebApp ni aniqlash
+    const isTelegram = window.Telegram?.WebApp || 
+                      window.location.href.includes('t.me') ||
+                      window.location.href.includes('telegram.me') ||
+                      navigator.userAgent.includes('TelegramBot');
+    setIsTelegramWebApp(!!isTelegram);
+
     // Sayt yuklanishini simulyatsiya qilish
     const timer = setTimeout(() => {
       setIsLoading(false)
@@ -152,7 +160,10 @@ function App() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="relative"
+                  className={`relative ${isTelegramWebApp ? 'pt-24' : ''}`}
+                  style={isTelegramWebApp ? { 
+                    paddingTop: 'calc(env(safe-area-inset-top, 0px) + 80px)'
+                  } : {}}
                 >
                   {renderPage()}
                 </motion.main>

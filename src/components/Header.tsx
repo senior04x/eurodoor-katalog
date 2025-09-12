@@ -19,10 +19,20 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
   const { t } = useLanguage();
   const { totalItems, isCartOpen, setIsCartOpen } = useCart();
   const { user, signOut } = useAuth();
   const { showSuccess } = useToast();
+
+  // Telegram WebApp ni aniqlash
+  useEffect(() => {
+    const isTelegram = window.Telegram?.WebApp || 
+                      window.location.href.includes('t.me') ||
+                      window.location.href.includes('telegram.me') ||
+                      navigator.userAgent.includes('TelegramBot');
+    setIsTelegramWebApp(!!isTelegram);
+  }, []);
 
   // Body scrollni bloklash (mobil menyu ochilganda)
   useEffect(() => {
@@ -154,8 +164,17 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
       variants={headerVariants}
       initial="hidden"
       animate="show"
-      className="bg-white/3 backdrop-blur-sm border border-white/20 sticky top-0 z-40 shadow-lg m-4 rounded-md overflow-visible"
-      style={{ top: 'env(safe-area-inset-top)' }}
+      className={`bg-white/3 backdrop-blur-sm border border-white/20 z-40 shadow-lg rounded-md overflow-visible ${
+        isTelegramWebApp 
+          ? 'fixed top-0 left-0 right-0 m-4' 
+          : 'sticky top-0 m-4'
+      }`}
+      style={isTelegramWebApp ? { 
+        top: 'env(safe-area-inset-top, 0px)',
+        marginTop: 'env(safe-area-inset-top, 16px)',
+        marginLeft: 'env(safe-area-inset-left, 16px)',
+        marginRight: 'env(safe-area-inset-right, 16px)'
+      } : {}}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20 md:h-15">
