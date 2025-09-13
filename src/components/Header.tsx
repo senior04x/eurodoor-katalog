@@ -227,7 +227,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
             {user ? (
               <div className="flex items-center space-x-2 ml-4">
                 {/* Notification Center */}
-                <NotificationCenter />
+                <NotificationCenter onNavigate={onNavigate} />
                 
                 <div className="relative">
                   <button
@@ -379,7 +379,8 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                     <div className="mb-3">
                       <NotificationCenter 
                         isMobile={true} 
-                        onMobileClose={() => setIsMenuOpen(false)} 
+                        onMobileClose={() => setIsMenuOpen(false)}
+                        onNavigate={onNavigate}
                       />
                     </div>
                   )}

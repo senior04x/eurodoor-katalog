@@ -12,6 +12,7 @@ const ProductDetailPage = lazy(() => import('./components/ProductDetailPage'))
 const OrderSuccessPage = lazy(() => import('./components/OrderSuccessPage'))
 const OrderTracking = lazy(() => import('./components/OrderTracking'))
 const ProfilePage = lazy(() => import('./components/ProfilePage'))
+const NotificationCenter = lazy(() => import('./components/NotificationCenter'))
 import { CartProvider } from './contexts/CartContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
@@ -285,6 +286,12 @@ function App() {
         return (
           <Suspense fallback={<LoadingFallback />}>
             <ProfilePage onNavigate={handleNavigate} />
+          </Suspense>
+        )
+      case 'notifications':
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <NotificationCenter />
           </Suspense>
         )
       case 'admin':

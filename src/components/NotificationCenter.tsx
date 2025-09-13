@@ -21,9 +21,10 @@ interface Notification {
 interface NotificationCenterProps {
   isMobile?: boolean
   onMobileClose?: () => void
+  onNavigate?: (page: string) => void
 }
 
-const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = false, onMobileClose }) => {
+const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = false, onMobileClose, onNavigate }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
@@ -32,10 +33,15 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
 
   // Load notifications
   const loadNotifications = async () => {
-    if (!user) return
+    if (!user) {
+      console.log('❌ No user found for loadNotifications')
+      return
+    }
 
     try {
       setLoading(true)
+      console.log('🔔 Loading notifications for user:', user.id)
+      
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
@@ -43,12 +49,18 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
         .order('created_at', { ascending: false })
         .limit(50)
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Supabase error loading notifications:', error)
+        throw error
+      }
 
+      console.log('✅ Loaded notifications:', data)
       setNotifications(data || [])
-      setUnreadCount(data?.filter(n => !n.is_read).length || 0)
+      const unreadCount = data?.filter(n => !n.is_read).length || 0
+      setUnreadCount(unreadCount)
+      console.log('✅ Unread count:', unreadCount)
     } catch (error) {
-      console.error('Error loading notifications:', error)
+      console.error('❌ Error loading notifications:', error)
     } finally {
       setLoading(false)
     }
@@ -57,20 +69,30 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
   // Mark notification as read
   const markAsRead = async (notificationId: string) => {
     try {
-      const { error } = await supabase
+      console.log('🔔 Marking notification as read:', notificationId)
+      
+      const { data, error } = await supabase
         .from('notifications')
         .update({ is_read: true })
         .eq('id', notificationId)
+        .select()
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Supabase error:', error)
+        throw error
+      }
+
+      console.log('✅ Notification marked as read:', data)
 
       // Update local state
       setNotifications(prev => 
         prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
       )
       setUnreadCount(prev => Math.max(0, prev - 1))
+      
+      console.log('✅ Local state updated for single notification')
     } catch (error) {
-      console.error('Error marking notification as read:', error)
+      console.error('❌ Error marking notification as read:', error)
     }
   }
 
@@ -84,22 +106,37 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
 
   // Mark all as read
   const markAllAsRead = async () => {
-    if (!user) return
+    if (!user) {
+      console.log('❌ No user found for markAllAsRead')
+      return
+    }
 
     try {
-      const { error } = await supabase
+      console.log('🔔 Marking all notifications as read for user:', user.id)
+      
+      const { data, error } = await supabase
         .from('notifications')
         .update({ is_read: true })
         .eq('user_id', user.id)
         .eq('is_read', false)
+        .select()
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Supabase error:', error)
+        throw error
+      }
+
+      console.log('✅ Marked notifications as read:', data)
 
       // Update local state
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
       setUnreadCount(0)
+      
+      console.log('✅ Local state updated - all notifications marked as read')
     } catch (error) {
-      console.error('Error marking all notifications as read:', error)
+      console.error('❌ Error marking all notifications as read:', error)
+      // Show user-friendly error message
+      alert('Bildirishnomalarni o\'qilgan deb belgilashda xatolik yuz berdi. Iltimos, qaytadan urinib ko\'ring.')
     }
   }
 
@@ -174,9 +211,17 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
         },
         (payload) => {
           console.log('🔔 Notification updated:', payload.new)
+          const updatedNotification = payload.new as Notification
+          
           setNotifications(prev => 
-            prev.map(n => n.id === payload.new.id ? payload.new as Notification : n)
+            prev.map(n => n.id === updatedNotification.id ? updatedNotification : n)
           )
+          
+          // Update unread count based on the update
+          if (updatedNotification.is_read) {
+            setUnreadCount(prev => Math.max(0, prev - 1))
+            console.log('✅ Unread count decreased due to notification read')
+          }
         }
       )
       .subscribe()
@@ -230,9 +275,10 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllAsRead}
-                    className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                    className="text-blue-400 hover:text-blue-300 transition-colors p-1 rounded hover:bg-white/10"
+                    title="Barchasini o'qilgan deb belgilash"
                   >
-                    Barchasini o'qilgan deb belgilash
+                    <CheckCircle className="w-4 h-4" />
                   </button>
                 )}
                 <button
@@ -310,7 +356,10 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
                     } else {
                       setIsOpen(false)
                     }
-                    // Navigate to full notifications page if needed
+                    // Navigate to notifications page
+                    if (onNavigate) {
+                      onNavigate('notifications')
+                    }
                   }}
                   className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
                 >
