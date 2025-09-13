@@ -20,7 +20,7 @@ function App() {
   // URL hash'dan current page ni olish
   const getInitialPage = () => {
     const hash = window.location.hash.replace('#', '')
-    const validPages = ['home', 'catalog', 'about', 'contact', 'orders', 'profile', 'order-success']
+    const validPages = ['home', 'catalog', 'about', 'contact', 'orders', 'profile', 'order-success', 'product-detail']
     
     // Product detail page uchun
     if (hash.startsWith('product-detail/')) {
