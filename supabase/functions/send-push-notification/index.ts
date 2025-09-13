@@ -22,7 +22,8 @@ Deno.serve(async (req) => {
     title, 
     body, 
     tag, 
-    icon: icon || '/favicon.ico' 
+    icon: icon || '/favicon.ico', 
+    url: '/en/orders.html' 
   });
   const results: any[] = [];
 
