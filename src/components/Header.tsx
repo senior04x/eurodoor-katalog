@@ -9,6 +9,7 @@ import { useToast } from '../contexts/ToastContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import CartSidebar from './CartSidebar';
 import { notificationService } from '../lib/notificationService';
+import { enablePushForCurrentUser, testPushNotification, isPWAInstalled, isPushSupported } from '../lib/iosNotificationService';
 
 interface HeaderProps {
   currentPage: string;
@@ -45,14 +46,35 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
     }
   };
 
-  const testPushNotification = async () => {
+  const testPushNotificationHandler = async () => {
     try {
       console.log('🧪 Manual test push notification triggered');
-      await notificationService.sendTestPushNotification();
+      await testPushNotification();
       showSuccess('Test push notification yuborildi!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Test push notification error:', error);
       showError('Test push notification xatosi: ' + error.message);
+    }
+  };
+
+  const enablePushNotifications = async () => {
+    try {
+      if (!user) {
+        showError('Iltimos, avval tizimga kiring');
+        return;
+      }
+
+      if (!isPushSupported()) {
+        showError('Push notifications qo\'llab-quvvatlanmaydi');
+        return;
+      }
+
+      console.log('🔔 Enabling push notifications...');
+      await enablePushForCurrentUser(user.id);
+      showSuccess('Push notifications yoqildi!');
+    } catch (error: any) {
+      console.error('Enable push notification error:', error);
+      showError('Push notification xatosi: ' + error.message);
     }
   };
 
@@ -298,7 +320,17 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                     <button
                       onClick={() => {
                         setShowUserMenu(false);
-                        testPushNotification();
+                        enablePushNotifications();
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <span className="h-4 w-4 mr-2">🔔</span>
+                      Enable Push Notifications
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        testPushNotificationHandler();
                       }}
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
