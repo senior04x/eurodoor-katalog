@@ -217,10 +217,11 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className={`absolute ${isMobile ? 'left-0 right-0 mx-4' : 'right-0'} top-full mt-2 ${isMobile ? 'w-auto' : 'w-80'} bg-black/60 backdrop-blur-2xl rounded-lg shadow-2xl border border-white/30 z-50`}
+            className={`absolute ${isMobile ? 'left-0 right-0 mx-4' : 'right-0'} top-full mt-2 ${isMobile ? 'w-auto' : 'w-80'} bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-blue-600/30 backdrop-blur-2xl shadow-2xl border border-white/30 z-50`}
+            style={{ borderRadius: '0' }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/30 bg-black/20 backdrop-blur-sm">
+            <div className="flex items-center justify-between p-4 border-b border-white/30 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm">
               <h3 className="text-white font-semibold">Bildirishnomalar</h3>
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
@@ -298,7 +299,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
 
             {/* Footer */}
             {notifications.length > 0 && (
-              <div className="p-3 border-t border-white/30 bg-black/20 backdrop-blur-sm text-center">
+              <div className="p-3 border-t border-white/30 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm text-center">
                 <button
                   onClick={() => {
                     if (isMobile) {
