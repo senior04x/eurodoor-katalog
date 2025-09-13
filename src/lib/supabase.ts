@@ -14,9 +14,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   realtime: {
     params: {
       eventsPerSecond: 10
-    },
-    transport: 'websocket',
-    timeout: 20000
+    }
   },
   global: {
     headers: {
