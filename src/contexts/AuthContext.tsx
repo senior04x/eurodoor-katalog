@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
-import { setCurrentUserId } from '../lib/notificationService'
+import { setCurrentUserId, ensurePushSubscription } from '../lib/notificationService'
 
 export interface User {
   id: string
@@ -127,6 +127,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               setUser(userData);
               // Save user ID for notifications
               setCurrentUserId(session.user.id);
+              
+              // Setup push notifications for the user
+              try {
+                console.log('🔔 Setting up push notifications for user:', session.user.id)
+                await ensurePushSubscription(session.user.id)
+                console.log('✅ Push notifications setup completed')
+              } catch (error) {
+                console.error('❌ Push notification setup failed:', error)
+                // Don't fail the login if push notification setup fails
+              }
               
               // Trigger notification check after successful login
               setTimeout(() => {

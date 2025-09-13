@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import CartSidebar from './CartSidebar';
+import NotificationCenter from './NotificationCenter';
 import { testPushNotification } from '../lib/api';
 import { ensurePushSubscription, isPushSupported } from '../lib/notificationService';
 
@@ -296,6 +297,9 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
             {/* Auth buttons in nav */}
             {user ? (
               <div className="flex items-center space-x-2 ml-4">
+                {/* Notification Center */}
+                <NotificationCenter />
+                
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center space-x-1 px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-md transition-colors"

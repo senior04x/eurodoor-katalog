@@ -4,7 +4,7 @@ import { Package, Clock, CheckCircle, Truck, Home, Search, AlertCircle } from 'l
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
-// import { notificationService } from '../lib/notificationService' // Replaced with new system
+import { pushNotificationService } from '../lib/pushNotificationService'
 
 interface Order {
   id: string
@@ -113,6 +113,20 @@ export default function OrderTracking() {
                   tag: `order-${payload.new.order_number}`,
                   requireInteraction: true
                 });
+              }
+              
+              // Send push notification to user's device
+              if (user && user.id) {
+                try {
+                  await pushNotificationService.notifyOrderStatusChange(
+                    payload.new.order_number,
+                    newStatus,
+                    user.id
+                  );
+                  console.log('✅ Push notification sent to user device');
+                } catch (error) {
+                  console.error('❌ Push notification error:', error);
+                }
               }
             }
             
