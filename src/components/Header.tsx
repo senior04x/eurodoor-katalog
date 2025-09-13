@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Menu, X, ShoppingCart, User, LogOut, LogIn, UserPlus, Bell } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, LogOut, LogIn, UserPlus, Bell, Package } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -276,7 +276,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                       }}
                       className="flex items-center w-full px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
                     >
-                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      <Package className="h-4 w-4 mr-2" />
                       {t('header.orders')}
                     </button>
                     <hr className="my-1 border-white/20" />
@@ -396,9 +396,28 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                   {/* Mobile Notification Center */}
                   {user && (
                     <div className="mb-3">
+                      <button
+                        onClick={() => setShowNotifications(!showNotifications)}
+                        className="flex items-center w-full px-3 py-2 text-white hover:bg-white/10 transition-colors"
+                      >
+                        <Bell className="h-5 w-5 mr-3" />
+                        <span className="text-sm">Bildirishnomalar</span>
+                        {unreadCount > 0 && (
+                          <div className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                          </div>
+                        )}
+                      </button>
+                      
                       <NotificationCenter 
                         isMobile={true} 
-                        onMobileClose={() => setIsMenuOpen(false)}
+                        isOpen={showNotifications}
+                        onMobileClose={() => {
+                          setIsMenuOpen(false);
+                          setShowNotifications(false);
+                        }}
+                        onUnreadCountChange={setUnreadCount}
+                        onClose={() => setShowNotifications(false)}
                       />
                     </div>
                   )}
@@ -438,7 +457,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                         }}
                         className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
                       >
-                        <ShoppingCart className="h-5 w-5 mr-3" />
+                        <Package className="h-5 w-5 mr-3" />
                         <span>{t('header.orders')}</span>
                       </button>
                       <button
