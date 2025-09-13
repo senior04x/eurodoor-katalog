@@ -20,6 +20,8 @@ export interface NotificationAction {
 class NotificationService {
   private permission: NotificationPermission = 'default';
   private isSupported: boolean = false;
+  private lastNotificationTime: { [key: string]: number } = {};
+  private notificationDebounceTime: number = 5000; // 5 soniya
 
   constructor() {
     this.isSupported = 'Notification' in window;
@@ -55,11 +57,29 @@ class NotificationService {
     }
 
     try {
+      // Duplicate notification'larni oldini olish uchun tag ishlatish
+      const tag = data.tag || `notification-${Date.now()}`;
+      
+      // Avvalgi notification'larni yopish (bir xil tag bilan)
+      if (data.tag) {
+        // Service Worker orqali notification yuborish (agar mavjud bo'lsa)
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: 'SHOW_NOTIFICATION',
+            data: {
+              ...data,
+              tag: tag
+            }
+          });
+          return;
+        }
+      }
+
       const notificationOptions: NotificationOptions = {
         body: data.body,
         icon: data.icon || '/favicon.ico',
         badge: data.badge || '/favicon.ico',
-        tag: data.tag,
+        tag: tag, // Duplicate'larni oldini olish uchun
         data: data.data,
         requireInteraction: true, // Notification avtomatik yopilmasin
         silent: false
@@ -77,10 +97,15 @@ class NotificationService {
         window.focus();
         notification.close();
         
-        // Agar order tracking sahifasiga o'tish kerak bo'lsa
+        // Buyurtmalar sahifasiga o'tish
         if (data.data?.orderNumber) {
           // Order tracking sahifasiga o'tish
-          window.location.href = `#order-tracking?order=${data.data.orderNumber}`;
+          window.location.href = `#orders`;
+          console.log(`🔔 Notification clicked - navigating to orders page for order: ${data.data.orderNumber}`);
+        } else {
+          // Umumiy buyurtmalar sahifasiga o'tish
+          window.location.href = `#orders`;
+          console.log('🔔 Notification clicked - navigating to orders page');
         }
       };
 
@@ -89,10 +114,12 @@ class NotificationService {
         console.log('Notification closed');
       };
 
-      // 10 soniyadan keyin avtomatik yopish
+      // 15 soniyadan keyin avtomatik yopish
       setTimeout(() => {
         notification.close();
-      }, 10000);
+      }, 15000);
+
+      console.log(`✅ Notification shown with tag: ${tag}`);
 
     } catch (error) {
       console.error('Error showing notification:', error);
@@ -191,6 +218,19 @@ class NotificationService {
 
     const message = statusMessages[order.status as keyof typeof statusMessages];
     if (message) {
+      // Duplicate notification'larni oldini olish
+      const notificationKey = `${orderNumber}-${order.status}`;
+      const now = Date.now();
+      const lastTime = this.lastNotificationTime[notificationKey] || 0;
+      
+      if (now - lastTime < this.notificationDebounceTime) {
+        console.log(`⚠️ Skipping duplicate notification for ${notificationKey}`);
+        return;
+      }
+      
+      this.lastNotificationTime[notificationKey] = now;
+      console.log(`✅ Showing notification for ${notificationKey}`);
+
       await this.showNotification({
         ...message,
         data: { orderNumber, status: order.status },

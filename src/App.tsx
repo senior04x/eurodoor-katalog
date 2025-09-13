@@ -94,11 +94,23 @@ function App() {
       }
     }
 
+    // Service Worker message listener
+    const handleServiceWorkerMessage = (event: MessageEvent) => {
+      console.log('🔔 Service Worker message received:', event.data);
+      
+      if (event.data && event.data.type === 'NAVIGATE_TO_ORDERS') {
+        console.log('🔔 Navigating to orders page from Service Worker');
+        handleNavigate('orders');
+      }
+    }
+
     window.addEventListener('hashchange', handleHashChange)
+    navigator.serviceWorker?.addEventListener('message', handleServiceWorkerMessage)
 
     return () => {
       clearTimeout(timer)
       window.removeEventListener('hashchange', handleHashChange)
+      navigator.serviceWorker?.removeEventListener('message', handleServiceWorkerMessage)
       // Cleanup
       document.body.style.overflow = 'auto'
       document.body.classList.remove('overflow-hidden')
