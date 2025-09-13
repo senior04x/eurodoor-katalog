@@ -21,16 +21,15 @@ interface Notification {
 interface NotificationCenterProps {
   isMobile?: boolean
   onMobileClose?: () => void
-  onNavigate?: (page: string) => void
   isOpen?: boolean
   onClose?: () => void
   onUnreadCountChange?: (count: number) => void
 }
 
-const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = false, onMobileClose, onNavigate, isOpen: externalIsOpen, onUnreadCountChange }) => {
+const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = false, onMobileClose, isOpen: externalIsOpen, onUnreadCountChange, onClose }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false)
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen
-  const setIsOpen = externalIsOpen !== undefined ? () => {} : setInternalIsOpen
+  const setIsOpen = externalIsOpen !== undefined ? (onClose || (() => {})) : setInternalIsOpen
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -362,27 +361,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
               )}
             </div>
 
-            {/* Footer */}
-            {notifications.length > 0 && (
-              <div className="p-3 border-t border-white/30 text-center" style={{ background: 'linear-gradient(90deg, rgba(48, 70, 117, 0.3) 0%, rgba(69, 27, 111, 0.3) 100%)' }}>
-                <button
-                  onClick={() => {
-                    if (isMobile) {
-                      handleMobileClose()
-                    } else {
-                      setIsOpen(false)
-                    }
-                    // Navigate to notifications page
-                    if (onNavigate) {
-                      onNavigate('notifications')
-                    }
-                  }}
-                  className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
-                >
-                  Barcha bildirishnomalarni ko'rish
-                </button>
-              </div>
-            )}
+            {/* No footer - removed "View all notifications" button */}
           </motion.div>
         )}
       </AnimatePresence>

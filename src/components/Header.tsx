@@ -244,8 +244,8 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                 {/* Notification Center Dropdown */}
                 <NotificationCenter 
                   isOpen={showNotifications} 
-                  onNavigate={onNavigate}
                   onUnreadCountChange={setUnreadCount}
+                  onClose={() => setShowNotifications(false)}
                 />
                 
                 <div className="relative">
@@ -399,7 +399,6 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                       <NotificationCenter 
                         isMobile={true} 
                         onMobileClose={() => setIsMenuOpen(false)}
-                        onNavigate={onNavigate}
                       />
                     </div>
                   )}
