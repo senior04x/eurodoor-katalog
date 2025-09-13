@@ -19,7 +19,6 @@ interface HeaderProps {
 export default function Header({ currentPage, onNavigate, onShowAuthModal }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editProfileData, setEditProfileData] = useState({
@@ -266,50 +265,157 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                 {/* Notification Center */}
                 <NotificationCenter />
                 
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-1 px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-md transition-colors"
-                >
-                  <User className="h-4 w-4" />
-                  <span className="text-sm">{user.name || user.email}</span>
-                </button>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowProfileModal(true)}
+                    className="flex items-center space-x-1 px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-md transition-colors"
+                  >
+                    <User className="h-4 w-4" />
+                    <span className="text-sm">{user.name || user.email}</span>
+                  </button>
+                  
+                  {/* Profile Modal positioned below user name */}
+                  <AnimatePresence>
+                    {showProfileModal && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute right-0 top-full mt-2 w-80 bg-gradient-to-br from-blue-500/90 via-purple-500/90 to-blue-600/90 backdrop-blur-2xl border border-white/30 shadow-2xl z-50"
+                        style={{ borderRadius: '0' }}
+                      >
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-4 border-b border-white/30 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm">
+                          <h3 className="text-white font-semibold text-lg">Mening Profilim</h3>
+                          <button
+                            onClick={() => setShowProfileModal(false)}
+                            className="text-white/70 hover:text-white transition-colors"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6 space-y-4">
+                          {/* Name */}
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                              <User className="w-5 h-5 text-blue-400" />
+                            </div>
+                            <div className="flex-1">
+                              <label className="block text-sm font-medium text-gray-300 mb-1">Ism</label>
+                              {isEditingProfile ? (
+                                <input
+                                  type="text"
+                                  value={editProfileData.name}
+                                  onChange={(e) => setEditProfileData({ ...editProfileData, name: e.target.value })}
+                                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white focus:outline-none focus:border-white/40 transition-colors text-sm"
+                                  placeholder="Ismingizni kiriting"
+                                />
+                              ) : (
+                                <p className="text-white font-medium">{user?.name || 'Kiritilmagan'}</p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Phone */}
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                              <Phone className="w-5 h-5 text-green-400" />
+                            </div>
+                            <div className="flex-1">
+                              <label className="block text-sm font-medium text-gray-300 mb-1">Telefon raqami</label>
+                              {isEditingProfile ? (
+                                <input
+                                  type="tel"
+                                  value={editProfileData.phone}
+                                  onChange={(e) => setEditProfileData({ ...editProfileData, phone: e.target.value })}
+                                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white focus:outline-none focus:border-white/40 transition-colors text-sm"
+                                  placeholder="+998 90 123 45 67"
+                                />
+                              ) : (
+                                <p className="text-white font-medium">{user?.phone || 'Kiritilmagan'}</p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Email */}
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                              <Mail className="w-5 h-5 text-purple-400" />
+                            </div>
+                            <div className="flex-1">
+                              <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                              <p className="text-white font-medium">{user?.email}</p>
+                              <p className="text-gray-400 text-xs">Email o'zgartirib bo'lmaydi</p>
+                            </div>
+                          </div>
+
+                          {/* Registration Date */}
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                              <Calendar className="w-5 h-5 text-orange-400" />
+                            </div>
+                            <div className="flex-1">
+                              <label className="block text-sm font-medium text-gray-300 mb-1">Ro'yxatdan o'tgan sana</label>
+                              <p className="text-white font-medium">
+                                {user?.created_at ? new Date(user.created_at).toLocaleDateString('uz-UZ', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                }) : 'Noma\'lum'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-4 border-t border-white/30 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm">
+                          {isEditingProfile ? (
+                            <div className="flex space-x-3">
+                              <button
+                                onClick={handleProfileSave}
+                                className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-green-600/80 hover:bg-green-600 text-white transition-colors text-sm"
+                              >
+                                <Save className="w-4 h-4" />
+                                <span>Saqlash</span>
+                              </button>
+                              <button
+                                onClick={handleProfileCancel}
+                                className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-gray-600/80 hover:bg-gray-600 text-white transition-colors text-sm"
+                              >
+                                <X className="w-4 h-4" />
+                                <span>Bekor qilish</span>
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex space-x-3">
+                              <button
+                                onClick={handleProfileEdit}
+                                className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600/80 hover:bg-blue-600 text-white transition-colors text-sm"
+                              >
+                                <Edit className="w-4 h-4" />
+                                <span>Tahrirlash</span>
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setShowProfileModal(false);
+                                  onNavigate('orders');
+                                }}
+                                className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-purple-600/80 hover:bg-purple-600 text-white transition-colors text-sm"
+                              >
+                                <ShoppingCart className="w-4 h-4" />
+                                <span>Buyurtmalarim</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
                 
-                {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-xl rounded-lg border border-gray-200 shadow-2xl py-1 z-50">
-                    <button
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        setShowProfileModal(true);
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                    >
-                      <User className="h-4 w-4 mr-2" />
-                      {t('header.profile')}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        onNavigate('orders');
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                    >
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                      {t('header.orders')}
-                    </button>
-                    <hr className="my-1 border-gray-200" />
-                    <button
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        signOut();
-                        showSuccess('Tizimdan chiqildi!', 'Muvaffaqiyatli tizimdan chiqdingiz');
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      {t('header.logout')}
-                    </button>
-                  </div>
-                )}
               </div>
             ) : (
               <div className="flex items-center space-x-2 ml-4">
@@ -506,155 +612,6 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
       {/* Cart Sidebar */}
       <CartSidebar onNavigate={onNavigate} />
 
-      {/* Profile Modal */}
-      <AnimatePresence>
-        {showProfileModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setShowProfileModal(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ duration: 0.2 }}
-              className="w-full max-w-md bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-blue-600/30 backdrop-blur-2xl border border-white/30 shadow-2xl"
-              style={{ borderRadius: '0' }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-white/30 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm">
-                <h3 className="text-white font-semibold text-lg">Mening Profilim</h3>
-                <button
-                  onClick={() => setShowProfileModal(false)}
-                  className="text-white/70 hover:text-white transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Content */}
-              <div className="p-6 space-y-4">
-                {/* Name */}
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                    <User className="w-5 h-5 text-blue-400" />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Ism</label>
-                    {isEditingProfile ? (
-                      <input
-                        type="text"
-                        value={editProfileData.name}
-                        onChange={(e) => setEditProfileData({ ...editProfileData, name: e.target.value })}
-                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white focus:outline-none focus:border-white/40 transition-colors text-sm"
-                        placeholder="Ismingizni kiriting"
-                      />
-                    ) : (
-                      <p className="text-white font-medium">{user?.name || 'Kiritilmagan'}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Phone */}
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                    <Phone className="w-5 h-5 text-green-400" />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Telefon raqami</label>
-                    {isEditingProfile ? (
-                      <input
-                        type="tel"
-                        value={editProfileData.phone}
-                        onChange={(e) => setEditProfileData({ ...editProfileData, phone: e.target.value })}
-                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white focus:outline-none focus:border-white/40 transition-colors text-sm"
-                        placeholder="+998 90 123 45 67"
-                      />
-                    ) : (
-                      <p className="text-white font-medium">{user?.phone || 'Kiritilmagan'}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Email */}
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                    <Mail className="w-5 h-5 text-purple-400" />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                    <p className="text-white font-medium">{user?.email}</p>
-                    <p className="text-gray-400 text-xs">Email o'zgartirib bo'lmaydi</p>
-                  </div>
-                </div>
-
-                {/* Registration Date */}
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-orange-400" />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Ro'yxatdan o'tgan sana</label>
-                    <p className="text-white font-medium">
-                      {user?.created_at ? new Date(user.created_at).toLocaleDateString('uz-UZ', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      }) : 'Noma\'lum'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="p-4 border-t border-white/30 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm">
-                {isEditingProfile ? (
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={handleProfileSave}
-                      className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-green-600/80 hover:bg-green-600 text-white transition-colors text-sm"
-                    >
-                      <Save className="w-4 h-4" />
-                      <span>Saqlash</span>
-                    </button>
-                    <button
-                      onClick={handleProfileCancel}
-                      className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-gray-600/80 hover:bg-gray-600 text-white transition-colors text-sm"
-                    >
-                      <X className="w-4 h-4" />
-                      <span>Bekor qilish</span>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={handleProfileEdit}
-                      className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600/80 hover:bg-blue-600 text-white transition-colors text-sm"
-                    >
-                      <Edit className="w-4 h-4" />
-                      <span>Tahrirlash</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowProfileModal(false);
-                        onNavigate('orders');
-                      }}
-                      className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-purple-600/80 hover:bg-purple-600 text-white transition-colors text-sm"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>Buyurtmalarim</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.header>
   );
 }
