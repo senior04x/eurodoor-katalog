@@ -24,7 +24,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
   const { t } = useLanguage();
   const { totalItems, isCartOpen, setIsCartOpen } = useCart();
   const { user, signOut } = useAuth();
-  const { showSuccess, showError } = useToast();
+  const { showSuccess } = useToast();
 
 
 
