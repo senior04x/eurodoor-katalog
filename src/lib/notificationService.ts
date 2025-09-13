@@ -163,6 +163,8 @@ class NotificationService {
             // Agar status o'zgargan bo'lsa
             if (order.status !== oldOrder.status) {
               console.log(`🔄 Status changed from ${oldOrder.status} to ${order.status} for order: ${order.order_number}`);
+              console.log(`🔔 Permission status: ${this.permission}`);
+              console.log(`🔔 Is supported: ${this.isSupported}`);
               await this.handleOrderStatusChange(order, order.order_number);
             } else {
               console.log('⚠️ Status did not change, skipping notification');
@@ -215,6 +217,10 @@ class NotificationService {
 
   // Order status o'zgarishini boshqarish
   private async handleOrderStatusChange(order: any, orderNumber: string): Promise<void> {
+    console.log(`🔔 handleOrderStatusChange called for order: ${orderNumber}, status: ${order.status}`);
+    console.log(`🔔 Current permission: ${this.permission}`);
+    console.log(`🔔 Is supported: ${this.isSupported}`);
+    
     const statusMessages = {
       'confirmed': {
         title: '✅ Buyurtma Tasdiqlandi!',
@@ -244,6 +250,8 @@ class NotificationService {
     };
 
     const message = statusMessages[order.status as keyof typeof statusMessages];
+    console.log(`🔔 Message for status ${order.status}:`, message);
+    
     if (message) {
       // Duplicate notification'larni oldini olish
       const notificationKey = `${orderNumber}-${order.status}`;
@@ -257,28 +265,39 @@ class NotificationService {
       
       this.lastNotificationTime[notificationKey] = now;
       console.log(`✅ Showing notification for ${notificationKey}`);
-
-      await this.showNotification({
+      console.log(`🔔 Notification data:`, {
         ...message,
-        data: { orderNumber, status: order.status },
-        actions: [
-          {
-            action: 'view',
-            title: 'Ko\'rish',
-            icon: '/icons/eye.png'
-          },
-          {
-            action: 'close',
-            title: 'Yopish',
-            icon: '/icons/close.png'
-          }
-        ]
+        data: { orderNumber, status: order.status }
       });
+
+      try {
+        await this.showNotification({
+          ...message,
+          data: { orderNumber, status: order.status },
+          actions: [
+            {
+              action: 'view',
+              title: 'Ko\'rish',
+              icon: '/icons/eye.png'
+            },
+            {
+              action: 'close',
+              title: 'Yopish',
+              icon: '/icons/close.png'
+            }
+          ]
+        });
+        console.log(`✅ Notification sent successfully for ${notificationKey}`);
+      } catch (error) {
+        console.error(`❌ Error sending notification for ${notificationKey}:`, error);
+      }
 
       // Email notification yuborish (agar email mavjud bo'lsa)
       if (order.customer_email) {
         await this.sendEmailNotification(order, message);
       }
+    } else {
+      console.log(`⚠️ No message found for status: ${order.status}`);
     }
   }
 
