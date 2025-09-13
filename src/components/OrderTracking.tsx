@@ -33,6 +33,7 @@ export default function OrderTracking() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const { user } = useAuth()
   const { t } = useLanguage()
 
@@ -40,6 +41,40 @@ export default function OrderTracking() {
   useEffect(() => {
     if (user) {
       loadUserOrders()
+      
+      // Real-time subscription for order updates
+      const subscription = supabase
+        .channel('order-updates')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'orders'
+          },
+          (payload) => {
+            console.log('🔄 Order updated:', payload)
+            
+            // Update the specific order in the orders array
+            setOrders(prevOrders => {
+              return prevOrders.map(order => {
+                if (order.id === payload.new.id) {
+                  console.log('✅ Updating order status:', payload.new.status)
+                  setLastUpdate(new Date())
+                  return { ...order, ...payload.new }
+                }
+                return order
+              })
+            })
+          }
+        )
+        .subscribe((status) => {
+          console.log('📡 Order subscription status:', status)
+        })
+
+      return () => {
+        subscription.unsubscribe()
+      }
     }
   }, [user])
 
@@ -82,6 +117,9 @@ export default function OrderTracking() {
       
       if (!data || data.length === 0) {
         setError('Buyurtma topilmadi')
+      } else {
+        // Start real-time subscription for searched orders
+        startOrderSubscription(data.map(order => order.id))
       }
     } catch (error) {
       console.error('Qidiruvda xatolik:', error)
@@ -89,6 +127,38 @@ export default function OrderTracking() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Real-time subscription for specific orders
+  const startOrderSubscription = (orderIds: string[]) => {
+    const subscription = supabase
+      .channel('specific-orders')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders',
+          filter: `id=in.(${orderIds.join(',')})`
+        },
+        (payload) => {
+          console.log('🔄 Specific order updated:', payload)
+          
+          setOrders(prevOrders => {
+            return prevOrders.map(order => {
+              if (order.id === payload.new.id) {
+                console.log('✅ Updating searched order status:', payload.new.status)
+                setLastUpdate(new Date())
+                return { ...order, ...payload.new }
+              }
+              return order
+            })
+          })
+        }
+      )
+      .subscribe()
+
+    return subscription
   }
 
   const getStatusIndex = (status: string) => {
@@ -154,6 +224,14 @@ export default function OrderTracking() {
                 {loading ? 'Qidirilmoqda...' : 'Qidirish'}
               </button>
             </div>
+            
+            {/* Real-time Status Indicator */}
+            {lastUpdate && (
+              <div className="mt-4 flex items-center justify-center text-sm text-green-400">
+                <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                Oxirgi yangilanish: {lastUpdate.toLocaleTimeString('uz-UZ')}
+              </div>
+            )}
           </div>
 
           {/* Error Message */}
