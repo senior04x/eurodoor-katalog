@@ -217,12 +217,11 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className={`absolute ${isMobile ? 'left-0 right-0 mx-4' : 'right-0'} top-full mt-2 ${isMobile ? 'w-auto' : 'w-80'} bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-blue-600/30 backdrop-blur-2xl shadow-2xl border border-white/30 z-50`}
-            style={{ borderRadius: '0' }}
+            className={`absolute ${isMobile ? 'left-0 right-0 mx-4' : 'right-0'} top-full mt-2 ${isMobile ? 'w-auto' : 'w-80'} bg-white/95 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-200 z-50`}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/30 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm">
-              <h3 className="text-white font-semibold">Bildirishnomalar</h3>
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+              <h3 className="text-gray-900 font-semibold">Bildirishnomalar</h3>
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
                   <button
@@ -234,7 +233,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
                 )}
                 <button
                   onClick={isMobile ? handleMobileClose : () => setIsOpen(false)}
-                  className="text-white/60 hover:text-white transition-colors"
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -244,12 +243,12 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
             {/* Notifications List */}
             <div className="max-h-96 overflow-y-auto">
               {loading ? (
-                <div className="p-4 text-center text-white/80 bg-black/10 backdrop-blur-sm">
+                <div className="p-4 text-center text-gray-600 bg-gray-50">
                   <Clock className="w-6 h-6 mx-auto mb-2 animate-spin" />
                   Yuklanmoqda...
                 </div>
               ) : notifications.length === 0 ? (
-                <div className="p-8 text-center text-white/80 bg-black/10 backdrop-blur-sm">
+                <div className="p-8 text-center text-gray-600 bg-gray-50">
                   <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p>Bildirishnomalar yo'q</p>
                 </div>
@@ -259,8 +258,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
                     key={notification.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className={`p-4 border-b border-white/20 hover:bg-white/10 transition-colors cursor-pointer ${
-                      !notification.is_read ? 'bg-blue-500/20 backdrop-blur-sm' : 'bg-white/5'
+                    className={`p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer ${
+                      !notification.is_read ? 'bg-blue-50' : 'bg-white'
                     }`}
                     onClick={() => markAsRead(notification.id)}
                   >
@@ -270,22 +269,22 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
-                          <h4 className="text-white font-medium text-sm truncate">
+                          <h4 className="text-gray-900 font-medium text-sm truncate">
                             {notification.title}
                           </h4>
                           {!notification.is_read && (
                             <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
                           )}
                         </div>
-                        <p className="text-white/70 text-sm mb-2 line-clamp-2">
+                        <p className="text-gray-600 text-sm mb-2 line-clamp-2">
                           {notification.message}
                         </p>
                         <div className="flex items-center justify-between">
-                          <span className="text-white/50 text-xs">
+                          <span className="text-gray-500 text-xs">
                             {formatDate(notification.created_at)}
                           </span>
                           {notification.order_number && (
-                            <span className="text-blue-400 text-xs font-medium">
+                            <span className="text-blue-600 text-xs font-medium">
                               #{notification.order_number}
                             </span>
                           )}
@@ -299,7 +298,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
 
             {/* Footer */}
             {notifications.length > 0 && (
-              <div className="p-3 border-t border-white/30 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm text-center">
+              <div className="p-3 border-t border-gray-200 bg-gray-50 text-center">
                 <button
                   onClick={() => {
                     if (isMobile) {
@@ -309,7 +308,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
                     }
                     // Navigate to full notifications page if needed
                   }}
-                  className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
+                  className="text-blue-600 hover:text-blue-700 text-sm transition-colors"
                 >
                   Barcha bildirishnomalarni ko'rish
                 </button>

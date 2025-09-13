@@ -275,13 +275,13 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                 </button>
                 
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-blue-600/30 backdrop-blur-2xl border border-white/30 shadow-2xl py-1 z-50" style={{ borderRadius: '0' }}>
+                  <div className="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-xl rounded-lg border border-gray-200 shadow-2xl py-1 z-50">
                     <button
                       onClick={() => {
                         setShowUserMenu(false);
                         setShowProfileModal(true);
                       }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                     >
                       <User className="h-4 w-4 mr-2" />
                       {t('header.profile')}
@@ -291,19 +291,19 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                         setShowUserMenu(false);
                         onNavigate('orders');
                       }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />
                       {t('header.orders')}
                     </button>
-                    <hr className="my-1 border-white/20" />
+                    <hr className="my-1 border-gray-200" />
                     <button
                       onClick={() => {
                         setShowUserMenu(false);
                         signOut();
                         showSuccess('Tizimdan chiqildi!', 'Muvaffaqiyatli tizimdan chiqdingiz');
                       }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                     >
                       <LogOut className="h-4 w-4 mr-2" />
                       {t('header.logout')}
