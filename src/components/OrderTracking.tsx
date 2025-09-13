@@ -86,6 +86,36 @@ export default function OrderTracking() {
               table: payload.table
             })
             
+            // Check if this is a status change
+            const oldStatus = payload.old?.status
+            const newStatus = payload.new?.status
+            
+            if (oldStatus && newStatus && oldStatus !== newStatus) {
+              console.log('🔔 Order status changed:', { oldStatus, newStatus })
+              
+              // Show browser notification
+              if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+                const statusMessages: { [key: string]: string } = {
+                  'pending': 'Buyurtmangiz qabul qilindi va ko\'rib chiqilmoqda',
+                  'confirmed': 'Buyurtmangiz tasdiqlandi va ishlab chiqarishga yuborildi',
+                  'processing': 'Buyurtmangiz ishlab chiqarilmoqda',
+                  'ready': 'Buyurtmangiz tayyor! Yetkazib berish uchun tayyorlanmoqda',
+                  'shipped': 'Buyurtmangiz yuborildi va yo\'lda',
+                  'delivered': 'Buyurtmangiz yetkazib berildi! Rahmat!',
+                  'cancelled': 'Buyurtmangiz bekor qilindi'
+                };
+
+                const message = statusMessages[newStatus] || `Buyurtma holati o'zgartirildi: ${newStatus}`;
+                
+                new Notification(`Eurodoor - Buyurtma #${payload.new.order_number}`, {
+                  body: message,
+                  icon: '/favicon.ico',
+                  tag: `order-${payload.new.order_number}`,
+                  requireInteraction: true
+                });
+              }
+            }
+            
             // Immediately update local state for instant feedback
             setOrders(prevOrders => {
               return prevOrders.map(order => {

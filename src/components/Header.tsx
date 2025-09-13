@@ -34,8 +34,23 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
       console.log('🔔 Permission status:', Notification.permission);
       console.log('🔔 Is supported:', 'Notification' in window);
       
+      // Check if notifications are supported
+      if (!('Notification' in window)) {
+        showError('Bu brauzer notification\'larni qo\'llab-quvvatlamaydi');
+        return;
+      }
+      
+      // Request permission if not granted
+      if (Notification.permission === 'default') {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          showError('Notification permission rad etildi');
+          return;
+        }
+      }
+      
       // Simple browser notification test
-      if ('Notification' in window && Notification.permission === 'granted') {
+      if (Notification.permission === 'granted') {
         new Notification('🔔 Test Notification', {
           body: 'Bu test notification. Agar ko\'rsangiz, notification ishlayapti!',
           icon: '/favicon.ico',
@@ -47,6 +62,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
       }
     } catch (error) {
       console.error('Test notification error:', error);
+      showError('Notification test xatoligi');
     }
   };
 
