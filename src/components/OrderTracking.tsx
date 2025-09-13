@@ -40,22 +40,52 @@ export default function OrderTracking() {
 
   useEffect(() => {
     if (user) {
+      // Test Supabase connection first
+      const testConnection = async () => {
+        try {
+          const { data, error } = await supabase.from('orders').select('count').limit(1)
+          if (error) {
+            console.error('❌ Supabase connection error:', error)
+          } else {
+            console.log('✅ Supabase connection OK')
+          }
+        } catch (err) {
+          console.error('❌ Supabase test error:', err)
+        }
+      }
+      
+      testConnection()
       loadUserOrders()
       
-      // Real-time subscription for order updates
+      // Enhanced real-time subscription for order updates (matching admin panel)
       const subscription = supabase
-        .channel('order-updates')
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'orders'
-          },
+        .channel('customer-orders-realtime', {
+          config: {
+            broadcast: { self: true },
+            presence: { key: 'customer-orders' }
+          }
+        })
+        .on('postgres_changes', 
+          { event: 'INSERT', schema: 'public', table: 'orders' },
           (payload) => {
-            console.log('🔄 Order updated:', payload)
+            console.log('🆕 New order added:', payload.new)
+            console.log('🔄 Refreshing orders list...')
+            loadUserOrders() // Refresh to get latest data
+          }
+        )
+        .on('postgres_changes', 
+          { event: 'UPDATE', schema: 'public', table: 'orders' },
+          (payload) => {
+            console.log('✏️ Order updated:', payload.new)
+            console.log('🔄 Payload details:', {
+              new: payload.new,
+              old: payload.old,
+              eventType: payload.eventType,
+              schema: payload.schema,
+              table: payload.table
+            })
             
-            // Update the specific order in the orders array
+            // Immediately update local state for instant feedback
             setOrders(prevOrders => {
               return prevOrders.map(order => {
                 if (order.id === payload.new.id) {
@@ -68,8 +98,31 @@ export default function OrderTracking() {
             })
           }
         )
+        .on('postgres_changes', 
+          { event: 'DELETE', schema: 'public', table: 'orders' },
+          (payload) => {
+            console.log('🗑️ Order deleted:', payload.old)
+            console.log('🔄 Updating local state...')
+            // Immediately update local state for instant feedback
+            setOrders(prevOrders => prevOrders.filter(order => order.id !== payload.old.id))
+          }
+        )
         .subscribe((status) => {
-          console.log('📡 Order subscription status:', status)
+          console.log('📡 Customer orders subscription status:', status)
+          if (status === 'SUBSCRIBED') {
+            console.log('✅ Successfully subscribed to customer orders real-time updates')
+            console.log('🎯 Real-time sync is now active for customer!')
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('❌ Channel error in customer orders subscription')
+            console.error('❌ Real-time sync will not work!')
+          } else if (status === 'TIMED_OUT') {
+            console.error('⏰ Customer orders subscription timed out')
+            console.error('❌ Real-time sync will not work!')
+          } else if (status === 'CLOSED') {
+            console.log('🔌 Customer orders subscription closed')
+          } else {
+            console.log('📡 Customer orders subscription status:', status)
+          }
         })
 
       return () => {

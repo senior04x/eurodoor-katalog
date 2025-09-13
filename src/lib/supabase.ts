@@ -4,11 +4,23 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = 'https://oathybjrmhtubbemjeyy.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdGh5YmpybWh0dWJiZW1qZXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MjMzOTIsImV4cCI6MjA3Mjk5OTM5Mn0.GlKHHQj1nhDGwF78Fr7zlKytRxEwXwlyRTlgEX6d4io'
 
-// Create Supabase client with real-time enabled
+// Create Supabase client with enhanced real-time configuration
 export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  },
   realtime: {
     params: {
       eventsPerSecond: 10
+    },
+    transport: 'websocket',
+    timeout: 20000
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'eurodoor-customer-panel'
     }
   }
 })
