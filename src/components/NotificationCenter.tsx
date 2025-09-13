@@ -217,7 +217,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className={`absolute ${isMobile ? 'left-0 right-0 mx-4' : 'right-0'} top-full mt-2 ${isMobile ? 'w-auto' : 'w-80'} bg-black/40 backdrop-blur-xl rounded-lg shadow-2xl border border-white/30 z-50`}
+            className={`absolute ${isMobile ? 'left-0 right-0 mx-4' : 'right-0'} top-full mt-2 ${isMobile ? 'w-auto' : 'w-80'} bg-black/60 backdrop-blur-2xl rounded-lg shadow-2xl border border-white/30 z-50`}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-white/30 bg-black/20 backdrop-blur-sm">
