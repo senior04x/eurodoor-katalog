@@ -22,10 +22,14 @@ interface NotificationCenterProps {
   isMobile?: boolean
   onMobileClose?: () => void
   onNavigate?: (page: string) => void
+  isOpen?: boolean
+  onClose?: () => void
 }
 
-const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = false, onMobileClose, onNavigate }) => {
-  const [isOpen, setIsOpen] = useState(false)
+const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = false, onMobileClose, onNavigate, isOpen: externalIsOpen }) => {
+  const [internalIsOpen, setInternalIsOpen] = useState(false)
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen
+  const setIsOpen = externalIsOpen !== undefined ? () => {} : setInternalIsOpen
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -235,25 +239,27 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
 
   return (
     <div className="relative">
-      {/* Notification Bell Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`relative p-2 text-white/80 hover:text-white transition-colors ${isMobile ? 'w-full justify-start' : ''}`}
-      >
-        <Bell className="w-6 h-6" />
-        {unreadCount > 0 && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
-          >
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </motion.div>
-        )}
-        {isMobile && (
-          <span className="ml-3 text-sm">Bildirishnomalar</span>
-        )}
-      </button>
+      {/* Notification Bell Button - only show if not controlled externally */}
+      {externalIsOpen === undefined && (
+        <button
+          onClick={() => setInternalIsOpen(!internalIsOpen)}
+          className={`relative p-2 text-white/80 hover:text-white transition-colors ${isMobile ? 'w-full justify-start' : ''}`}
+        >
+          <Bell className="w-6 h-6" />
+          {unreadCount > 0 && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+            >
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </motion.div>
+          )}
+          {isMobile && (
+            <span className="ml-3 text-sm">Bildirishnomalar</span>
+          )}
+        </button>
+      )}
 
       {/* Notification Dropdown */}
       <AnimatePresence>
