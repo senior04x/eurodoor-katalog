@@ -229,16 +229,17 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                 {/* Notification Center */}
                 <NotificationCenter />
                 
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-1 px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-md transition-colors"
-                >
-                  <User className="h-4 w-4" />
-                  <span className="text-sm">{user.name || user.email}</span>
-                </button>
-                
-                {showUserMenu && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-gradient-to-br from-blue-500/90 via-purple-500/90 to-blue-600/90 backdrop-blur-xl rounded-lg border border-white/30 shadow-2xl py-1 z-50">
+                <div className="relative">
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center space-x-1 px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-md transition-colors"
+                  >
+                    <User className="h-4 w-4" />
+                    <span className="text-sm">{user.name || user.email}</span>
+                  </button>
+                  
+                  {showUserMenu && (
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-gradient-to-br from-blue-500/90 via-purple-500/90 to-blue-600/90 backdrop-blur-xl rounded-lg border border-white/30 shadow-2xl py-1 z-50">
                     <button
                       onClick={() => {
                         setShowUserMenu(false);
@@ -271,8 +272,9 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                       <LogOut className="h-4 w-4 mr-2" />
                       {t('header.logout')}
                     </button>
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
                 
               </div>
             ) : (
