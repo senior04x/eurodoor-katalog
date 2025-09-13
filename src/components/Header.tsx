@@ -29,10 +29,14 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
   // Test notification function
   const testNotification = async () => {
     try {
+      console.log('🔔 Manual test notification triggered');
+      console.log('🔔 Permission status:', Notification.permission);
+      console.log('🔔 Is supported:', 'Notification' in window);
+      
       await notificationService.showNotification({
         title: '🔔 Test Notification',
         body: 'Bu test notification. Agar ko\'rsangiz, notification ishlayapti!',
-        tag: 'test-notification',
+        tag: 'test-notification-' + Date.now(),
         data: { orderNumber: 'TEST-123' }
       });
       showSuccess('Test notification yuborildi!');

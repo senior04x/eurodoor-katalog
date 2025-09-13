@@ -21,7 +21,7 @@ class NotificationService {
   private permission: NotificationPermission = 'default';
   private isSupported: boolean = false;
   private lastNotificationTime: { [key: string]: number } = {};
-  private notificationDebounceTime: number = 5000; // 5 soniya
+  private notificationDebounceTime: number = 1000; // 1 soniya
   private globalSubscription: any = null;
   private isWatching: boolean = false;
 
@@ -271,6 +271,7 @@ class NotificationService {
       
       if (now - lastTime < this.notificationDebounceTime) {
         console.log(`⚠️ Skipping duplicate notification for ${notificationKey}`);
+        console.log(`⚠️ Time difference: ${now - lastTime}ms, debounce time: ${this.notificationDebounceTime}ms`);
         return;
       }
       
