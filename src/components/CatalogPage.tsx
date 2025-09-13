@@ -338,7 +338,10 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                     
                     <div className="flex space-x-2">
                       <button
-                        onClick={() => onNavigate('product', product.id)}
+                        onClick={() => {
+                          console.log('🔍 CatalogPage: Navigating to product detail:', product.id);
+                          onNavigate('product-detail', product.id);
+                        }}
                         className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
                         title="Batafsil ko'rish"
                       >

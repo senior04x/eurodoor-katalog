@@ -113,7 +113,7 @@ function App() {
   const handleNavigate = (page: string, productId?: string) => {
     console.log('🔄 App: Navigating to page:', page, 'productId:', productId);
     
-    if (page === 'product' && productId) {
+    if (page === 'product-detail' && productId) {
       // Product detail sahifasiga o'tish
       setSelectedProduct({ id: productId });
       setCurrentPage('product-detail');

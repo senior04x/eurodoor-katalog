@@ -164,7 +164,8 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
 
   const handleBackToProduct = () => {
     if (selectedProduct && onNavigate) {
-      onNavigate('product', selectedProduct.id);
+      console.log('🔍 ContactPage: Navigating back to product detail:', selectedProduct.id);
+      onNavigate('product-detail', selectedProduct.id);
     } else if (onNavigate) {
       onNavigate('catalog');
     }
