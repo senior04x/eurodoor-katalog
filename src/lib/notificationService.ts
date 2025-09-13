@@ -68,19 +68,27 @@ class NotificationService {
       const tag = data.tag || `notification-${Date.now()}`;
       console.log('🔔 Using tag:', tag);
       
-      // Avvalgi notification'larni yopish (bir xil tag bilan)
-      if (data.tag) {
-        // Service Worker orqali notification yuborish (agar mavjud bo'lsa)
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-          console.log('🔔 Sending notification via Service Worker');
-          navigator.serviceWorker.controller.postMessage({
-            type: 'SHOW_NOTIFICATION',
-            data: {
-              ...data,
-              tag: tag
-            }
-          });
-          return;
+      // Service Worker orqali notification yuborish (background support uchun)
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          if (registration.active) {
+            console.log('🔔 Sending notification via Service Worker for background support');
+            registration.active.postMessage({
+              type: 'SHOW_NOTIFICATION',
+              data: {
+                ...data,
+                tag: tag,
+                requireInteraction: true,
+                silent: false,
+                vibrate: [200, 100, 200]
+              }
+            });
+            console.log('✅ Notification sent via Service Worker');
+            return; // Service Worker orqali yuborildi
+          }
+        } catch (error) {
+          console.log('⚠️ Service Worker notification failed, falling back to direct notification:', error);
         }
       }
 
@@ -187,6 +195,9 @@ class NotificationService {
           if (status === 'SUBSCRIBED') {
             console.log('✅ Successfully subscribed to global orders');
             this.isWatching = true;
+            
+            // Background sync'ni boshlash
+            this.startBackgroundSync();
           } else if (status === 'CHANNEL_ERROR') {
             console.error('❌ Global channel error');
           } else if (status === 'TIMED_OUT') {
@@ -196,6 +207,41 @@ class NotificationService {
 
     } catch (error) {
       console.error('Error starting global order watching:', error);
+    }
+  }
+
+  // Background sync'ni boshlash
+  async startBackgroundSync(): Promise<void> {
+    try {
+      if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+        const registration = await navigator.serviceWorker.ready;
+        
+        // Periodic background sync
+        if ('periodicSync' in window.ServiceWorkerRegistration.prototype) {
+          try {
+            await (registration as any).periodicSync.register('order-sync', {
+              minInterval: 60000 // 1 daqiqa
+            });
+            console.log('✅ Periodic background sync registered');
+          } catch (error) {
+            console.log('⚠️ Periodic sync not supported:', error);
+          }
+        }
+
+        // Background sync
+        try {
+          if ('sync' in registration) {
+            await (registration as any).sync.register('order-sync');
+            console.log('✅ Background sync registered');
+          } else {
+            console.log('⚠️ Background sync not supported');
+          }
+        } catch (error) {
+          console.log('⚠️ Background sync failed:', error);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error starting background sync:', error);
     }
   }
 
@@ -355,11 +401,40 @@ class NotificationService {
           ) as BufferSource
         });
         console.log('✅ Push subscription created:', newSubscription);
+        
+        // Subscription'ni server'ga yuborish
+        await this.sendSubscriptionToServer(newSubscription);
       } else {
         console.log('✅ Push subscription already exists:', subscription);
+        // Mavjud subscription'ni server'ga yuborish
+        await this.sendSubscriptionToServer(subscription);
       }
     } catch (error) {
       console.error('❌ Push subscription failed:', error);
+    }
+  }
+
+  // Subscription'ni server'ga yuborish
+  async sendSubscriptionToServer(subscription: PushSubscription): Promise<void> {
+    try {
+      console.log('📤 Sending subscription to server...');
+      
+      // Supabase'ga subscription'ni saqlash
+      const { data, error } = await supabase
+        .from('push_subscriptions')
+        .upsert({
+          user_id: (await supabase.auth.getUser()).data.user?.id,
+          subscription: subscription,
+          created_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('❌ Failed to save subscription:', error);
+      } else {
+        console.log('✅ Subscription saved to server:', data);
+      }
+    } catch (error) {
+      console.error('❌ Error sending subscription to server:', error);
     }
   }
 

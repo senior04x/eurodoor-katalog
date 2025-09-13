@@ -174,7 +174,9 @@ self.addEventListener('message', (event) => {
         }
       ],
       requireInteraction: true,
-      silent: false
+      silent: false,
+      vibrate: data.vibrate || [200, 100, 200], // Vibration pattern
+      timestamp: Date.now()
     };
     
     event.waitUntil(
