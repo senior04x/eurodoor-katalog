@@ -132,14 +132,18 @@ function App() {
 
   const handleNavigate = (page: string, productId?: string) => {
     console.log('🔄 App: Navigating to page:', page, 'productId:', productId);
+    console.log('🔄 App: Current state before navigation - currentPage:', currentPage, 'selectedProduct:', selectedProduct);
     
     if (page === 'product-detail' && productId) {
       // Product detail sahifasiga o'tish
+      console.log('🔄 App: Setting selectedProduct to:', { id: productId });
       setSelectedProduct({ id: productId });
+      console.log('🔄 App: Setting currentPage to: product-detail');
       setCurrentPage('product-detail');
       // URL hash ni o'zgartirish
       window.location.hash = `product-detail/${productId}`;
       console.log('✅ App: Product selected:', productId);
+      console.log('✅ App: Hash set to:', window.location.hash);
     } else {
       // Oddiy sahifa o'tish
       setCurrentPage(page);
@@ -185,6 +189,8 @@ function App() {
         console.log('🎯 ProductDetail case - productId:', productId, 'selectedProduct:', selectedProduct)
         console.log('🎯 Current hash:', window.location.hash)
         console.log('🎯 getProductIdFromHash result:', getProductIdFromHash())
+        console.log('🎯 selectedProduct?.id:', selectedProduct?.id)
+        console.log('🎯 getProductIdFromHash():', getProductIdFromHash())
         
         if (productId) {
           console.log('✅ Rendering ProductDetailPage with productId:', productId)
@@ -196,13 +202,16 @@ function App() {
           )
         } else {
           console.log('❌ No productId found, showing error page')
+          console.log('❌ selectedProduct:', selectedProduct)
+          console.log('❌ getProductIdFromHash():', getProductIdFromHash())
           return (
             <div className="min-h-screen flex items-center justify-center">
               <div className="text-center">
                 <h2 className="text-2xl font-bold text-white mb-4">Mahsulot topilmadi</h2>
                 <p className="text-gray-300 mb-4">Product ID: {productId || 'undefined'}</p>
                 <p className="text-gray-300 mb-4">Current hash: {window.location.hash}</p>
-                <p className="text-gray-300 mb-4">Selected product: {selectedProduct ? 'exists' : 'null'}</p>
+                <p className="text-gray-300 mb-4">Selected product: {selectedProduct ? JSON.stringify(selectedProduct) : 'null'}</p>
+                <p className="text-gray-300 mb-4">getProductIdFromHash(): {getProductIdFromHash() || 'null'}</p>
                 <button
                   onClick={() => handleNavigate('catalog')}
                   className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600"
