@@ -418,14 +418,29 @@ class NotificationService {
   async sendSubscriptionToServer(subscription: PushSubscription): Promise<void> {
     try {
       console.log('📤 Sending subscription to server...');
+      console.log('📤 Subscription details:', {
+        endpoint: subscription.endpoint,
+        keys: subscription.getKey ? {
+          p256dh: subscription.getKey('p256dh'),
+          auth: subscription.getKey('auth')
+        } : 'No keys available'
+      });
       
+      const user = (await supabase.auth.getUser()).data.user;
+      if (!user) {
+        console.error('❌ No authenticated user found');
+        return;
+      }
+
       // Supabase'ga subscription'ni saqlash
       const { data, error } = await supabase
         .from('push_subscriptions')
         .upsert({
-          user_id: (await supabase.auth.getUser()).data.user?.id,
-          subscription: subscription,
+          user_id: user.id,
+          subscription: subscription.toJSON(),
           created_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
         });
 
       if (error) {
@@ -452,6 +467,27 @@ class NotificationService {
       outputArray[i] = rawData.charCodeAt(i);
     }
     return outputArray;
+  }
+
+  // Test push notification yuborish
+  async sendTestPushNotification(): Promise<void> {
+    try {
+      console.log('🧪 Sending test push notification...');
+      
+      const { data, error } = await supabase.functions.invoke('test-push-notification', {
+        body: {}
+      });
+
+      if (error) {
+        console.error('❌ Test push notification failed:', error);
+        throw error;
+      } else {
+        console.log('✅ Test push notification sent:', data);
+      }
+    } catch (error) {
+      console.error('❌ Error sending test push notification:', error);
+      throw error;
+    }
   }
 
   // Notification permission holatini olish

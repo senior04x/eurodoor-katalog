@@ -54,17 +54,31 @@ self.addEventListener('fetch', (event) => {
 // Push event - background notifications
 self.addEventListener('push', (event) => {
   console.log('📱 Push event received:', event);
+  console.log('📱 Push event data:', event.data);
   
   let data = {};
   if (event.data) {
     try {
       data = event.data.json();
+      console.log('📱 Parsed push data:', data);
     } catch (e) {
-      data = { title: 'Eurodoor', body: event.data.text() };
+      console.log('📱 Failed to parse push data as JSON, using text:', e);
+      data = { 
+        title: 'Eurodoor', 
+        body: event.data.text() || 'Yangi xabar',
+        tag: 'eurodoor-push-' + Date.now()
+      };
     }
+  } else {
+    console.log('📱 No push data, using default');
+    data = { 
+      title: 'Eurodoor', 
+      body: 'Yangi xabar',
+      tag: 'eurodoor-push-' + Date.now()
+    };
   }
 
-  console.log('📱 Push data:', data);
+  console.log('📱 Final push data:', data);
 
   const options = {
     body: data.body || 'Yangi xabar',
@@ -88,10 +102,16 @@ self.addEventListener('push', (event) => {
     timestamp: Date.now()
   };
 
-  console.log('📱 Showing notification with options:', options);
+  console.log('📱 Showing push notification with options:', options);
 
   event.waitUntil(
     self.registration.showNotification(data.title || 'Eurodoor', options)
+      .then(() => {
+        console.log('✅ Push notification shown successfully');
+      })
+      .catch((error) => {
+        console.error('❌ Failed to show push notification:', error);
+      })
   );
 });
 

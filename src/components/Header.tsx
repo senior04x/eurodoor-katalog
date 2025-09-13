@@ -24,7 +24,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
   const { t } = useLanguage();
   const { totalItems, isCartOpen, setIsCartOpen } = useCart();
   const { user, signOut } = useAuth();
-  const { showSuccess } = useToast();
+  const { showSuccess, showError } = useToast();
 
   // Test notification function
   const testNotification = async () => {
@@ -42,6 +42,17 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
       showSuccess('Test notification yuborildi!');
     } catch (error) {
       console.error('Test notification error:', error);
+    }
+  };
+
+  const testPushNotification = async () => {
+    try {
+      console.log('🧪 Manual test push notification triggered');
+      await notificationService.sendTestPushNotification();
+      showSuccess('Test push notification yuborildi!');
+    } catch (error) {
+      console.error('Test push notification error:', error);
+      showError('Test push notification xatosi: ' + error.message);
     }
   };
 
@@ -283,6 +294,16 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                     >
                       <span className="h-4 w-4 mr-2">🔔</span>
                       Test Notification
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        testPushNotification();
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <span className="h-4 w-4 mr-2">🧪</span>
+                      Test Push Notification
                     </button>
                     <hr className="my-1" />
                     <button
