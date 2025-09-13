@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Product Detail - Eurodoor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 5px;
+            display: inline-block;
+        }
+        .success { background: rgba(34, 197, 94, 0.3); border-color: rgba(34, 197, 94, 0.5); }
+        .error { background: rgba(239, 68, 68, 0.3); border-color: rgba(239, 68, 68, 0.5); }
+        .warning { background: rgba(245, 158, 11, 0.3); border-color: rgba(245, 158, 11, 0.5); }
+        .info { background: rgba(59, 130, 246, 0.3); border-color: rgba(59, 130, 246, 0.5); }
+        .product-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Debug Product Detail - Eurodoor</h1>
+        <p>Bu sahifa product detail navigation muammosini debug qilish uchun yaratilgan.</p>
+
+        <!-- Step 1: Test All Products -->
+        <div class="section">
+            <h3>📦 Step 1: Test All Products</h3>
+            <button onclick="testAllProducts()">Get All Products</button>
+            <div id="productsList"></div>
+        </div>
+
+        <!-- Step 2: Test Specific Product -->
+        <div class="section">
+            <h3>🎯 Step 2: Test Specific Product</h3>
+            <button onclick="testSpecificProduct()">Test Product: 079d2971-9027-47b6-90ef-dea803bb3c79</button>
+            <div id="specificProduct"></div>
+        </div>
+
+        <!-- Step 3: Test Navigation -->
+        <div class="section">
+            <h3>🔄 Step 3: Test Navigation</h3>
+            <button onclick="testNavigation()">Test Navigation to Product Detail</button>
+            <div id="navigationResult"></div>
+        </div>
+
+        <!-- Console Log -->
+        <div class="section">
+            <h3>📋 Console Log</h3>
+            <button onclick="clearLog()">Clear Log</button>
+            <div id="log" class="log"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+        // Supabase configuration
+        const supabaseUrl = 'https://oathybjrmhtubbemjeyy.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdGh5YmpybWh0dWJiZW1qZXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MjMzOTIsImV4cCI6MjA3Mjk5OTM5Mn0.GlKHHQj1nhDGwF78Fr7zlKytRxEwXwlyRTlgEX6d4io';
+
+        const supabase = createClient(supabaseUrl, supabaseKey, {
+            auth: {
+                autoRefreshToken: true,
+                persistSession: true,
+                detectSessionInUrl: true
+            },
+            realtime: {
+                params: {
+                    eventsPerSecond: 10
+                }
+            },
+            global: {
+                headers: {
+                    'X-Client-Info': 'eurodoor-debug'
+                }
+            }
+        });
+
+        // Logging function
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #888;">[${timestamp}]</span> <span class="status ${type}">${type.toUpperCase()}</span> ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // Test all products
+        window.testAllProducts = async function() {
+            log('🔄 Testing all products...', 'info');
+            
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    log(`❌ Error fetching products: ${error.message}`, 'error');
+                    log(`❌ Error code: ${error.code}`, 'error');
+                    log(`❌ Error details: ${JSON.stringify(error.details)}`, 'error');
+                } else {
+                    log(`✅ Found ${data?.length || 0} products`, 'success');
+                    
+                    const productsList = document.getElementById('productsList');
+                    productsList.innerHTML = '';
+                    
+                    if (data && data.length > 0) {
+                        data.forEach((product, index) => {
+                            const productCard = document.createElement('div');
+                            productCard.className = 'product-card';
+                            productCard.innerHTML = `
+                                <h4>${product.name}</h4>
+                                <p><strong>ID:</strong> ${product.id}</p>
+                                <p><strong>Price:</strong> ${product.price} ${product.currency || 'so\'m'}</p>
+                                <p><strong>Stock:</strong> ${product.stock || 'N/A'}</p>
+                                <p><strong>Active:</strong> ${product.is_active ? 'Yes' : 'No'}</p>
+                                <p><strong>Created:</strong> ${new Date(product.created_at).toLocaleDateString()}</p>
+                            `;
+                            productsList.appendChild(productCard);
+                            
+                            log(`📦 ${index + 1}. ${product.name} (ID: ${product.id})`, 'info');
+                        });
+                    } else {
+                        log('❌ No products found in database', 'error');
+                        productsList.innerHTML = '<p style="color: #ff6b6b;">No products found!</p>';
+                    }
+                }
+            } catch (err) {
+                log(`❌ Exception: ${err.message}`, 'error');
+            }
+        };
+
+        // Test specific product
+        window.testSpecificProduct = async function() {
+            const productId = '079d2971-9027-47b6-90ef-dea803bb3c79';
+            log(`🔄 Testing specific product: ${productId}`, 'info');
+            
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('id', productId)
+                    .eq('is_active', true)
+                    .single();
+                
+                const resultDiv = document.getElementById('specificProduct');
+                
+                if (error) {
+                    log(`❌ Error fetching product: ${error.message}`, 'error');
+                    log(`❌ Error code: ${error.code}`, 'error');
+                    log(`❌ Error details: ${JSON.stringify(error.details)}`, 'error');
+                    resultDiv.innerHTML = `<div class="status error">Product Not Found: ${error.message}</div>`;
+                } else if (data) {
+                    log(`✅ Product found: ${data.name}`, 'success');
+                    log(`📦 Product details: ${JSON.stringify(data, null, 2)}`, 'info');
+                    
+                    resultDiv.innerHTML = `
+                        <div class="status success">Product Found!</div>
+                        <div class="product-card">
+                            <h4>${data.name}</h4>
+                            <p><strong>ID:</strong> ${data.id}</p>
+                            <p><strong>Price:</strong> ${data.price} ${data.currency || 'so\'m'}</p>
+                            <p><strong>Stock:</strong> ${data.stock || 'N/A'}</p>
+                            <p><strong>Material:</strong> ${data.material || 'N/A'}</p>
+                            <p><strong>Dimensions:</strong> ${data.dimensions || 'N/A'}</p>
+                            <p><strong>Active:</strong> ${data.is_active ? 'Yes' : 'No'}</p>
+                        </div>
+                    `;
+                } else {
+                    log('❌ Product not found or inactive', 'error');
+                    resultDiv.innerHTML = '<div class="status error">Product Not Found or Inactive</div>';
+                }
+            } catch (err) {
+                log(`❌ Exception: ${err.message}`, 'error');
+                document.getElementById('specificProduct').innerHTML = `<div class="status error">Exception: ${err.message}</div>`;
+            }
+        };
+
+        // Test navigation
+        window.testNavigation = function() {
+            log('🔄 Testing navigation...', 'info');
+            
+            const productId = '079d2971-9027-47b6-90ef-dea803bb3c79';
+            const targetUrl = `http://localhost:3001/#product-detail/${productId}`;
+            
+            log(`🎯 Target URL: ${targetUrl}`, 'info');
+            
+            // Test hash parsing
+            const testHash = `product-detail/${productId}`;
+            const parsedId = testHash.split('/')[1];
+            log(`🔍 Hash parsing test: "${testHash}" -> "${parsedId}"`, 'info');
+            
+            if (parsedId === productId) {
+                log('✅ Hash parsing works correctly', 'success');
+                document.getElementById('navigationResult').innerHTML = `
+                    <div class="status success">Hash Parsing: OK</div>
+                    <p>Click the link below to test navigation:</p>
+                    <a href="${targetUrl}" target="_blank" style="color: #60a5fa; text-decoration: underline;">${targetUrl}</a>
+                `;
+            } else {
+                log('❌ Hash parsing failed', 'error');
+                document.getElementById('navigationResult').innerHTML = '<div class="status error">Hash Parsing Failed</div>';
+            }
+        };
+
+        // Clear log
+        window.clearLog = function() {
+            document.getElementById('log').innerHTML = '';
+        };
+
+        // Initialize
+        log('🚀 Debug Product Detail initialized', 'success');
+        log('Click "Get All Products" to start debugging', 'info');
+    </script>
+</body>
+</html>

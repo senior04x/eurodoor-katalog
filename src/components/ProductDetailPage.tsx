@@ -115,6 +115,8 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
             <p className="text-white text-lg">Mahsulot yuklanmoqda...</p>
+            <p className="text-white/60 text-sm mt-2">Product ID: {productId}</p>
+            <p className="text-white/60 text-sm">Loading state: {loading ? 'true' : 'false'}</p>
           </div>
         </div>
       </div>
@@ -131,7 +133,9 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
           <div className="text-center">
             <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-white mb-2">Mahsulot topilmadi</h3>
-            <p className="text-gray-300 mb-4">Kechirasiz, bu mahsulot mavjud emas</p>
+            <p className="text-gray-300 mb-2">Kechirasiz, bu mahsulot mavjud emas</p>
+            <p className="text-gray-400 text-sm mb-4">Product ID: {productId}</p>
+            <p className="text-gray-400 text-sm mb-4">Loading: {loading ? 'true' : 'false'}</p>
             <button
               onClick={() => onNavigate('catalog')}
               className="bg-blue-500/20 text-blue-300 px-6 py-3 rounded-lg font-semibold hover:bg-blue-500/30 transition-colors"
