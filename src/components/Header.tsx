@@ -283,7 +283,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
                         className="absolute right-0 top-full mt-2 w-80 bg-gradient-to-br from-blue-500/90 via-purple-500/90 to-blue-600/90 backdrop-blur-2xl border border-white/30 shadow-2xl z-50"
-                        style={{ borderRadius: '0' }}
+                        style={{ borderRadius: '12px' }}
                       >
                         {/* Header */}
                         <div className="flex items-center justify-between p-4 border-b border-white/30 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm">
