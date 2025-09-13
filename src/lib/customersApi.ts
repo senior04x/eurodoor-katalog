@@ -76,7 +76,7 @@ export const customersApi = {
   }): Promise<Customer> {
     try {
       // Avval mijoz mavjudligini tekshirish
-      let customer = await this.getCustomerByPhone(customerData.phone);
+      const customer = await this.getCustomerByPhone(customerData.phone);
       
       if (customer) {
         // Mavjud mijoz ma'lumotlarini yangilash

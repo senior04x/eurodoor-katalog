@@ -228,7 +228,7 @@ function App() {
             <ContactPage onNavigate={handleNavigate} />
           </Suspense>
         )
-      case 'product-detail':
+      case 'product-detail': {
         const productId = selectedProduct?.id || getProductIdFromHash()
         console.log('🎯 ProductDetail case - productId:', productId, 'selectedProduct:', selectedProduct)
         console.log('🎯 Current hash:', window.location.hash)
@@ -268,6 +268,7 @@ function App() {
             </div>
           )
         }
+      }
       case 'order-success':
         console.log('🎉 Rendering OrderSuccessPage!');
         return (

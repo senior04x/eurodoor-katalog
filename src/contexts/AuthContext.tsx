@@ -127,6 +127,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               setUser(userData);
               // Save user ID for notifications
               setCurrentUserId(session.user.id);
+              
+              // Trigger notification check after successful login
+              setTimeout(() => {
+                console.log('🔔 User logged in, checking for notification permission...')
+                // This will trigger NotificationGate to show if needed
+              }, 1000);
             }
           } else {
             // Boshqa event'lar uchun to'g'ridan-to'g'ri setUser
@@ -398,6 +404,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.error('❌ Auto sign-in error:', signInError)
         } else {
           console.log('✅ User auto-signed in successfully')
+          
+          // Trigger notification check after successful signup
+          setTimeout(() => {
+            console.log('🔔 User signed up, checking for notification permission...')
+            // This will trigger NotificationGate to show if needed
+          }, 1000);
         }
       }
 
