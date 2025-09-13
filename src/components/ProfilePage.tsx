@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { User, Phone, Mail, Edit, Save, X, ShoppingCart, Package, Calendar } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
+import { supabase } from '../lib/supabase'
 
 interface ProfilePageProps {
   onNavigate: (page: string) => void
@@ -16,6 +17,57 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
     name: '',
     phone: ''
   })
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    totalSpent: 0,
+    memberDays: 0
+  })
+  const [loading, setLoading] = useState(true)
+
+  // Load user statistics
+  const loadUserStats = async () => {
+    if (!user) return
+
+    try {
+      setLoading(true)
+      
+      // Get user's orders
+      const { data: orders, error: ordersError } = await supabase
+        .from('orders')
+        .select('id, total_amount, status, created_at')
+        .eq('customer_email', user.email)
+
+      if (ordersError) {
+        console.error('Error fetching orders:', ordersError)
+        return
+      }
+
+      // Calculate statistics
+      const totalOrders = orders?.length || 0
+      const totalSpent = orders?.reduce((sum, order) => {
+        // Only count completed/delivered orders
+        if (order.status === 'delivered' || order.status === 'completed') {
+          return sum + (order.total_amount || 0)
+        }
+        return sum
+      }, 0) || 0
+
+      // Calculate member days
+      const memberDays = Math.floor((Date.now() - new Date(user.created_at).getTime()) / (1000 * 60 * 60 * 24))
+
+      setStats({
+        totalOrders,
+        totalSpent,
+        memberDays
+      })
+
+      console.log('📊 User stats loaded:', { totalOrders, totalSpent, memberDays })
+    } catch (error) {
+      console.error('Error loading user stats:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (user) {
@@ -23,6 +75,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
         name: user.name || '',
         phone: user.phone || ''
       })
+      loadUserStats()
     }
   }, [user])
 
@@ -224,22 +277,41 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
             {/* Statistika */}
             <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
               <h3 className="text-lg font-semibold text-white mb-4">Statistika</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Buyurtmalar soni</span>
-                  <span className="text-white font-semibold">0</span>
+              {loading ? (
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Buyurtmalar soni</span>
+                    <div className="w-8 h-4 bg-white/20 rounded animate-pulse"></div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Jami xarid</span>
+                    <div className="w-16 h-4 bg-white/20 rounded animate-pulse"></div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">A'zo bo'lgan</span>
+                    <div className="w-12 h-4 bg-white/20 rounded animate-pulse"></div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Jami xarid</span>
-                  <span className="text-white font-semibold">0 UZS</span>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Buyurtmalar soni</span>
+                    <span className="text-white font-semibold">{stats.totalOrders}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">Jami xarid</span>
+                    <span className="text-white font-semibold">
+                      {stats.totalSpent.toLocaleString('uz-UZ')} UZS
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">A'zo bo'lgan</span>
+                    <span className="text-white font-semibold">
+                      {stats.memberDays} kun
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">A'zo bo'lgan</span>
-                  <span className="text-white font-semibold">
-                    {Math.floor((Date.now() - new Date(user.created_at).getTime()) / (1000 * 60 * 60 * 24))} kun
-                  </span>
-                </div>
-              </div>
+              )}
             </div>
           </motion.div>
         </div>
