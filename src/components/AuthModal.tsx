@@ -4,6 +4,7 @@ import { X, Eye, EyeOff, Lock, User, Phone } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useToast } from '../contexts/ToastContext'
+import { installAutoAskNotifications } from '../boot/autoAskNotifications'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -26,7 +27,7 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange }: AuthM
   
   const { signIn, signUp } = useAuth()
   const { t } = useLanguage()
-  const { showSuccess } = useToast()
+  const { showSuccess, showError } = useToast()
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,12 +65,15 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange }: AuthM
         // Login uchun telefon raqamidan email yaratamiz
         const cleanPhone = formData.phone.replace(/\D/g, '') // Faqat raqamlarni olib qolish
         const email = `${cleanPhone}@eurodoor.uz`
+        
+        // Non-blocking login: try/catch/finally; on error show toast; in finally re-enable UI
         const result = await signIn(email, formData.password)
         if (result.success) {
           showSuccess('Tizimga kirildi!', 'Muvaffaqiyatli tizimga kirdingiz')
           onClose()
           setFormData({ phone: '', password: '', name: '', confirmPassword: '' })
           setError('')
+          // listener will route; no extra awaits here
         } else {
           // Email tasdiqlash xatoligini yashirish
           if (result.error?.includes('Email not confirmed') || result.error?.includes('email_not_confirmed')) {
@@ -78,9 +82,12 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange }: AuthM
             setFormData({ phone: '', password: '', name: '', confirmPassword: '' })
             setError('')
           } else {
-            setError(result.error || t('auth.login_error'))
+            showError('Xatolik', result.error || t('auth.login_error'))
           }
         }
+        
+        // Call only, NO await - never block login flow
+        installAutoAskNotifications()
       } else {
         // Register uchun validatsiya
         if (!formData.name.trim()) {
@@ -112,8 +119,8 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange }: AuthM
           setError(result.error || t('auth.register_error'))
         }
       }
-    } catch (error) {
-      setError(t('auth.general_error'))
+    } catch (error: any) {
+      showError('Xatolik', error.message ?? t('auth.general_error'))
     } finally {
       setLoading(false)
     }

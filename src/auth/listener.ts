@@ -1,9 +1,9 @@
-import { supabase } from '../lib/supabase'
+import { supabase } from '@/supabaseClient'
 
-function withTimeout<T>(p: Promise<T>, ms = 8000): Promise<T> {
+function withTimeout<T>(p: Promise<T>, ms = 6000) {
   return Promise.race([
     p,
-    new Promise<T>((_, rej) => setTimeout(() => rej(new Error('Request timeout')), ms))
+    new Promise<T>((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
   ])
 }
 
@@ -11,31 +11,22 @@ let routed = false
 
 export function attachAuthListener() {
   supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('[EURODOOR] auth state =', event)
+    console.log('[EURODOOR] auth =', event)
     if (event !== 'SIGNED_IN' || !session?.user) return
+
+    // NEVER block UI: try customer check, but continue on any error/timeout
     try {
-      const { data, error } = await supabase
-        .from('customers')
-        .select('id')
-        .eq('user_id', session.user.id)
-        .maybeSingle()
-
-      if (error) {
-        console.error('[EURODOOR] customer check error:', error)
-        throw error
-      }
-
+      const { data } = await withTimeout(
+        supabase.from('customers').select('id').eq('user_id', session.user.id).maybeSingle(),
+        6000
+      )
       console.log('[EURODOOR] customer row:', data)
-
-      if (!routed) {
-        routed = true
-        if (location.hash !== '#orders') location.hash = 'orders'
-      }
     } catch (e) {
-      console.error('[EURODOOR] customer check failed:', e)
+      console.warn('[EURODOOR] customer check skip:', e)
+    } finally {
       if (!routed) {
         routed = true
-        if (location.hash !== '#home') location.hash = 'home'
+        location.hash = 'orders'
       }
     }
   })
