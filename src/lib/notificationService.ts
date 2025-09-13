@@ -53,19 +53,26 @@ class NotificationService {
 
   // Browser notification yuborish
   async showNotification(data: NotificationData): Promise<void> {
+    console.log('🔔 showNotification called with data:', data);
+    console.log('🔔 Permission status:', this.permission);
+    console.log('🔔 Is supported:', this.isSupported);
+    
     if (!this.isSupported || this.permission !== 'granted') {
-      console.warn('Cannot show notification: permission not granted');
+      console.warn('Cannot show notification: permission not granted or not supported');
+      console.warn('Permission:', this.permission, 'Supported:', this.isSupported);
       return;
     }
 
     try {
       // Duplicate notification'larni oldini olish uchun tag ishlatish
       const tag = data.tag || `notification-${Date.now()}`;
+      console.log('🔔 Using tag:', tag);
       
       // Avvalgi notification'larni yopish (bir xil tag bilan)
       if (data.tag) {
         // Service Worker orqali notification yuborish (agar mavjud bo'lsa)
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          console.log('🔔 Sending notification via Service Worker');
           navigator.serviceWorker.controller.postMessage({
             type: 'SHOW_NOTIFICATION',
             data: {
@@ -77,6 +84,7 @@ class NotificationService {
         }
       }
 
+      console.log('🔔 Creating browser notification directly');
       const notificationOptions: NotificationOptions = {
         body: data.body,
         icon: data.icon || '/favicon.ico',
@@ -92,10 +100,13 @@ class NotificationService {
         (notificationOptions as any).actions = data.actions;
       }
 
+      console.log('🔔 Notification options:', notificationOptions);
       const notification = new Notification(data.title, notificationOptions);
+      console.log('🔔 Notification created:', notification);
 
       // Notification click event
       notification.onclick = () => {
+        console.log('🔔 Notification clicked');
         window.focus();
         notification.close();
         
@@ -113,7 +124,7 @@ class NotificationService {
 
       // Notification yopilganda
       notification.onclose = () => {
-        console.log('Notification closed');
+        console.log('🔔 Notification closed');
       };
 
       // 15 soniyadan keyin avtomatik yopish
@@ -124,7 +135,7 @@ class NotificationService {
       console.log(`✅ Notification shown with tag: ${tag}`);
 
     } catch (error) {
-      console.error('Error showing notification:', error);
+      console.error('❌ Error showing notification:', error);
     }
   }
 
@@ -293,9 +304,10 @@ class NotificationService {
       }
 
       // Email notification yuborish (agar email mavjud bo'lsa)
-      if (order.customer_email) {
-        await this.sendEmailNotification(order, message);
-      }
+      // Temporarily disabled due to CORS issues
+      // if (order.customer_email) {
+      //   await this.sendEmailNotification(order, message);
+      // }
     } else {
       console.log(`⚠️ No message found for status: ${order.status}`);
     }
