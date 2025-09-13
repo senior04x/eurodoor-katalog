@@ -9,8 +9,6 @@ import { useToast } from '../contexts/ToastContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import CartSidebar from './CartSidebar';
 import NotificationCenter from './NotificationCenter';
-import { ensurePushSubscription, isPushSupported } from '../lib/notificationService';
-import { supabase } from '../lib/supabase';
 
 interface HeaderProps {
   currentPage: string;
@@ -23,84 +21,13 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
   const [showAdmin, setShowAdmin] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
-  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const { t } = useLanguage();
   const { totalItems, isCartOpen, setIsCartOpen } = useCart();
   const { user, signOut } = useAuth();
   const { showSuccess, showError } = useToast();
 
 
-  const enablePushNotifications = async () => {
-    try {
-      if (!user) {
-        showError('Iltimos, avval tizimga kiring');
-        return;
-      }
 
-      if (!isPushSupported()) {
-        showError('Push notifications qo\'llab-quvvatlanmaydi');
-        return;
-      }
-
-      console.log('🔔 Enabling push notifications...');
-      await ensurePushSubscription(user.id);
-      showSuccess('Push notifications yoqildi!');
-    } catch (error: any) {
-      console.error('Enable push notification error:', error);
-      showError('Push notification xatosi: ' + error.message);
-    }
-  };
-
-  // Load unread notification count
-  const loadUnreadNotificationCount = async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('is_read', false);
-
-      if (error) throw error;
-      setUnreadNotificationCount(data?.length || 0);
-    } catch (error) {
-      console.error('Error loading unread notification count:', error);
-    }
-  };
-
-  // Load notification count when user changes
-  useEffect(() => {
-    if (user) {
-      loadUnreadNotificationCount();
-    } else {
-      setUnreadNotificationCount(0);
-    }
-  }, [user]);
-
-  // Real-time subscription for notification count
-  useEffect(() => {
-    if (!user) return;
-
-    const subscription = supabase
-      .channel('header-notifications-realtime')
-      .on('postgres_changes', 
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`
-        },
-        () => {
-          loadUnreadNotificationCount();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [user]);
 
   // Telegram WebApp ni aniqlash
   useEffect(() => {
