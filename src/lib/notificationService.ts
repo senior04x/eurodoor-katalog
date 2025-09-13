@@ -55,16 +55,22 @@ class NotificationService {
     }
 
     try {
-      const notification = new Notification(data.title, {
+      const notificationOptions: NotificationOptions = {
         body: data.body,
         icon: data.icon || '/favicon.ico',
         badge: data.badge || '/favicon.ico',
         tag: data.tag,
         data: data.data,
-        actions: data.actions,
         requireInteraction: true, // Notification avtomatik yopilmasin
         silent: false
-      });
+      };
+
+      // Add actions if supported (Chrome/Edge only)
+      if (data.actions && 'actions' in Notification.prototype) {
+        (notificationOptions as any).actions = data.actions;
+      }
+
+      const notification = new Notification(data.title, notificationOptions);
 
       // Notification click event
       notification.onclick = () => {
