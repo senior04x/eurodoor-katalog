@@ -117,12 +117,18 @@ function App() {
           // Service Worker'ni register qilish
           await notificationService.registerServiceWorker();
           console.log('✅ Service Worker registered');
+          // Global order watching'ni boshlash
+          await notificationService.startGlobalOrderWatching();
+          console.log('✅ Global order watching started');
         } else if (permission === 'default') {
           console.log('🔔 Requesting notification permission...');
           const hasPermission = await notificationService.requestPermission();
           if (hasPermission) {
             console.log('✅ Notification permission granted');
             await notificationService.registerServiceWorker();
+            // Global order watching'ni boshlash
+            await notificationService.startGlobalOrderWatching();
+            console.log('✅ Global order watching started');
           } else {
             console.log('❌ Notification permission denied');
           }

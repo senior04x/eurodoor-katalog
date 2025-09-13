@@ -22,6 +22,8 @@ class NotificationService {
   private isSupported: boolean = false;
   private lastNotificationTime: { [key: string]: number } = {};
   private notificationDebounceTime: number = 5000; // 5 soniya
+  private globalSubscription: any = null;
+  private isWatching: boolean = false;
 
   constructor() {
     this.isSupported = 'Notification' in window;
@@ -126,26 +128,29 @@ class NotificationService {
     }
   }
 
-  // Order status o'zgarishini kuzatish
-  async watchOrderStatus(orderNumber: string, customerPhone: string): Promise<void> {
+  // Global order status o'zgarishini kuzatish (barcha order'lar uchun)
+  async startGlobalOrderWatching(): Promise<void> {
+    if (this.isWatching) {
+      console.log('🔔 Already watching orders globally');
+      return;
+    }
+
     try {
-      console.log(`🔔 Watching order status for: ${orderNumber}`);
-      console.log(`📱 Customer phone: ${customerPhone}`);
+      console.log('🔔 Starting global order watching...');
       console.log(`🔐 Notification permission: ${this.permission}`);
       
-      // Real-time subscription
-      const subscription = supabase
-        .channel(`order-${orderNumber}`)
+      // Global real-time subscription - barcha order'lar uchun
+      this.globalSubscription = supabase
+        .channel('global-orders-watching')
         .on(
           'postgres_changes',
           {
             event: 'UPDATE',
             schema: 'public',
-            table: 'orders',
-            filter: `order_number=eq.${orderNumber}`
+            table: 'orders'
           },
           async (payload) => {
-            console.log('📦 Order status changed:', payload);
+            console.log('📦 Global order status changed:', payload);
             console.log('📦 Payload details:', {
               new: payload.new,
               old: payload.old,
@@ -157,29 +162,51 @@ class NotificationService {
             
             // Agar status o'zgargan bo'lsa
             if (order.status !== oldOrder.status) {
-              console.log(`🔄 Status changed from ${oldOrder.status} to ${order.status}`);
-              await this.handleOrderStatusChange(order, orderNumber);
+              console.log(`🔄 Status changed from ${oldOrder.status} to ${order.status} for order: ${order.order_number}`);
+              await this.handleOrderStatusChange(order, order.order_number);
             } else {
               console.log('⚠️ Status did not change, skipping notification');
             }
           }
         )
         .subscribe((status) => {
-          console.log(`📡 Subscription status: ${status}`);
+          console.log(`📡 Global subscription status: ${status}`);
           if (status === 'SUBSCRIBED') {
-            console.log(`✅ Successfully subscribed to order: ${orderNumber}`);
+            console.log('✅ Successfully subscribed to global orders');
+            this.isWatching = true;
           } else if (status === 'CHANNEL_ERROR') {
-            console.error(`❌ Channel error for order: ${orderNumber}`);
+            console.error('❌ Global channel error');
           } else if (status === 'TIMED_OUT') {
-            console.error(`⏰ Subscription timed out for order: ${orderNumber}`);
+            console.error('⏰ Global subscription timed out');
           }
         });
 
-      // 30 daqiqadan keyin subscription ni to'xtatish
-      setTimeout(() => {
-        subscription.unsubscribe();
-        console.log(`🔔 Stopped watching order: ${orderNumber}`);
-      }, 30 * 60 * 1000); // 30 daqiqa
+    } catch (error) {
+      console.error('Error starting global order watching:', error);
+    }
+  }
+
+  // Global subscription'ni to'xtatish
+  stopGlobalOrderWatching(): void {
+    if (this.globalSubscription) {
+      this.globalSubscription.unsubscribe();
+      this.globalSubscription = null;
+      this.isWatching = false;
+      console.log('🔔 Stopped global order watching');
+    }
+  }
+
+  // Order status o'zgarishini kuzatish (legacy method - faqat bir order uchun)
+  async watchOrderStatus(orderNumber: string, customerPhone: string): Promise<void> {
+    try {
+      console.log(`🔔 Watching order status for: ${orderNumber}`);
+      console.log(`📱 Customer phone: ${customerPhone}`);
+      console.log(`🔐 Notification permission: ${this.permission}`);
+      
+      // Global watching'ni boshlash (agar hali boshlanmagan bo'lsa)
+      if (!this.isWatching) {
+        await this.startGlobalOrderWatching();
+      }
 
     } catch (error) {
       console.error('Error watching order status:', error);

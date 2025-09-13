@@ -4,6 +4,7 @@ import { Package, Clock, CheckCircle, Truck, Home, Search, AlertCircle } from 'l
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
+import { notificationService } from '../lib/notificationService'
 
 interface Order {
   id: string
@@ -171,8 +172,8 @@ export default function OrderTracking() {
       if (!data || data.length === 0) {
         setError('Buyurtma topilmadi')
       } else {
-        // Start real-time subscription for searched orders
-        startOrderSubscription(data.map(order => order.id))
+        // Real-time subscription global notification service orqali ishlayapti
+        console.log('✅ Orders loaded, real-time updates handled by global notification service');
       }
     } catch (error) {
       console.error('Qidiruvda xatolik:', error)
@@ -182,37 +183,8 @@ export default function OrderTracking() {
     }
   }
 
-  // Real-time subscription for specific orders
-  const startOrderSubscription = (orderIds: string[]) => {
-    const subscription = supabase
-      .channel('specific-orders')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'orders',
-          filter: `id=in.(${orderIds.join(',')})`
-        },
-        (payload) => {
-          console.log('🔄 Specific order updated:', payload)
-          
-          setOrders(prevOrders => {
-            return prevOrders.map(order => {
-              if (order.id === payload.new.id) {
-                console.log('✅ Updating searched order status:', payload.new.status)
-                setLastUpdate(new Date())
-                return { ...order, ...payload.new }
-              }
-              return order
-            })
-          })
-        }
-      )
-      .subscribe()
-
-    return subscription
-  }
+  // Real-time subscription removed - handled by global notification service
+  // This prevents duplicate notifications
 
   const getStatusIndex = (status: string) => {
     return statusSteps.findIndex(step => step.key === status)
