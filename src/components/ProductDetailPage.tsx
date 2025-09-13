@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from '../contexts/CartContext';
 import { useToast } from '../contexts/ToastContext';
 import { productsApi } from '../lib/productsApi';
-import { Product } from '../lib/supabase';
+import { Product, supabase } from '../lib/supabase';
 
 interface ProductDetailPageProps {
   productId: string;
@@ -30,9 +30,23 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
     const loadProduct = async () => {
       try {
         console.log('🔄 Loading product with ID:', productId);
+        console.log('🔄 ProductId type:', typeof productId);
+        console.log('🔄 ProductId length:', productId?.length);
         setLoading(true);
+        
+        // Direct Supabase call for debugging
+        console.log('🔄 Making direct Supabase call...');
+        const { data: directData, error: directError } = await supabase
+          .from('products')
+          .select('*')
+          .eq('id', productId)
+          .eq('is_active', true)
+          .single();
+        
+        console.log('📦 Direct Supabase response:', { data: directData, error: directError });
+        
         const fetchedProduct = await productsApi.getProductById(productId);
-        console.log('📦 Fetched product:', fetchedProduct);
+        console.log('📦 API fetched product:', fetchedProduct);
         
         if (fetchedProduct) {
           setProduct(fetchedProduct);
