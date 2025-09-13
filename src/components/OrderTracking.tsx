@@ -118,12 +118,15 @@ export default function OrderTracking() {
               // Send push notification to user's device
               if (user && user.id) {
                 try {
-                  await pushNotificationService.notifyOrderStatusChange(
+                  pushNotificationService.notifyOrderStatusChange(
                     payload.new.order_number,
                     newStatus,
                     user.id
-                  );
-                  console.log('✅ Push notification sent to user device');
+                  ).then(() => {
+                    console.log('✅ Push notification sent to user device');
+                  }).catch((error) => {
+                    console.error('❌ Push notification error:', error);
+                  });
                 } catch (error) {
                   console.error('❌ Push notification error:', error);
                 }

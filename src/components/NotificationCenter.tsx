@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bell, X, Check, AlertCircle, Package, Truck, CheckCircle, Clock } from 'lucide-react'
+import { Bell, X, AlertCircle, Package, CheckCircle, Clock } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 
