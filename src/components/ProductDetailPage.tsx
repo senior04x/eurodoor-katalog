@@ -17,6 +17,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   const { addToCart } = useCart();
   const { showSuccess } = useToast();
   
+  console.log('🎯 ProductDetailPage rendered with productId:', productId);
 
   // Real Supabase product
   const [product, setProduct] = useState<Product | null>(null);
@@ -27,10 +28,12 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   useEffect(() => {
     const loadProduct = async () => {
       try {
+        console.log('🔄 Loading product with ID:', productId);
         setLoading(true);
         const fetchedProduct = await productsApi.getProductById(productId);
+        console.log('📦 Fetched product:', fetchedProduct);
         setProduct(fetchedProduct);
-        console.log('✅ Product loaded:', fetchedProduct);
+        console.log('✅ Product loaded successfully');
       } catch (error) {
         console.error('❌ Error loading product:', error);
         setProduct(null);
@@ -40,7 +43,11 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
     };
 
     if (productId) {
+      console.log('🎯 ProductId exists, loading product...');
       loadProduct();
+    } else {
+      console.log('❌ No productId provided');
+      setLoading(false);
     }
   }, [productId]);
 

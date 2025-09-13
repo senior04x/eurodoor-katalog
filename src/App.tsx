@@ -159,12 +159,26 @@ function App() {
         return <ContactPage onNavigate={handleNavigate} />
       case 'product-detail':
         const productId = selectedProduct?.id || getProductIdFromHash()
+        console.log('🎯 ProductDetail case - productId:', productId, 'selectedProduct:', selectedProduct)
         return productId ? (
           <ProductDetailPage 
             productId={productId} 
             onNavigate={handleNavigate}
           />
-        ) : null
+        ) : (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-white mb-4">Mahsulot topilmadi</h2>
+              <p className="text-gray-300 mb-4">Product ID: {productId || 'undefined'}</p>
+              <button
+                onClick={() => handleNavigate('catalog')}
+                className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600"
+              >
+                Katalogga qaytish
+              </button>
+            </div>
+          </div>
+        )
       case 'order-success':
         console.log('🎉 Rendering OrderSuccessPage!');
         return <OrderSuccessPage onNavigate={handleNavigate} />
