@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase'
 
-function withTimeout<T>(p: Promise<T>, ms = 8000) {
+function withTimeout<T>(p: Promise<T>, ms = 8000): Promise<T> {
   return Promise.race([
     p,
     new Promise<T>((_, rej) => setTimeout(() => rej(new Error('Request timeout')), ms))
@@ -14,14 +14,17 @@ export function attachAuthListener() {
     console.log('[EURODOOR] auth state =', event)
     if (event !== 'SIGNED_IN' || !session?.user) return
     try {
-      const q = supabase
-        .from('customers')           // adjust if your table is 'profiles'
+      const { data, error } = await supabase
+        .from('customers')
         .select('id')
         .eq('user_id', session.user.id)
         .maybeSingle()
-        .throwOnError()
 
-      const { data } = await withTimeout(q, 8000)
+      if (error) {
+        console.error('[EURODOOR] customer check error:', error)
+        throw error
+      }
+
       console.log('[EURODOOR] customer row:', data)
 
       if (!routed) {

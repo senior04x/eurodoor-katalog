@@ -1,7 +1,7 @@
 // Universal Notification Service for All Platforms
 import { supabase } from './supabase';
 
-export const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string
+export const VAPID_PUBLIC_KEY = (import.meta as any).env?.VITE_VAPID_PUBLIC_KEY as string
 
 function b64ToUint8Array(base64: string) {
   const pad = '='.repeat((4 - (base64.length % 4)) % 4)
