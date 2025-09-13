@@ -53,33 +53,6 @@ export default function NotificationGate() {
     }
   }
 
-  // Debug function to manually trigger notification check
-  const triggerNotificationCheck = () => {
-    console.log('🔔 Manually triggering notification check...')
-    if (user && shouldAskForNotifications()) {
-      requestNotificationPermission()
-    } else {
-      console.log('🔔 Notification check conditions not met:', {
-        user: !!user,
-        shouldAsk: shouldAskForNotifications()
-      })
-    }
-  }
-
-  // Add debug button in development
-  if (process.env.NODE_ENV === 'development' && user) {
-    return (
-      <div className="fixed bottom-4 right-4 z-[10000]">
-        <button 
-          onClick={triggerNotificationCheck}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm"
-        >
-          Test Notifications
-        </button>
-      </div>
-    )
-  }
-
   // No modal needed anymore - direct permission request
   return null
 }
