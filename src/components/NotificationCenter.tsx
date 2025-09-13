@@ -18,7 +18,12 @@ interface Notification {
   updated_at: string
 }
 
-const NotificationCenter: React.FC = () => {
+interface NotificationCenterProps {
+  isMobile?: boolean
+  onMobileClose?: () => void
+}
+
+const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = false, onMobileClose }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
@@ -66,6 +71,14 @@ const NotificationCenter: React.FC = () => {
       setUnreadCount(prev => Math.max(0, prev - 1))
     } catch (error) {
       console.error('Error marking notification as read:', error)
+    }
+  }
+
+  // Handle mobile close
+  const handleMobileClose = () => {
+    setIsOpen(false)
+    if (onMobileClose) {
+      onMobileClose()
     }
   }
 
@@ -180,7 +193,7 @@ const NotificationCenter: React.FC = () => {
       {/* Notification Bell Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-white/80 hover:text-white transition-colors"
+        className={`relative p-2 text-white/80 hover:text-white transition-colors ${isMobile ? 'w-full justify-start' : ''}`}
       >
         <Bell className="w-6 h-6" />
         {unreadCount > 0 && (
@@ -192,6 +205,9 @@ const NotificationCenter: React.FC = () => {
             {unreadCount > 9 ? '9+' : unreadCount}
           </motion.div>
         )}
+        {isMobile && (
+          <span className="ml-3 text-sm">Bildirishnomalar</span>
+        )}
       </button>
 
       {/* Notification Dropdown */}
@@ -201,10 +217,10 @@ const NotificationCenter: React.FC = () => {
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className="absolute right-0 top-full mt-2 w-80 bg-white/10 backdrop-blur-lg rounded-lg shadow-xl border border-white/20 z-50"
+            className={`absolute ${isMobile ? 'left-0 right-0 mx-4' : 'right-0'} top-full mt-2 ${isMobile ? 'w-auto' : 'w-80'} bg-black/40 backdrop-blur-xl rounded-lg shadow-2xl border border-white/30 z-50`}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/20">
+            <div className="flex items-center justify-between p-4 border-b border-white/30 bg-black/20 backdrop-blur-sm">
               <h3 className="text-white font-semibold">Bildirishnomalar</h3>
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
@@ -216,7 +232,7 @@ const NotificationCenter: React.FC = () => {
                   </button>
                 )}
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={isMobile ? handleMobileClose : () => setIsOpen(false)}
                   className="text-white/60 hover:text-white transition-colors"
                 >
                   <X className="w-4 h-4" />
@@ -227,12 +243,12 @@ const NotificationCenter: React.FC = () => {
             {/* Notifications List */}
             <div className="max-h-96 overflow-y-auto">
               {loading ? (
-                <div className="p-4 text-center text-white/60">
+                <div className="p-4 text-center text-white/80 bg-black/10 backdrop-blur-sm">
                   <Clock className="w-6 h-6 mx-auto mb-2 animate-spin" />
                   Yuklanmoqda...
                 </div>
               ) : notifications.length === 0 ? (
-                <div className="p-8 text-center text-white/60">
+                <div className="p-8 text-center text-white/80 bg-black/10 backdrop-blur-sm">
                   <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p>Bildirishnomalar yo'q</p>
                 </div>
@@ -242,8 +258,8 @@ const NotificationCenter: React.FC = () => {
                     key={notification.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className={`p-4 border-b border-white/10 hover:bg-white/5 transition-colors cursor-pointer ${
-                      !notification.is_read ? 'bg-blue-500/10' : ''
+                    className={`p-4 border-b border-white/20 hover:bg-white/10 transition-colors cursor-pointer ${
+                      !notification.is_read ? 'bg-blue-500/20 backdrop-blur-sm' : 'bg-white/5'
                     }`}
                     onClick={() => markAsRead(notification.id)}
                   >
@@ -282,10 +298,14 @@ const NotificationCenter: React.FC = () => {
 
             {/* Footer */}
             {notifications.length > 0 && (
-              <div className="p-3 border-t border-white/20 text-center">
+              <div className="p-3 border-t border-white/30 bg-black/20 backdrop-blur-sm text-center">
                 <button
                   onClick={() => {
-                    setIsOpen(false)
+                    if (isMobile) {
+                      handleMobileClose()
+                    } else {
+                      setIsOpen(false)
+                    }
                     // Navigate to full notifications page if needed
                   }}
                   className="text-blue-400 hover:text-blue-300 text-sm transition-colors"

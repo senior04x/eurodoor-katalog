@@ -9,8 +9,8 @@ import { useToast } from '../contexts/ToastContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import CartSidebar from './CartSidebar';
 import NotificationCenter from './NotificationCenter';
-import { testPushNotification } from '../lib/api';
 import { ensurePushSubscription, isPushSupported } from '../lib/notificationService';
+import { supabase } from '../lib/supabase';
 
 interface HeaderProps {
   currentPage: string;
@@ -23,60 +23,12 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
   const [showAdmin, setShowAdmin] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const { t } = useLanguage();
   const { totalItems, isCartOpen, setIsCartOpen } = useCart();
   const { user, signOut } = useAuth();
   const { showSuccess, showError } = useToast();
 
-  // Test notification function
-  const testNotification = async () => {
-    try {
-      console.log('🔔 Manual test notification triggered');
-      console.log('🔔 Permission status:', Notification.permission);
-      console.log('🔔 Is supported:', 'Notification' in window);
-      
-      // Check if notifications are supported
-      if (!('Notification' in window)) {
-        showError('Bu brauzer notification\'larni qo\'llab-quvvatlamaydi');
-        return;
-      }
-      
-      // Request permission if not granted
-      if (Notification.permission === 'default') {
-        const permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
-          showError('Notification permission rad etildi');
-          return;
-        }
-      }
-      
-      // Simple browser notification test
-      if (Notification.permission === 'granted') {
-        new Notification('🔔 Test Notification', {
-          body: 'Bu test notification. Agar ko\'rsangiz, notification ishlayapti!',
-          icon: '/favicon.ico',
-          tag: 'test-notification-' + Date.now()
-        });
-        showSuccess('Test notification yuborildi!');
-      } else {
-        showError('Notification permission yo\'q');
-      }
-    } catch (error) {
-      console.error('Test notification error:', error);
-      showError('Notification test xatoligi');
-    }
-  };
-
-  const testPushNotificationHandler = async () => {
-    try {
-      console.log('🧪 Manual test push notification triggered');
-      await testPushNotification();
-      showSuccess('Test push notification yuborildi!');
-    } catch (error: any) {
-      console.error('Test push notification error:', error);
-      showError('Test push notification xatosi: ' + error.message);
-    }
-  };
 
   const enablePushNotifications = async () => {
     try {
@@ -98,6 +50,57 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
       showError('Push notification xatosi: ' + error.message);
     }
   };
+
+  // Load unread notification count
+  const loadUnreadNotificationCount = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_read', false);
+
+      if (error) throw error;
+      setUnreadNotificationCount(data?.length || 0);
+    } catch (error) {
+      console.error('Error loading unread notification count:', error);
+    }
+  };
+
+  // Load notification count when user changes
+  useEffect(() => {
+    if (user) {
+      loadUnreadNotificationCount();
+    } else {
+      setUnreadNotificationCount(0);
+    }
+  }, [user]);
+
+  // Real-time subscription for notification count
+  useEffect(() => {
+    if (!user) return;
+
+    const subscription = supabase
+      .channel('header-notifications-realtime')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          loadUnreadNotificationCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user]);
 
   // Telegram WebApp ni aniqlash
   useEffect(() => {
@@ -330,36 +333,6 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                       <ShoppingCart className="h-4 w-4 mr-2" />
                       {t('header.orders')}
                     </button>
-                    <button
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        testNotification();
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      <span className="h-4 w-4 mr-2">🔔</span>
-                      Test Notification
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        enablePushNotifications();
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      <span className="h-4 w-4 mr-2">🔔</span>
-                      Enable Push Notifications
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        testPushNotificationHandler();
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      <span className="h-4 w-4 mr-2">🧪</span>
-                      Test Push Notification
-                    </button>
                     <hr className="my-1" />
                     <button
                       onClick={() => {
@@ -472,6 +445,16 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                 
                 {/* Mobil korzinka va foydalanuvchi tugmalari */}
                 <div className="px-2 py-2 border-t border-white/10 mt-4 pt-4">
+                  {/* Mobile Notification Center */}
+                  {user && (
+                    <div className="mb-3">
+                      <NotificationCenter 
+                        isMobile={true} 
+                        onMobileClose={() => setIsMenuOpen(false)} 
+                      />
+                    </div>
+                  )}
+                  
                   <button
                     onClick={() => {
                       setIsCartOpen(!isCartOpen);
