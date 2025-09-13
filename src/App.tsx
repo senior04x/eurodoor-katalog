@@ -22,12 +22,21 @@ function App() {
     const hash = window.location.hash.replace('#', '')
     const validPages = ['home', 'catalog', 'about', 'contact', 'orders', 'profile', 'order-success', 'product-detail']
     
+    console.log('🔍 getInitialPage - hash:', hash)
+    console.log('🔍 getInitialPage - validPages:', validPages)
+    
     // Product detail page uchun
     if (hash.startsWith('product-detail/')) {
+      console.log('✅ getInitialPage - returning product-detail')
       return 'product-detail'
     }
     
-    return validPages.includes(hash) ? hash : 'home'
+    const isValidPage = validPages.includes(hash)
+    console.log('🔍 getInitialPage - isValidPage:', isValidPage)
+    const result = isValidPage ? hash : 'home'
+    console.log('🔍 getInitialPage - returning:', result)
+    
+    return result
   }
 
   // Product ID ni hash'dan olish
@@ -152,6 +161,9 @@ function App() {
 
   const renderPage = () => {
     console.log('🎯 Rendering page:', currentPage);
+    console.log('🎯 Current hash:', window.location.hash);
+    console.log('🎯 Selected product:', selectedProduct);
+    
     switch (currentPage) {
       case 'home':
         return <HomePage onNavigate={handleNavigate} />
@@ -164,25 +176,36 @@ function App() {
       case 'product-detail':
         const productId = selectedProduct?.id || getProductIdFromHash()
         console.log('🎯 ProductDetail case - productId:', productId, 'selectedProduct:', selectedProduct)
-        return productId ? (
-          <ProductDetailPage 
-            productId={productId} 
-            onNavigate={handleNavigate}
-          />
-        ) : (
-          <div className="min-h-screen flex items-center justify-center">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-white mb-4">Mahsulot topilmadi</h2>
-              <p className="text-gray-300 mb-4">Product ID: {productId || 'undefined'}</p>
-              <button
-                onClick={() => handleNavigate('catalog')}
-                className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600"
-              >
-                Katalogga qaytish
-              </button>
+        console.log('🎯 Current hash:', window.location.hash)
+        console.log('🎯 getProductIdFromHash result:', getProductIdFromHash())
+        
+        if (productId) {
+          console.log('✅ Rendering ProductDetailPage with productId:', productId)
+          return (
+            <ProductDetailPage 
+              productId={productId} 
+              onNavigate={handleNavigate}
+            />
+          )
+        } else {
+          console.log('❌ No productId found, showing error page')
+          return (
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-white mb-4">Mahsulot topilmadi</h2>
+                <p className="text-gray-300 mb-4">Product ID: {productId || 'undefined'}</p>
+                <p className="text-gray-300 mb-4">Current hash: {window.location.hash}</p>
+                <p className="text-gray-300 mb-4">Selected product: {selectedProduct ? 'exists' : 'null'}</p>
+                <button
+                  onClick={() => handleNavigate('catalog')}
+                  className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600"
+                >
+                  Katalogga qaytish
+                </button>
+              </div>
             </div>
-          </div>
-        )
+          )
+        }
       case 'order-success':
         console.log('🎉 Rendering OrderSuccessPage!');
         return <OrderSuccessPage onNavigate={handleNavigate} />
