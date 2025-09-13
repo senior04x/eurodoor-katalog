@@ -313,30 +313,11 @@ class NotificationService {
     }
   }
 
-  // Email notification yuborish
+  // Email notification yuborish - DISABLED due to CORS issues
   private async sendEmailNotification(order: any, message: any): Promise<void> {
-    try {
-      // Supabase Edge Function chaqirish
-      const { error } = await supabase.functions.invoke('send-order-notification', {
-        body: {
-          email: order.customer_email,
-          orderNumber: order.order_number,
-          customerName: order.customer_name,
-          status: order.status,
-          title: message.title,
-          body: message.body,
-          totalAmount: order.total_amount
-        }
-      });
-
-      if (error) {
-        console.error('Error sending email notification:', error);
-      } else {
-        console.log('✅ Email notification sent successfully');
-      }
-    } catch (error) {
-      console.error('Error sending email notification:', error);
-    }
+    console.log('📧 Email notification disabled due to CORS issues');
+    // Email notification temporarily disabled
+    // This prevents CORS errors in console
   }
 
   // Service Worker registration
