@@ -78,7 +78,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
     initializeNotifications();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsSubmitting(true);
     

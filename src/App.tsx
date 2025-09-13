@@ -74,6 +74,16 @@ function App() {
                       navigator.userAgent.includes('TelegramBot');
     setIsTelegramWebApp(!!isTelegram);
 
+    // Listen for service worker messages (notification clicks)
+    const handleServiceWorkerMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'NAVIGATE_TO_ORDERS') {
+        console.log('🔔 Notification clicked, navigating to orders')
+        handleNavigate('orders')
+      }
+    }
+
+    navigator.serviceWorker?.addEventListener('message', handleServiceWorkerMessage)
+
     // Sayt yuklanishini simulyatsiya qilish
     const timer = setTimeout(() => {
       setIsLoading(false)
@@ -101,18 +111,7 @@ function App() {
       }
     }
 
-    // Service Worker message listener
-    const handleServiceWorkerMessage = (event: MessageEvent) => {
-      console.log('🔔 Service Worker message received:', event.data);
-      
-      if (event.data && event.data.type === 'NAVIGATE_TO_ORDERS') {
-        console.log('🔔 Navigating to orders page from Service Worker');
-        handleNavigate('orders');
-      }
-    }
-
     window.addEventListener('hashchange', handleHashChange)
-    navigator.serviceWorker?.addEventListener('message', handleServiceWorkerMessage)
     
     // Initialize auto-ask notifications system
     installAutoAskNotifications();

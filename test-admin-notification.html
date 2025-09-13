@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Admin Notification - Eurodoor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .danger {
+            background: #f44336;
+        }
+        .danger:hover {
+            background: #da190b;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.3);
+        }
+        .error {
+            background: rgba(244, 67, 54, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Test Admin Notification</h1>
+        <p>Bu sahifa admin panel'dan buyurtma holatini o'zgartirganda notification yuborishni test qilish uchun.</p>
+        
+        <div class="form-group">
+            <label for="userId">User ID (Customer):</label>
+            <input type="text" id="userId" placeholder="144aab36-2e2e-4af7-9916-9e3016584ae6" value="144aab36-2e2e-4af7-9916-9e3016584ae6">
+        </div>
+        
+        <div class="form-group">
+            <label for="orderNumber">Buyurtma Raqami:</label>
+            <input type="text" id="orderNumber" placeholder="EURO-123456" value="EURO-123456">
+        </div>
+        
+        <div class="form-group">
+            <label for="orderStatus">Yangi Holat:</label>
+            <select id="orderStatus">
+                <option value="pending">Kutilmoqda</option>
+                <option value="confirmed">Tasdiqlangan</option>
+                <option value="processing">Tayyorlanmoqda</option>
+                <option value="ready">Tayyor</option>
+                <option value="delivered">Yetkazilgan</option>
+                <option value="cancelled">Bekor qilindi</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="title">Notification Sarlavhasi:</label>
+            <input type="text" id="title" placeholder="Buyurtma Holati O'zgartirildi">
+        </div>
+        
+        <div class="form-group">
+            <label for="body">Notification Matni:</label>
+            <textarea id="body" rows="3" placeholder="Sizning buyurtmangiz holati o'zgartirildi"></textarea>
+        </div>
+        
+        <button onclick="sendTestNotification()">🔔 Test Notification Yuborish</button>
+        <button onclick="simulateOrderUpdate()" class="danger">🔄 Simulate Order Update</button>
+        <button onclick="checkSubscriptions()">📋 Check Subscriptions</button>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://oathybjrmhtubbemjeyy.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdGh5YmpybWh0dWJiZW1qZXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQxNzQ4NzQsImV4cCI6MjA0OTc1MDg3NH0.8QZqJqJqJqJqJqJqJqJqJqJqJqJqJqJqJqJqJqJqJq';
+
+        async function sendTestNotification() {
+            const userId = document.getElementById('userId').value;
+            const orderNumber = document.getElementById('orderNumber').value;
+            const status = document.getElementById('orderStatus').value;
+            const title = document.getElementById('title').value || getStatusTitle(status);
+            const body = document.getElementById('body').value || getStatusBody(status, orderNumber);
+
+            if (!userId) {
+                showResult('User ID kiritish kerak!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/send-push-notification`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        title: title,
+                        body: body,
+                        tag: `order-${orderNumber}`,
+                        icon: '/icons/icon-192.png',
+                        data: {
+                            orderId: 'test-order-id',
+                            orderNumber: orderNumber,
+                            status: status,
+                            type: 'order_status_change',
+                            url: '/orders'
+                        }
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Notification yuborildi!<br>Natija: ${JSON.stringify(result, null, 2)}`, 'success');
+                } else {
+                    showResult(`❌ Xatolik: ${JSON.stringify(result, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Xatolik: ${error.message}`, 'error');
+            }
+        }
+
+        async function simulateOrderUpdate() {
+            const userId = document.getElementById('userId').value;
+            const orderNumber = document.getElementById('orderNumber').value;
+            const status = document.getElementById('orderStatus').value;
+
+            if (!userId || !orderNumber) {
+                showResult('User ID va Order Number kiritish kerak!', 'error');
+                return;
+            }
+
+            try {
+                // Simulate order update in database
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({
+                        order_number: orderNumber,
+                        customer_id: 'test-customer-id',
+                        user_id: userId,
+                        status: status,
+                        total_amount: 1000000,
+                        created_at: new Date().toISOString()
+                    })
+                });
+
+                if (response.ok) {
+                    showResult('✅ Order yaratildi! Database trigger ishga tushishi kerak.', 'success');
+                } else {
+                    const error = await response.text();
+                    showResult(`❌ Order yaratishda xatolik: ${error}`, 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Xatolik: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkSubscriptions() {
+            const userId = document.getElementById('userId').value;
+
+            if (!userId) {
+                showResult('User ID kiritish kerak!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/push_subscriptions?user_id=eq.${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    }
+                });
+
+                const subscriptions = await response.json();
+                
+                if (subscriptions.length > 0) {
+                    showResult(`✅ ${subscriptions.length} ta subscription topildi:<br>${JSON.stringify(subscriptions, null, 2)}`, 'success');
+                } else {
+                    showResult('❌ Hech qanday subscription topilmadi. User notification yoqmagan bo\'lishi mumkin.', 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Xatolik: ${error.message}`, 'error');
+            }
+        }
+
+        function getStatusTitle(status) {
+            const titles = {
+                'pending': '📝 Buyurtma Qabul Qilindi',
+                'confirmed': '✅ Buyurtma Tasdiqlandi',
+                'processing': '🔄 Buyurtma Tayyorlanmoqda',
+                'ready': '📦 Buyurtma Tayyor',
+                'delivered': '🚚 Buyurtma Yetkazildi',
+                'cancelled': '❌ Buyurtma Bekor Qilindi'
+            };
+            return titles[status] || '🔔 Buyurtma Holati O\'zgartirildi';
+        }
+
+        function getStatusBody(status, orderNumber) {
+            const bodies = {
+                'pending': `Sizning ${orderNumber} raqamli buyurtmangiz qabul qilindi.`,
+                'confirmed': `Sizning ${orderNumber} raqamli buyurtmangiz tasdiqlandi.`,
+                'processing': `Sizning ${orderNumber} raqamli buyurtmangiz tayyorlanmoqda.`,
+                'ready': `Sizning ${orderNumber} raqamli buyurtmangiz tayyor!`,
+                'delivered': `Sizning ${orderNumber} raqamli buyurtmangiz yetkazildi.`,
+                'cancelled': `Sizning ${orderNumber} raqamli buyurtmangiz bekor qilindi.`
+            };
+            return bodies[status] || `Sizning ${orderNumber} raqamli buyurtmangiz holati o'zgartirildi.`;
+        }
+
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = message;
+            resultDiv.className = `result ${type}`;
+            resultDiv.style.display = 'block';
+        }
+
+        // Auto-fill form based on status
+        document.getElementById('orderStatus').addEventListener('change', function() {
+            const status = this.value;
+            const orderNumber = document.getElementById('orderNumber').value;
+            
+            document.getElementById('title').value = getStatusTitle(status);
+            document.getElementById('body').value = getStatusBody(status, orderNumber);
+        });
+    </script>
+</body>
+</html>

@@ -22,8 +22,13 @@ Deno.serve(async (req) => {
     title, 
     body, 
     tag, 
-    icon: icon || '/favicon.ico', 
-    url: '/en/orders.html' 
+    icon: icon || '/icons/icon-192.png', 
+    url: '/orders',
+    badge: '/icons/icon-192.png',
+    data: {
+      url: '/orders',
+      timestamp: Date.now()
+    }
   });
   const results: any[] = [];
 

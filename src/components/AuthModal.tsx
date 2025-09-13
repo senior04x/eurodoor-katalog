@@ -30,7 +30,7 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange }: AuthM
   const { showSuccess, showError } = useToast()
 
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: any) => {
     const { name, value } = e.target
     let processedValue = value
     
@@ -55,7 +55,7 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange }: AuthM
     setError('')
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault()
     setError('')
     setLoading(true)
