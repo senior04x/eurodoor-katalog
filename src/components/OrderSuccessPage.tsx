@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { CheckCircle, Home, ShoppingBag, Phone, Bell } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { notificationService } from '../lib/notificationService';
+import { testNotificationSystem } from '../lib/notificationTest';
 
 interface OrderSuccessPageProps {
   orderNumber?: string;
@@ -70,6 +71,18 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
       if (notificationStatus !== 'granted') {
         console.log('❌ Notification permission not granted');
         return;
+      }
+
+      // Test order status change
+      const testResult = await testNotificationSystem.testOrderStatusChange(
+        orderData.orderNumber, 
+        'confirmed'
+      );
+
+      if (testResult.success) {
+        console.log('✅ Test order status change successful');
+      } else {
+        console.error('❌ Test order status change failed:', testResult.error);
       }
 
       await notificationService.showNotification({
