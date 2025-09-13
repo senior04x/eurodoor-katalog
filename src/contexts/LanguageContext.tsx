@@ -235,6 +235,31 @@ const translations: Translations = {
     ru: 'Спасибо от команды Eurodoor! Ваше доверие очень важно для нас.',
     en: 'Thank you from the Eurodoor team! Your trust is very important to us.'
   },
+  'orderSuccess.notificationTitle': {
+    uz: 'Bildirishnomalarni yoqish',
+    ru: 'Включить уведомления',
+    en: 'Enable Notifications'
+  },
+  'orderSuccess.notificationText': {
+    uz: 'Buyurtmangizning holati o\'zgarganida sizga bildirishnoma yuboramiz. Sahifani yopib chiqib ketgan taqdirda ham xabarlarni olasiz.',
+    ru: 'Мы отправим вам уведомление при изменении статуса вашего заказа. Вы будете получать сообщения даже после закрытия страницы.',
+    en: 'We will send you a notification when your order status changes. You will receive messages even after closing the page.'
+  },
+  'orderSuccess.enableNotifications': {
+    uz: 'Bildirishnomalarni yoqish',
+    ru: 'Включить уведомления',
+    en: 'Enable Notifications'
+  },
+  'orderSuccess.notificationsEnabled': {
+    uz: 'Bildirishnomalar yoqilgan',
+    ru: 'Уведомления включены',
+    en: 'Notifications Enabled'
+  },
+  'orderSuccess.notificationsEnabledText': {
+    uz: 'Buyurtmangizning barcha o\'zgarishlari haqida sizga bildirishnoma yuboriladi.',
+    ru: 'Вам будут отправляться уведомления обо всех изменениях вашего заказа.',
+    en: 'You will receive notifications about all changes to your order.'
+  },
 
   // Auth translations
   'auth.login': {

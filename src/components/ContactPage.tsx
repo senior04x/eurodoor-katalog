@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { ordersApi } from '../lib/ordersApi';
 import { customersApi } from '../lib/customersApi';
+import { notificationService } from '../lib/notificationService';
 
 interface ContactPageProps {
   onNavigate?: (page: string, productId?: string) => void;
@@ -54,6 +55,29 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
 
   const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
 
+  // Notification permission so'rash
+  useEffect(() => {
+    const initializeNotifications = async () => {
+      try {
+        // Service Worker ni register qilish
+        await notificationService.registerServiceWorker();
+        
+        // Notification permission so'rash
+        const hasPermission = await notificationService.requestPermission();
+        
+        if (hasPermission) {
+          console.log('✅ Notification permission granted');
+        } else {
+          console.log('❌ Notification permission denied');
+        }
+      } catch (error) {
+        console.error('Error initializing notifications:', error);
+      }
+    };
+
+    initializeNotifications();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -94,6 +118,14 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
           totalAmount: cartItems.length > 0 ? totalPrice : (selectedProduct?.price || 0)
         };
         localStorage.setItem('lastOrderData', JSON.stringify(orderData));
+        
+        // Notification service ni ishga tushirish
+        try {
+          await notificationService.watchOrderStatus(order.order_number, formData.phone);
+          console.log('🔔 Order status watching started for:', order.order_number);
+        } catch (error) {
+          console.error('Error starting order status watching:', error);
+        }
         
         // Form va cart ni tozalash
         setFormData({

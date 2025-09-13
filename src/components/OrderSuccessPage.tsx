@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, Home, ShoppingBag, Phone } from 'lucide-react';
+import { CheckCircle, Home, ShoppingBag, Phone, Bell } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { notificationService } from '../lib/notificationService';
 
 interface OrderSuccessPageProps {
   orderNumber?: string;
@@ -34,6 +35,34 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
       setOrderData(parsed);
     }
   }, []);
+
+  // Notification permission holatini tekshirish
+  const [notificationStatus, setNotificationStatus] = useState<'checking' | 'granted' | 'denied'>('checking');
+
+  useEffect(() => {
+    const checkNotificationStatus = () => {
+      const status = notificationService.getPermissionStatus();
+      setNotificationStatus(status === 'granted' ? 'granted' : 'denied');
+    };
+
+    checkNotificationStatus();
+  }, []);
+
+  // Notification permission so'rash
+  const requestNotificationPermission = async () => {
+    try {
+      const hasPermission = await notificationService.requestPermission();
+      setNotificationStatus(hasPermission ? 'granted' : 'denied');
+      
+      if (hasPermission) {
+        // Agar permission berilgan bo'lsa, order status ni kuzatishni boshlash
+        await notificationService.watchOrderStatus(orderData.orderNumber, orderData.customerPhone);
+        console.log('🔔 Order status watching started from success page');
+      }
+    } catch (error) {
+      console.error('Error requesting notification permission:', error);
+    }
+  };
 
   const handleGoHome = () => {
     localStorage.removeItem('lastOrderData');
@@ -159,6 +188,51 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
               {t('orderSuccess.contactText')}
             </p>
           </motion.div>
+
+          {/* Notification Settings */}
+          {notificationStatus !== 'granted' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.95 }}
+              className="bg-yellow-500/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-yellow-400/20"
+            >
+              <div className="flex items-center justify-center mb-3">
+                <Bell className="w-5 h-5 text-yellow-400 mr-2" />
+                <h4 className="text-lg font-semibold text-yellow-300">
+                  {t('orderSuccess.notificationTitle')}
+                </h4>
+              </div>
+              <p className="text-yellow-200 text-center mb-4">
+                {t('orderSuccess.notificationText')}
+              </p>
+              <button
+                onClick={requestNotificationPermission}
+                className="w-full bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-200 font-semibold py-3 px-6 rounded-xl border border-yellow-400/30 transition-all duration-300 hover:scale-105"
+              >
+                {t('orderSuccess.enableNotifications')}
+              </button>
+            </motion.div>
+          )}
+
+          {notificationStatus === 'granted' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.95 }}
+              className="bg-green-500/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-green-400/20"
+            >
+              <div className="flex items-center justify-center mb-3">
+                <Bell className="w-5 h-5 text-green-400 mr-2" />
+                <h4 className="text-lg font-semibold text-green-300">
+                  {t('orderSuccess.notificationsEnabled')}
+                </h4>
+              </div>
+              <p className="text-green-200 text-center">
+                {t('orderSuccess.notificationsEnabledText')}
+              </p>
+            </motion.div>
+          )}
 
           {/* Action Buttons */}
           <motion.div
