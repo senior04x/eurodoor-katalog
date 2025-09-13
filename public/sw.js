@@ -64,6 +64,8 @@ self.addEventListener('push', (event) => {
     }
   }
 
+  console.log('📱 Push data:', data);
+
   const options = {
     body: data.body || 'Yangi xabar',
     icon: data.icon || '/favicon.ico',
@@ -81,8 +83,12 @@ self.addEventListener('push', (event) => {
       }
     ],
     requireInteraction: true,
-    silent: false
+    silent: false,
+    vibrate: [200, 100, 200], // Vibration pattern
+    timestamp: Date.now()
   };
+
+  console.log('📱 Showing notification with options:', options);
 
   event.waitUntil(
     self.registration.showNotification(data.title || 'Eurodoor', options)

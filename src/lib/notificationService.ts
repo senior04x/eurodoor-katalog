@@ -327,10 +327,56 @@ class NotificationService {
       try {
         const registration = await navigator.serviceWorker.register('/sw.js');
         console.log('✅ Service Worker registered:', registration);
+        
+        // Push subscription uchun
+        if ('PushManager' in window) {
+          console.log('✅ Push API supported');
+          await this.subscribeToPush(registration);
+        } else {
+          console.log('❌ Push API not supported');
+        }
       } catch (error) {
         console.error('❌ Service Worker registration failed:', error);
       }
     }
+  }
+
+  // Push subscription
+  async subscribeToPush(registration: ServiceWorkerRegistration): Promise<void> {
+    try {
+      const subscription = await registration.pushManager.getSubscription();
+      
+      if (!subscription) {
+        console.log('🔔 Creating new push subscription...');
+        const newSubscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: this.urlBase64ToUint8Array(
+            'BEl62iUYgUivxIkv69yViEuiBIa40HI0lF5AwyKcnxXs4VWXK8dTInu3FIni8kHUpcMWvqyJ8sY8qa4r8UXwcm8'
+          ) as BufferSource
+        });
+        console.log('✅ Push subscription created:', newSubscription);
+      } else {
+        console.log('✅ Push subscription already exists:', subscription);
+      }
+    } catch (error) {
+      console.error('❌ Push subscription failed:', error);
+    }
+  }
+
+  // VAPID key conversion
+  private urlBase64ToUint8Array(base64String: string): Uint8Array {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
   }
 
   // Notification permission holatini olish
