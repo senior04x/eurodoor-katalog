@@ -124,13 +124,20 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
 
   // Add to cart handler
   const handleAddToCart = (product: Product) => {
+    // Check stock availability
+    if (product.stock <= 0) {
+      showSuccess('Xatolik!', 'Bu mahsulot omborda yo\'q');
+      return;
+    }
+
     const cartItem = {
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.image || product.image_url || '',
       dimensions: product.dimensions,
-      material: product.material
+      material: product.material,
+      stock: product.stock
     };
 
     addToCart(cartItem);
@@ -320,9 +327,14 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                   )}
 
                   <div className="flex items-center justify-between">
-                    <div className="text-2xl font-bold text-white">
-                      {product.price.toLocaleString()} {product.currency}
-                            </div>
+                    <div>
+                      <div className="text-2xl font-bold text-white">
+                        {product.price.toLocaleString()} {product.currency}
+                      </div>
+                      <div className="text-sm text-gray-300">
+                        Qoldiq: {product.stock} dona
+                      </div>
+                    </div>
                     
                     <div className="flex space-x-2">
                       <button
@@ -334,11 +346,16 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                       </button>
                             <button
                         onClick={() => handleAddToCart(product)}
-                        className="p-2 bg-blue-500/20 hover:bg-blue-500/30 rounded-lg transition-colors"
-                        title="Korzinkaga qo'shish"
+                        disabled={product.stock <= 0}
+                        className={`p-2 rounded-lg transition-colors ${
+                          product.stock <= 0 
+                            ? 'bg-gray-500/20 cursor-not-allowed opacity-50' 
+                            : 'bg-blue-500/20 hover:bg-blue-500/30'
+                        }`}
+                        title={product.stock <= 0 ? "Omborda yo'q" : "Korzinkaga qo'shish"}
                       >
                         <ShoppingCart className="w-5 h-5 text-white" />
-                  </button>
+                      </button>
                     </div>
                   </div>
                 </div>

@@ -47,13 +47,25 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   const handleAddToCart = () => {
     if (!product) return;
 
+    // Check stock availability
+    if (product.stock <= 0) {
+      showSuccess('Xatolik!', 'Bu mahsulot omborda yo\'q');
+      return;
+    }
+
+    if (quantity > product.stock) {
+      showSuccess('Xatolik!', `Omborda faqat ${product.stock} dona mavjud`);
+      return;
+    }
+
     const cartItem = {
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.image || product.image_url || '',
       dimensions: product.dimensions,
-      material: product.material
+      material: product.material,
+      stock: product.stock
     };
 
     // Har bir miqdor uchun alohida qo'shish
@@ -183,8 +195,13 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                     </button>
                     <span className="w-16 text-center text-white font-semibold">{quantity}</span>
                     <button
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors"
+                      onClick={() => setQuantity(Math.min(product?.stock || 1, quantity + 1))}
+                      disabled={quantity >= (product?.stock || 0)}
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+                        quantity >= (product?.stock || 0)
+                          ? 'bg-gray-500/20 cursor-not-allowed opacity-50'
+                          : 'bg-white/20 hover:bg-white/30'
+                      }`}
                     >
                       <Plus className="h-4 w-4 text-white" />
                     </button>
@@ -195,10 +212,15 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                 {/* Add to Cart Button */}
                 <button
                   onClick={handleAddToCart}
-                  className="w-full bg-gradient-to-r from-blue-500/30 to-purple-500/30 text-blue-300 py-3 px-6 rounded-xl font-semibold hover:from-blue-500/40 hover:to-purple-500/40 transition-all duration-300 flex items-center justify-center gap-2 border border-blue-500/50 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  disabled={!product || product.stock <= 0}
+                  className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg ${
+                    !product || product.stock <= 0
+                      ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed border border-gray-500/50'
+                      : 'bg-gradient-to-r from-blue-500/30 to-purple-500/30 text-blue-300 hover:from-blue-500/40 hover:to-purple-500/40 border border-blue-500/50 hover:shadow-xl transform hover:scale-105'
+                  }`}
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  Korzinkaga qo'shish
+                  {!product || product.stock <= 0 ? "Omborda yo'q" : "Korzinkaga qo'shish"}
                 </button>
               </div>
 
@@ -235,6 +257,12 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                       <span className="text-white font-semibold">{product.lock_stages}</span>
                     </div>
                   )}
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-gray-300 font-medium">Omborda:</span>
+                    <span className={`font-semibold ${product.stock > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {product.stock} dona
+                    </span>
+                  </div>
                 </div>
               </div>
 

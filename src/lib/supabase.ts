@@ -44,6 +44,7 @@ export interface Product {
   lock_stages_en?: string;
   thickness?: string;
   price: number;
+  stock: number;
   currency: string;
   image?: string;
   image_url?: string;
