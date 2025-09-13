@@ -38,7 +38,7 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
   }, []);
 
   // Notification permission holatini tekshirish
-  const [notificationStatus, setNotificationStatus] = useState<'checking' | 'granted' | 'denied'>('checking');
+  const [notificationStatus] = useState<'checking' | 'granted' | 'denied'>('checking');
 
   useEffect(() => {
     const checkNotificationStatus = () => {

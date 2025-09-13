@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu, X, ShoppingCart, User, LogOut, LogIn, UserPlus } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,7 +9,7 @@ import { useToast } from '../contexts/ToastContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import CartSidebar from './CartSidebar';
 import { testPushNotification } from '../lib/api';
-import { ensurePushSubscription, isStandalone, isPushSupported } from '../lib/notificationService';
+import { ensurePushSubscription, isPushSupported } from '../lib/notificationService';
 
 interface HeaderProps {
   currentPage: string;
@@ -96,17 +96,16 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
     if (isMenuOpen) {
       document.body.classList.add('overflow-hidden');
       document.body.style.overflow = 'hidden';
-      
-      // Faqat scroll bloklash - click outside event larni o'chirib tashladik
-      // Cleanup function
-      return () => {
-        document.body.classList.remove('overflow-hidden');
-        document.body.style.overflow = 'auto';
-      };
     } else {
       document.body.classList.remove('overflow-hidden');
       document.body.style.overflow = 'auto';
     }
+    
+    // Cleanup function
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+      document.body.style.overflow = 'auto';
+    };
   }, [isMenuOpen]);
 
   // Maxsus kombinatsiya uchun event listener
@@ -124,7 +123,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
   }, [showAdmin]);
 
   // Logo ustida 5 marta bosish (mobil uchun)
-  const [logoClickCount, setLogoClickCount] = useState(0);
+  const [, setLogoClickCount] = useState(0);
   const handleLogoClick = () => {
     setLogoClickCount(prev => {
       const newCount = prev + 1;

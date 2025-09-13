@@ -82,6 +82,16 @@ export default defineConfig({
   build: {
     target: 'esnext',
     outDir: 'build',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          supabase: ['@supabase/supabase-js'],
+          ui: ['framer-motion', 'lucide-react'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
   },
   base: '/', // ✅ Root path uchun
   server: {

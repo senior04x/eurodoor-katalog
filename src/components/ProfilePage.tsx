@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { User, Phone, Mail, MapPin, Edit, Save, X, ShoppingCart, Package, Calendar } from 'lucide-react'
+import { User, Phone, Mail, Edit, Save, X, ShoppingCart, Package, Calendar } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 
@@ -10,7 +10,7 @@ interface ProfilePageProps {
 
 export default function ProfilePage({ onNavigate }: ProfilePageProps) {
   const { user, updateProfile } = useAuth()
-  const { t } = useLanguage()
+  const { } = useLanguage()
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState({
     name: '',

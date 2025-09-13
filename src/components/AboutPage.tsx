@@ -1,7 +1,7 @@
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Shield, Award, Users, MapPin } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 
 interface AboutPageProps {
   onNavigate: (page: string) => void;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, MessageCircle, Instagram, MapPin, Clock, Mail, Package, ArrowLeft, ShoppingCart } from 'lucide-react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+// import { ImageWithFallback } from './figma/ImageWithFallback';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from '../contexts/CartContext';
@@ -19,7 +19,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
   const { t } = useLanguage();
   const { items: cartItems, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
-  const { showSuccess, showError } = useToast();
+  const { showError } = useToast();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -53,7 +53,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
     delivery_address: ''
   });
 
-  const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+  // const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
 
   // Notification permission so'rash
   useEffect(() => {
@@ -84,7 +84,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
     
     try {
       // Customer yaratish yoki olish
-      const customer = await customersApi.upsertCustomer({
+      await customersApi.upsertCustomer({
         name: formData.name,
         phone: formData.phone,
         email: formData.email

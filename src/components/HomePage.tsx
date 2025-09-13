@@ -1,7 +1,7 @@
-import { ImageWithFallback } from './figma/ImageWithFallback';
+// import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ArrowRight, Shield, Award, Clock } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 
 interface HomePageProps {
   onNavigate: (page: string) => void;

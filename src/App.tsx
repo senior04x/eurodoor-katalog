@@ -1,24 +1,27 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense, lazy } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Header from './components/Header'
-import HomePage from './components/HomePage'
-import CatalogPage from './components/CatalogPage'
-import AboutPage from './components/AboutPage'
-import ContactPage from './components/ContactPage'
-import ProductDetailPage from './components/ProductDetailPage'
-import OrderSuccessPage from './components/OrderSuccessPage'
-import OrderTracking from './components/OrderTracking'
-import ProfilePage from './components/ProfilePage'
 import AppLoader from './components/AppLoader'
+
+// Lazy load components for better performance
+const HomePage = lazy(() => import('./components/HomePage'))
+const CatalogPage = lazy(() => import('./components/CatalogPage'))
+const AboutPage = lazy(() => import('./components/AboutPage'))
+const ContactPage = lazy(() => import('./components/ContactPage'))
+const ProductDetailPage = lazy(() => import('./components/ProductDetailPage'))
+const OrderSuccessPage = lazy(() => import('./components/OrderSuccessPage'))
+const OrderTracking = lazy(() => import('./components/OrderTracking'))
+const ProfilePage = lazy(() => import('./components/ProfilePage'))
 import { CartProvider } from './contexts/CartContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import { ToastProvider } from './contexts/ToastContext'
 import AuthModal from './components/AuthModal'
+import ErrorBoundary from './components/ErrorBoundary'
 // import { notificationService } from './lib/notificationService' // Replaced with new system
 import { installAutoAskNotifications } from './boot/autoAskNotifications'
 import NotificationGate from './components/NotificationGate'
-import { setCurrentUserId } from './lib/notificationService'
+// import { setCurrentUserId } from './lib/notificationService'
 
 function App() {
   // URL hash'dan current page ni olish
@@ -57,7 +60,7 @@ function App() {
   }
 
   const [currentPage, setCurrentPage] = useState(getInitialPage())
-  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [selectedProduct, setSelectedProduct] = useState<{ id: string } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
@@ -184,25 +187,47 @@ function App() {
     console.log('🔍 Current page state:', page);
   }
 
-  const handleProductSelect = (product: any) => {
-    setSelectedProduct(product)
-    setCurrentPage('product-detail')
-  }
+  // const handleProductSelect = (product: any) => {
+  //   setSelectedProduct(product)
+  //   setCurrentPage('product-detail')
+  // }
 
   const renderPage = () => {
     console.log('🎯 Rendering page:', currentPage);
     console.log('🎯 Current hash:', window.location.hash);
     console.log('🎯 Selected product:', selectedProduct);
     
+    const LoadingFallback = () => (
+      <div className="min-h-screen flex items-center justify-center">
+        <AppLoader isLoading={true} />
+      </div>
+    );
+    
     switch (currentPage) {
       case 'home':
-        return <HomePage onNavigate={handleNavigate} />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <HomePage onNavigate={handleNavigate} />
+          </Suspense>
+        )
       case 'catalog':
-        return <CatalogPage onNavigate={handleNavigate} />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <CatalogPage onNavigate={handleNavigate} />
+          </Suspense>
+        )
       case 'about':
-        return <AboutPage onNavigate={handleNavigate} />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <AboutPage onNavigate={handleNavigate} />
+          </Suspense>
+        )
       case 'contact':
-        return <ContactPage onNavigate={handleNavigate} />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <ContactPage onNavigate={handleNavigate} />
+          </Suspense>
+        )
       case 'product-detail':
         const productId = selectedProduct?.id || getProductIdFromHash()
         console.log('🎯 ProductDetail case - productId:', productId, 'selectedProduct:', selectedProduct)
@@ -214,10 +239,12 @@ function App() {
         if (productId) {
           console.log('✅ Rendering ProductDetailPage with productId:', productId)
           return (
-            <ProductDetailPage 
-              productId={productId} 
-              onNavigate={handleNavigate}
-            />
+            <Suspense fallback={<LoadingFallback />}>
+              <ProductDetailPage 
+                productId={productId} 
+                onNavigate={handleNavigate}
+              />
+            </Suspense>
           )
         } else {
           console.log('❌ No productId found, showing error page')
@@ -243,17 +270,37 @@ function App() {
         }
       case 'order-success':
         console.log('🎉 Rendering OrderSuccessPage!');
-        return <OrderSuccessPage onNavigate={handleNavigate} />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <OrderSuccessPage onNavigate={handleNavigate} />
+          </Suspense>
+        )
       case 'orders':
-        return <OrderTracking />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <OrderTracking />
+          </Suspense>
+        )
       case 'profile':
-        return <ProfilePage onNavigate={handleNavigate} />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <ProfilePage onNavigate={handleNavigate} />
+          </Suspense>
+        )
       case 'admin':
         // Admin panel alohida saytda: http://localhost:3000
         window.open('http://localhost:5175', '_blank')
-        return <HomePage onNavigate={handleNavigate} />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <HomePage onNavigate={handleNavigate} />
+          </Suspense>
+        )
       default:
-        return <HomePage onNavigate={handleNavigate} />
+        return (
+          <Suspense fallback={<LoadingFallback />}>
+            <HomePage onNavigate={handleNavigate} />
+          </Suspense>
+        )
     }
   }
 
@@ -262,51 +309,53 @@ function App() {
   }
 
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <CartProvider>
-          <ToastProvider>
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
-              <Header 
-                currentPage={currentPage} 
-                onNavigate={handleNavigate}
-                onShowAuthModal={(mode) => {
-                  setAuthMode(mode)
-                  setShowAuthModal(true)
-                }}
-              />
-              
-              <AnimatePresence mode="wait">
-                <motion.main
-                  key={currentPage}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className={`relative ${isTelegramWebApp ? 'pt-24' : ''}`}
-                  style={isTelegramWebApp ? { 
-                    paddingTop: 'calc(env(safe-area-inset-top, 0px) + 80px)'
-                  } : {}}
-                >
-                  {renderPage()}
-                </motion.main>
-              </AnimatePresence>
-              
-              {/* Auth Modal */}
-              <AuthModal
-                isOpen={showAuthModal}
-                onClose={() => setShowAuthModal(false)}
-                mode={authMode}
-                onModeChange={setAuthMode}
-              />
-              
-              {/* Notification Gate Modal */}
-              <NotificationGate />
-            </div>
-          </ToastProvider>
-        </CartProvider>
-      </AuthProvider>
-    </LanguageProvider>
+    <ErrorBoundary>
+      <LanguageProvider>
+        <AuthProvider>
+          <CartProvider>
+            <ToastProvider>
+              <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
+                <Header 
+                  currentPage={currentPage} 
+                  onNavigate={handleNavigate}
+                  onShowAuthModal={(mode) => {
+                    setAuthMode(mode)
+                    setShowAuthModal(true)
+                  }}
+                />
+                
+                <AnimatePresence mode="wait">
+                  <motion.main
+                    key={currentPage}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className={`relative ${isTelegramWebApp ? 'pt-24' : ''}`}
+                    style={isTelegramWebApp ? { 
+                      paddingTop: 'calc(env(safe-area-inset-top, 0px) + 80px)'
+                    } : {}}
+                  >
+                    {renderPage()}
+                  </motion.main>
+                </AnimatePresence>
+                
+                {/* Auth Modal */}
+                <AuthModal
+                  isOpen={showAuthModal}
+                  onClose={() => setShowAuthModal(false)}
+                  mode={authMode}
+                  onModeChange={setAuthMode}
+                />
+                
+                {/* Notification Gate Modal */}
+                <NotificationGate />
+              </div>
+            </ToastProvider>
+          </CartProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ErrorBoundary>
   )
 }
 

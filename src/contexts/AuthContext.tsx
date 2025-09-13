@@ -413,7 +413,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true)
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password
       })
@@ -429,7 +429,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             
             if (!updateError) {
               // Qayta kirishga urinish
-              const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
+              const { error: retryError } = await supabase.auth.signInWithPassword({
                 email,
                 password
               })

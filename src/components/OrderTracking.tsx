@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Package, Clock, CheckCircle, Truck, Home, Search, AlertCircle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -36,7 +36,7 @@ export default function OrderTracking() {
   const [error, setError] = useState('')
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
   const { user } = useAuth()
-  const { t } = useLanguage()
+  const { } = useLanguage()
 
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function OrderTracking() {
       // Test Supabase connection first
       const testConnection = async () => {
         try {
-          const { data, error } = await supabase.from('orders').select('count').limit(1)
+          const { error } = await supabase.from('orders').select('count').limit(1)
           if (error) {
             console.error('❌ Supabase connection error:', error)
           } else {
@@ -130,6 +130,7 @@ export default function OrderTracking() {
         subscription.unsubscribe()
       }
     }
+    return undefined;
   }, [user])
 
   const loadUserOrders = async () => {

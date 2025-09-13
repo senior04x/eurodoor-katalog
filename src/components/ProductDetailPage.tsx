@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { useState, useEffect } from 'react';
+// import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ArrowLeft, Shield, Ruler, Award, Package, ShoppingCart, Plus, Minus } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from '../contexts/CartContext';
@@ -13,7 +13,7 @@ interface ProductDetailPageProps {
 }
 
 export default function ProductDetailPage({ productId, onNavigate }: ProductDetailPageProps) {
-  const { t, language } = useLanguage();
+  const { } = useLanguage();
   const { addToCart } = useCart();
   const { showSuccess } = useToast();
   

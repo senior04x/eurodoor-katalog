@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { Eye, ShoppingCart, Search, Filter, Package, Ruler } from 'lucide-react';
+import { useMemo, useState, useEffect } from 'react';
+import { Eye, ShoppingCart, Search, Package, Ruler } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from '../contexts/CartContext';
