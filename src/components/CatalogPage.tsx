@@ -28,6 +28,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     const loadProducts = async () => {
       try {
         setLoading(true);
+        console.log('🔄 Loading products...');
         const fetchedProducts = await productsApi.getAllProducts();
         setProducts(fetchedProducts);
         console.log('✅ Products loaded:', fetchedProducts.length);
@@ -39,6 +40,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
       }
     };
 
+    // Load products immediately
     loadProducts();
 
     // Real-time subscription
@@ -49,6 +51,33 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
 
     return () => {
       subscription.unsubscribe();
+    };
+  }, []);
+
+  // Force reload products when component mounts (for navigation issues)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('🔄 Page became visible, reloading products...');
+        const loadProducts = async () => {
+          try {
+            setLoading(true);
+            const fetchedProducts = await productsApi.getAllProducts(true); // Force refresh
+            setProducts(fetchedProducts);
+            console.log('✅ Products reloaded:', fetchedProducts.length);
+          } catch (error) {
+            console.error('❌ Error reloading products:', error);
+          } finally {
+            setLoading(false);
+          }
+        };
+        loadProducts();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 

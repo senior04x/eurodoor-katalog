@@ -91,6 +91,15 @@ function App() {
       setCurrentPage(page);
       setSelectedProduct(null);
       console.log('✅ App: Page set to:', page);
+      
+      // Force reload for catalog page to fix loading issues
+      if (page === 'catalog') {
+        console.log('🔄 Forcing catalog reload...');
+        setTimeout(() => {
+          // Trigger a small state change to force re-render
+          setCurrentPage('catalog');
+        }, 50);
+      }
     }
     
     console.log('🔍 Current page state:', page);

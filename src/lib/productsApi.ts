@@ -3,19 +3,30 @@ import { supabase, Product } from './supabase';
 
 export const productsApi = {
   // Barcha faol mahsulotlarni olish
-  async getAllProducts(): Promise<Product[]> {
+  async getAllProducts(forceRefresh: boolean = false): Promise<Product[]> {
     try {
-      const { data, error } = await supabase
+      console.log('🔄 Fetching products...', forceRefresh ? '(force refresh)' : '');
+      
+      // Add cache busting for force refresh
+      const query = supabase
         .from('products')
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
+      
+      // Add timestamp for cache busting if force refresh
+      if (forceRefresh) {
+        query.gt('updated_at', new Date(0).toISOString());
+      }
+      
+      const { data, error } = await query;
       
       if (error) {
         console.error('❌ Supabase error fetching products:', error);
         throw new Error(`Supabase error: ${error.message}`);
       }
       
+      console.log('✅ Products fetched:', data?.length || 0);
       return data || [];
     } catch (error) {
       console.error('❌ Error fetching products:', error);
