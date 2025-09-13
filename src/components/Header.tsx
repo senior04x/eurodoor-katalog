@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Menu, X, ShoppingCart, User, LogOut, LogIn, UserPlus } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, LogOut, LogIn, UserPlus, Bell } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -20,6 +20,8 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
   const { t } = useLanguage();
   const { totalItems, isCartOpen, setIsCartOpen } = useCart();
@@ -226,8 +228,25 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
             {/* Auth buttons in nav */}
             {user ? (
               <div className="flex items-center space-x-2 ml-4">
-                {/* Notification Center */}
-                <NotificationCenter onNavigate={onNavigate} />
+                {/* Notification Bell Button */}
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="relative p-2 text-white/80 hover:text-white transition-colors"
+                >
+                  <Bell className="w-6 h-6" />
+                  {unreadCount > 0 && (
+                    <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </div>
+                  )}
+                </button>
+                
+                {/* Notification Center Dropdown */}
+                <NotificationCenter 
+                  isOpen={showNotifications} 
+                  onNavigate={onNavigate}
+                  onUnreadCountChange={setUnreadCount}
+                />
                 
                 <div className="relative">
                   <button

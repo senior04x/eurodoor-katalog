@@ -24,9 +24,10 @@ interface NotificationCenterProps {
   onNavigate?: (page: string) => void
   isOpen?: boolean
   onClose?: () => void
+  onUnreadCountChange?: (count: number) => void
 }
 
-const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = false, onMobileClose, onNavigate, isOpen: externalIsOpen }) => {
+const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = false, onMobileClose, onNavigate, isOpen: externalIsOpen, onUnreadCountChange }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false)
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen
   const setIsOpen = externalIsOpen !== undefined ? () => {} : setInternalIsOpen
@@ -63,6 +64,11 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
       const unreadCount = data?.filter(n => !n.is_read).length || 0
       setUnreadCount(unreadCount)
       console.log('✅ Unread count:', unreadCount)
+      
+      // Notify parent component about unread count change
+      if (onUnreadCountChange) {
+        onUnreadCountChange(unreadCount)
+      }
     } catch (error) {
       console.error('❌ Error loading notifications:', error)
     } finally {
@@ -92,7 +98,13 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
       setNotifications(prev => 
         prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
       )
-      setUnreadCount(prev => Math.max(0, prev - 1))
+      const newUnreadCount = Math.max(0, unreadCount - 1)
+      setUnreadCount(newUnreadCount)
+      
+      // Notify parent component about unread count change
+      if (onUnreadCountChange) {
+        onUnreadCountChange(newUnreadCount)
+      }
       
       console.log('✅ Local state updated for single notification')
     } catch (error) {
@@ -135,6 +147,11 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
       // Update local state
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
       setUnreadCount(0)
+      
+      // Notify parent component about unread count change
+      if (onUnreadCountChange) {
+        onUnreadCountChange(0)
+      }
       
       console.log('✅ Local state updated - all notifications marked as read')
     } catch (error) {
@@ -203,7 +220,13 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
         (payload) => {
           console.log('🔔 New notification received:', payload.new)
           setNotifications(prev => [payload.new as Notification, ...prev])
-          setUnreadCount(prev => prev + 1)
+          const newUnreadCount = unreadCount + 1
+          setUnreadCount(newUnreadCount)
+          
+          // Notify parent component about unread count change
+          if (onUnreadCountChange) {
+            onUnreadCountChange(newUnreadCount)
+          }
         }
       )
       .on('postgres_changes', 
@@ -223,7 +246,14 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
           
           // Update unread count based on the update
           if (updatedNotification.is_read) {
-            setUnreadCount(prev => Math.max(0, prev - 1))
+            const newUnreadCount = Math.max(0, unreadCount - 1)
+            setUnreadCount(newUnreadCount)
+            
+            // Notify parent component about unread count change
+            if (onUnreadCountChange) {
+              onUnreadCountChange(newUnreadCount)
+            }
+            
             console.log('✅ Unread count decreased due to notification read')
           }
         }
@@ -239,27 +269,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
 
   return (
     <div className="relative">
-      {/* Notification Bell Button - only show if not controlled externally */}
-      {externalIsOpen === undefined && (
-        <button
-          onClick={() => setInternalIsOpen(!internalIsOpen)}
-          className={`relative p-2 text-white/80 hover:text-white transition-colors ${isMobile ? 'w-full justify-start' : ''}`}
-        >
-          <Bell className="w-6 h-6" />
-          {unreadCount > 0 && (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
-            >
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </motion.div>
-          )}
-          {isMobile && (
-            <span className="ml-3 text-sm">Bildirishnomalar</span>
-          )}
-        </button>
-      )}
+      {/* No bell button - only dropdown */}
 
       {/* Notification Dropdown */}
       <AnimatePresence>
