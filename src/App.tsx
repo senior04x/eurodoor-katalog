@@ -79,8 +79,19 @@ function App() {
     // Hash change listener qo'shish
     const handleHashChange = () => {
       const newPage = getInitialPage()
+      const productId = getProductIdFromHash()
       console.log('🔄 Hash changed to:', newPage)
+      console.log('🔄 Product ID from hash:', productId)
+      
       setCurrentPage(newPage)
+      
+      // Product detail page uchun selectedProduct ni o'rnatish
+      if (newPage === 'product-detail' && productId) {
+        setSelectedProduct({ id: productId })
+        console.log('✅ Set selectedProduct to:', { id: productId })
+      } else {
+        setSelectedProduct(null)
+      }
     }
 
     window.addEventListener('hashchange', handleHashChange)
@@ -94,24 +105,20 @@ function App() {
     }
   }, [])
 
-  // URL hash ni tekshirish
+  // Initial selectedProduct ni o'rnatish
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '')
-      if (hash && hash !== currentPage) {
-        console.log('🔄 Hash change detected:', hash)
-        setCurrentPage(hash)
-      }
-    }
-
-    // Dastlabki hash ni tekshirish
-    handleHashChange()
-
-    // Hash o'zgarishlarini kuzatish
-    window.addEventListener('hashchange', handleHashChange)
+    const hash = window.location.hash.replace('#', '')
+    console.log('🔍 Initial hash check:', hash)
     
-    return () => window.removeEventListener('hashchange', handleHashChange)
-  }, [currentPage])
+    if (hash.startsWith('product-detail/')) {
+      const productId = hash.split('/')[1]
+      console.log('🔍 Initial product ID:', productId)
+      setSelectedProduct({ id: productId })
+      console.log('✅ Initial selectedProduct set to:', { id: productId })
+    } else {
+      setSelectedProduct(null)
+    }
+  }, [])
 
   // Scroll muammosini hal qilish - har sahifa o'zgarishida
   useEffect(() => {
