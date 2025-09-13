@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Test - Eurodoor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .success { background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.3); }
+        .error { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .info { background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .warning { background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Eurodoor Notification Test</h1>
+        <p>Bu sahifa notification system ni sinab ko'rish uchun yaratilgan.</p>
+
+        <!-- Permission Status -->
+        <div class="test-section">
+            <h2>📋 Notification Permission Status</h2>
+            <div id="permissionStatus" class="status info">
+                Checking permission status...
+            </div>
+            <button onclick="checkPermission()">Permission Holatini Tekshirish</button>
+            <button onclick="requestPermission()">Permission So'rash</button>
+        </div>
+
+        <!-- Test Notifications -->
+        <div class="test-section">
+            <h2>🧪 Test Notifications</h2>
+            <button onclick="testBasicNotification()">Basic Notification</button>
+            <button onclick="testOrderConfirmed()">Order Confirmed</button>
+            <button onclick="testOrderProcessing()">Order Processing</button>
+            <button onclick="testOrderShipped()">Order Shipped</button>
+            <button onclick="testOrderDelivered()">Order Delivered</button>
+            <button onclick="testOrderCancelled()">Order Cancelled</button>
+        </div>
+
+        <!-- Service Worker Test -->
+        <div class="test-section">
+            <h2>⚙️ Service Worker Test</h2>
+            <div id="swStatus" class="status info">
+                Checking Service Worker status...
+            </div>
+            <button onclick="registerServiceWorker()">Service Worker Register</button>
+            <button onclick="unregisterServiceWorker()">Service Worker Unregister</button>
+        </div>
+
+        <!-- Logs -->
+        <div class="test-section">
+            <h2>📝 Test Logs</h2>
+            <div id="logs" class="log"></div>
+            <button onclick="clearLogs()">Loglarni Tozalash</button>
+        </div>
+
+        <!-- Instructions -->
+        <div class="test-section">
+            <h2>📖 Test Qilish Yo'riqnomasi</h2>
+            <ol>
+                <li><strong>Permission So'rash:</strong> "Permission So'rash" tugmasini bosing</li>
+                <li><strong>Browser Dialog:</strong> Browser'da notification permission dialog ko'rinadi</li>
+                <li><strong>Allow Tanlang:</strong> "Allow" yoki "Ruxsat berish" tugmasini bosing</li>
+                <li><strong>Test Notifications:</strong> Har xil notification turlarini sinab ko'ring</li>
+                <li><strong>Background Test:</strong> Sahifani yopib, notification kelishini kuzating</li>
+                <li><strong>Service Worker:</strong> Service Worker statusini tekshiring</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="debug-notifications.js"></script>
+    <script>
+        let logs = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            logs.push(logMessage);
+            
+            const logsDiv = document.getElementById('logs');
+            logsDiv.innerHTML = logs.join('\n');
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            
+            console.log(logMessage);
+        }
+
+        function clearLogs() {
+            logs = [];
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        function updatePermissionStatus() {
+            const status = Notification.permission;
+            const statusDiv = document.getElementById('permissionStatus');
+            
+            let className = 'status ';
+            let text = '';
+            
+            switch(status) {
+                case 'granted':
+                    className += 'success';
+                    text = '✅ Notification permission granted - Notifications are enabled';
+                    break;
+                case 'denied':
+                    className += 'error';
+                    text = '❌ Notification permission denied - Notifications are disabled';
+                    break;
+                case 'default':
+                    className += 'warning';
+                    text = '⚠️ Notification permission not requested yet';
+                    break;
+            }
+            
+            statusDiv.className = className;
+            statusDiv.textContent = text;
+            
+            log(`Permission status: ${status}`, status);
+        }
+
+        function checkPermission() {
+            updatePermissionStatus();
+            log('Permission status checked');
+        }
+
+        async function requestPermission() {
+            try {
+                log('Requesting notification permission...');
+                const permission = await Notification.requestPermission();
+                log(`Permission result: ${permission}`);
+                updatePermissionStatus();
+            } catch (error) {
+                log(`Error requesting permission: ${error.message}`, 'error');
+            }
+        }
+
+        function testBasicNotification() {
+            if (Notification.permission !== 'granted') {
+                log('Permission not granted. Please request permission first.', 'error');
+                return;
+            }
+
+            const notification = new Notification('Test Notification', {
+                body: 'Bu test notification. Agar siz buni ko'ryapsiz, notification system ishlayapti!',
+                icon: '/favicon.ico',
+                tag: 'test-notification'
+            });
+
+            notification.onclick = () => {
+                log('Test notification clicked');
+                notification.close();
+            };
+
+            log('Basic notification sent');
+        }
+
+        function testOrderConfirmed() {
+            if (Notification.permission !== 'granted') {
+                log('Permission not granted. Please request permission first.', 'error');
+                return;
+            }
+
+            const notification = new Notification('✅ Buyurtma Tasdiqlandi!', {
+                body: 'Sizning EURO-123456 raqamli buyurtmangiz tasdiqlandi. Tez orada siz bilan bog\'lanamiz.',
+                icon: '/favicon.ico',
+                tag: 'order-EURO-123456-confirmed',
+                data: { orderNumber: 'EURO-123456', status: 'confirmed' },
+                actions: [
+                    { action: 'view', title: 'Ko\'rish' },
+                    { action: 'close', title: 'Yopish' }
+                ],
+                requireInteraction: true
+            });
+
+            notification.onclick = () => {
+                log('Order confirmed notification clicked');
+                notification.close();
+            };
+
+            log('Order confirmed notification sent');
+        }
+
+        function testOrderProcessing() {
+            if (Notification.permission !== 'granted') {
+                log('Permission not granted. Please request permission first.', 'error');
+                return;
+            }
+
+            const notification = new Notification('🔄 Buyurtma Tayyorlanmoqda', {
+                body: 'Sizning EURO-123456 raqamli buyurtmangiz tayyorlanmoqda.',
+                icon: '/favicon.ico',
+                tag: 'order-EURO-123456-processing',
+                data: { orderNumber: 'EURO-123456', status: 'processing' }
+            });
+
+            log('Order processing notification sent');
+        }
+
+        function testOrderShipped() {
+            if (Notification.permission !== 'granted') {
+                log('Permission not granted. Please request permission first.', 'error');
+                return;
+            }
+
+            const notification = new Notification('🚚 Buyurtma Yuborildi', {
+                body: 'Sizning EURO-123456 raqamli buyurtmangiz yuborildi. Tez orada yetkazib beriladi.',
+                icon: '/favicon.ico',
+                tag: 'order-EURO-123456-shipped',
+                data: { orderNumber: 'EURO-123456', status: 'shipped' }
+            });
+
+            log('Order shipped notification sent');
+        }
+
+        function testOrderDelivered() {
+            if (Notification.permission !== 'granted') {
+                log('Permission not granted. Please request permission first.', 'error');
+                return;
+            }
+
+            const notification = new Notification('🎉 Buyurtma Yetkazib Berildi!', {
+                body: 'Sizning EURO-123456 raqamli buyurtmangiz muvaffaqiyatli yetkazib berildi.',
+                icon: '/favicon.ico',
+                tag: 'order-EURO-123456-delivered',
+                data: { orderNumber: 'EURO-123456', status: 'delivered' }
+            });
+
+            log('Order delivered notification sent');
+        }
+
+        function testOrderCancelled() {
+            if (Notification.permission !== 'granted') {
+                log('Permission not granted. Please request permission first.', 'error');
+                return;
+            }
+
+            const notification = new Notification('❌ Buyurtma Bekor Qilindi', {
+                body: 'Sizning EURO-123456 raqamli buyurtmangiz bekor qilindi.',
+                icon: '/favicon.ico',
+                tag: 'order-EURO-123456-cancelled',
+                data: { orderNumber: 'EURO-123456', status: 'cancelled' }
+            });
+
+            log('Order cancelled notification sent');
+        }
+
+        async function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    log('Service Worker registered successfully');
+                    updateServiceWorkerStatus();
+                } catch (error) {
+                    log(`Service Worker registration failed: ${error.message}`, 'error');
+                }
+            } else {
+                log('Service Worker not supported in this browser', 'error');
+            }
+        }
+
+        async function unregisterServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (let registration of registrations) {
+                        await registration.unregister();
+                    }
+                    log('Service Worker unregistered successfully');
+                    updateServiceWorkerStatus();
+                } catch (error) {
+                    log(`Service Worker unregistration failed: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        function updateServiceWorkerStatus() {
+            const statusDiv = document.getElementById('swStatus');
+            
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    if (registrations.length > 0) {
+                        statusDiv.className = 'status success';
+                        statusDiv.textContent = `✅ Service Worker registered (${registrations.length} active)`;
+                    } else {
+                        statusDiv.className = 'status warning';
+                        statusDiv.textContent = '⚠️ No Service Worker registered';
+                    }
+                });
+            } else {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Service Worker not supported';
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            log('Notification test page loaded');
+            updatePermissionStatus();
+            updateServiceWorkerStatus();
+            
+            // Check if notifications are supported
+            if ('Notification' in window) {
+                log('Notifications are supported in this browser');
+            } else {
+                log('Notifications are NOT supported in this browser', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

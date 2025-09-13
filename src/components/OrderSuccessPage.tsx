@@ -64,6 +64,27 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
     }
   };
 
+  // Manual notification test
+  const testNotification = async () => {
+    try {
+      if (notificationStatus !== 'granted') {
+        console.log('❌ Notification permission not granted');
+        return;
+      }
+
+      await notificationService.showNotification({
+        title: '✅ Test Notification',
+        body: `Test notification for order ${orderData.orderNumber}. If you see this, notifications are working!`,
+        tag: `test-${orderData.orderNumber}`,
+        data: { orderNumber: orderData.orderNumber }
+      });
+      
+      console.log('✅ Test notification sent');
+    } catch (error) {
+      console.error('Error sending test notification:', error);
+    }
+  };
+
   const handleGoHome = () => {
     localStorage.removeItem('lastOrderData');
     onNavigate('home');
@@ -206,12 +227,21 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
               <p className="text-yellow-200 text-center mb-4">
                 {t('orderSuccess.notificationText')}
               </p>
-              <button
-                onClick={requestNotificationPermission}
-                className="w-full bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-200 font-semibold py-3 px-6 rounded-xl border border-yellow-400/30 transition-all duration-300 hover:scale-105"
-              >
-                {t('orderSuccess.enableNotifications')}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={requestNotificationPermission}
+                  className="flex-1 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-200 font-semibold py-3 px-6 rounded-xl border border-yellow-400/30 transition-all duration-300 hover:scale-105"
+                >
+                  {t('orderSuccess.enableNotifications')}
+                </button>
+                <button
+                  onClick={testNotification}
+                  className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 font-semibold py-3 px-4 rounded-xl border border-blue-400/30 transition-all duration-300 hover:scale-105"
+                  title="Test notification"
+                >
+                  🧪
+                </button>
+              </div>
             </motion.div>
           )}
 

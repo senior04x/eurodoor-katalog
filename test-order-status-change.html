@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status Change Test - Eurodoor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .success { background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.3); }
+        .error { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .info { background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .warning { background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        input, select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px;
+        }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .order-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Order Status Change Test</h1>
+        <p>Bu sahifa real order status o'zgarishini sinab ko'rish uchun yaratilgan.</p>
+
+        <!-- Supabase Connection -->
+        <div class="test-section">
+            <h2>🔗 Supabase Connection</h2>
+            <div id="supabaseStatus" class="status info">
+                Checking Supabase connection...
+            </div>
+            <input type="text" id="supabaseUrl" placeholder="Supabase URL" style="width: 300px;">
+            <input type="text" id="supabaseKey" placeholder="Supabase Anon Key" style="width: 300px;">
+            <br>
+            <button onclick="testSupabaseConnection()">Supabase Connection Test</button>
+        </div>
+
+        <!-- Create Test Order -->
+        <div class="test-section">
+            <h2>📦 Create Test Order</h2>
+            <input type="text" id="customerName" placeholder="Customer Name" value="Test Customer">
+            <input type="text" id="customerPhone" placeholder="Phone" value="+998901234567">
+            <input type="text" id="customerEmail" placeholder="Email" value="test@example.com">
+            <br>
+            <input type="text" id="deliveryAddress" placeholder="Delivery Address" value="Test Address" style="width: 400px;">
+            <br>
+            <button onclick="createTestOrder()">Create Test Order</button>
+            <div id="orderResult" class="status info" style="display: none;"></div>
+        </div>
+
+        <!-- Order Status Management -->
+        <div class="test-section">
+            <h2>⚙️ Order Status Management</h2>
+            <input type="text" id="orderNumber" placeholder="Order Number (e.g., EURO-123456)">
+            <select id="newStatus">
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="processing">Processing</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <br>
+            <button onclick="updateOrderStatus()">Update Order Status</button>
+            <button onclick="getOrderDetails()">Get Order Details</button>
+        </div>
+
+        <!-- Real-time Subscription Test -->
+        <div class="test-section">
+            <h2>📡 Real-time Subscription Test</h2>
+            <input type="text" id="watchOrderNumber" placeholder="Order Number to Watch">
+            <br>
+            <button onclick="startWatching()">Start Watching Order</button>
+            <button onclick="stopWatching()">Stop Watching</button>
+            <div id="subscriptionStatus" class="status info">
+                No active subscription
+            </div>
+        </div>
+
+        <!-- Test Orders List -->
+        <div class="test-section">
+            <h2>📋 Test Orders</h2>
+            <button onclick="loadTestOrders()">Load Test Orders</button>
+            <div id="ordersList"></div>
+        </div>
+
+        <!-- Logs -->
+        <div class="test-section">
+            <h2>📝 Test Logs</h2>
+            <div id="logs" class="log"></div>
+            <button onclick="clearLogs()">Clear Logs</button>
+        </div>
+
+        <!-- Instructions -->
+        <div class="test-section">
+            <h2>📖 Test Instructions</h2>
+            <ol>
+                <li><strong>Supabase Setup:</strong> Supabase URL va Key ni kiriting</li>
+                <li><strong>Connection Test:</strong> Supabase connection ni test qiling</li>
+                <li><strong>Create Order:</strong> Test order yarating</li>
+                <li><strong>Start Watching:</strong> Order ni real-time kuzatishni boshlang</li>
+                <li><strong>Change Status:</strong> Admin panel yoki bu sahifa orqali order status ni o'zgartiring</li>
+                <li><strong>Check Notifications:</strong> Browser notification kelishini kuzating</li>
+            </ol>
+        </div>
+    </div>
+
+    <script type="module">
+        let supabase = null;
+        let currentSubscription = null;
+        let logs = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            logs.push(logMessage);
+            
+            const logsDiv = document.getElementById('logs');
+            logsDiv.innerHTML = logs.join('\n');
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            
+            console.log(logMessage);
+        }
+
+        function clearLogs() {
+            logs = [];
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        async function initializeSupabase() {
+            const url = document.getElementById('supabaseUrl').value;
+            const key = document.getElementById('supabaseKey').value;
+            
+            if (!url || !key) {
+                log('Please enter Supabase URL and Key', 'error');
+                return false;
+            }
+
+            try {
+                // Import Supabase dynamically
+                const { createClient } = await import('https://cdn.skypack.dev/@supabase/supabase-js@2');
+                supabase = createClient(url, key);
+                log('Supabase client initialized');
+                return true;
+            } catch (error) {
+                log(`Error initializing Supabase: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function testSupabaseConnection() {
+            const initialized = await initializeSupabase();
+            if (!initialized) return;
+
+            try {
+                const { data, error } = await supabase.from('orders').select('count').limit(1);
+                
+                if (error) {
+                    log(`Supabase connection failed: ${error.message}`, 'error');
+                    document.getElementById('supabaseStatus').className = 'status error';
+                    document.getElementById('supabaseStatus').textContent = '❌ Supabase connection failed';
+                } else {
+                    log('Supabase connection successful');
+                    document.getElementById('supabaseStatus').className = 'status success';
+                    document.getElementById('supabaseStatus').textContent = '✅ Supabase connected successfully';
+                }
+            } catch (error) {
+                log(`Connection test error: ${error.message}`, 'error');
+                document.getElementById('supabaseStatus').className = 'status error';
+                document.getElementById('supabaseStatus').textContent = '❌ Connection test failed';
+            }
+        }
+
+        async function createTestOrder() {
+            if (!supabase) {
+                log('Please initialize Supabase first', 'error');
+                return;
+            }
+
+            const customerName = document.getElementById('customerName').value;
+            const customerPhone = document.getElementById('customerPhone').value;
+            const customerEmail = document.getElementById('customerEmail').value;
+            const deliveryAddress = document.getElementById('deliveryAddress').value;
+
+            if (!customerName || !customerPhone || !deliveryAddress) {
+                log('Please fill all required fields', 'error');
+                return;
+            }
+
+            try {
+                const orderNumber = `EURO-${Date.now().toString().slice(-6)}`;
+                
+                const order = {
+                    order_number: orderNumber,
+                    customer_name: customerName,
+                    customer_phone: customerPhone,
+                    customer_email: customerEmail,
+                    delivery_address: deliveryAddress,
+                    notes: 'Test order for notification testing',
+                    total_amount: 1500000,
+                    products: [{
+                        name: 'Test Product',
+                        price: 1500000,
+                        quantity: 1,
+                        image: '/test-image.jpg'
+                    }],
+                    status: 'pending'
+                };
+
+                const { data, error } = await supabase
+                    .from('orders')
+                    .insert([order])
+                    .select()
+                    .single();
+
+                if (error) {
+                    log(`Error creating order: ${error.message}`, 'error');
+                } else {
+                    log(`Test order created successfully: ${orderNumber}`);
+                    document.getElementById('orderNumber').value = orderNumber;
+                    document.getElementById('watchOrderNumber').value = orderNumber;
+                    
+                    const resultDiv = document.getElementById('orderResult');
+                    resultDiv.style.display = 'block';
+                    resultDiv.className = 'status success';
+                    resultDiv.textContent = `✅ Order created: ${orderNumber}`;
+                }
+            } catch (error) {
+                log(`Error creating test order: ${error.message}`, 'error');
+            }
+        }
+
+        async function updateOrderStatus() {
+            if (!supabase) {
+                log('Please initialize Supabase first', 'error');
+                return;
+            }
+
+            const orderNumber = document.getElementById('orderNumber').value;
+            const newStatus = document.getElementById('newStatus').value;
+
+            if (!orderNumber) {
+                log('Please enter order number', 'error');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .update({ status: newStatus })
+                    .eq('order_number', orderNumber)
+                    .select();
+
+                if (error) {
+                    log(`Error updating order status: ${error.message}`, 'error');
+                } else {
+                    log(`Order status updated to: ${newStatus}`);
+                    log(`This should trigger a notification if someone is watching order: ${orderNumber}`);
+                }
+            } catch (error) {
+                log(`Error updating order status: ${error.message}`, 'error');
+            }
+        }
+
+        async function getOrderDetails() {
+            if (!supabase) {
+                log('Please initialize Supabase first', 'error');
+                return;
+            }
+
+            const orderNumber = document.getElementById('orderNumber').value;
+
+            if (!orderNumber) {
+                log('Please enter order number', 'error');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('order_number', orderNumber)
+                    .single();
+
+                if (error) {
+                    log(`Error getting order details: ${error.message}`, 'error');
+                } else {
+                    log(`Order details: ${JSON.stringify(data, null, 2)}`);
+                }
+            } catch (error) {
+                log(`Error getting order details: ${error.message}`, 'error');
+            }
+        }
+
+        async function startWatching() {
+            if (!supabase) {
+                log('Please initialize Supabase first', 'error');
+                return;
+            }
+
+            const orderNumber = document.getElementById('watchOrderNumber').value;
+
+            if (!orderNumber) {
+                log('Please enter order number to watch', 'error');
+                return;
+            }
+
+            try {
+                // Stop existing subscription
+                if (currentSubscription) {
+                    await supabase.removeChannel(currentSubscription);
+                }
+
+                log(`Starting to watch order: ${orderNumber}`);
+
+                currentSubscription = supabase
+                    .channel(`order-${orderNumber}`)
+                    .on(
+                        'postgres_changes',
+                        {
+                            event: 'UPDATE',
+                            schema: 'public',
+                            table: 'orders',
+                            filter: `order_number=eq.${orderNumber}`
+                        },
+                        (payload) => {
+                            log(`📦 Order status changed: ${JSON.stringify(payload, null, 2)}`);
+                            
+                            const order = payload.new;
+                            const oldOrder = payload.old;
+                            
+                            if (order.status !== oldOrder.status) {
+                                log(`🔄 Status changed from ${oldOrder.status} to ${order.status}`);
+                                
+                                // Show browser notification if permission is granted
+                                if (Notification.permission === 'granted') {
+                                    const statusMessages = {
+                                        'confirmed': {
+                                            title: '✅ Buyurtma Tasdiqlandi!',
+                                            body: `Sizning ${orderNumber} raqamli buyurtmangiz tasdiqlandi.`
+                                        },
+                                        'processing': {
+                                            title: '🔄 Buyurtma Tayyorlanmoqda',
+                                            body: `Sizning ${orderNumber} raqamli buyurtmangiz tayyorlanmoqda.`
+                                        },
+                                        'shipped': {
+                                            title: '🚚 Buyurtma Yuborildi',
+                                            body: `Sizning ${orderNumber} raqamli buyurtmangiz yuborildi.`
+                                        },
+                                        'delivered': {
+                                            title: '🎉 Buyurtma Yetkazib Berildi!',
+                                            body: `Sizning ${orderNumber} raqamli buyurtmangiz yetkazib berildi.`
+                                        },
+                                        'cancelled': {
+                                            title: '❌ Buyurtma Bekor Qilindi',
+                                            body: `Sizning ${orderNumber} raqamli buyurtmangiz bekor qilindi.`
+                                        }
+                                    };
+
+                                    const message = statusMessages[order.status];
+                                    if (message) {
+                                        const notification = new Notification(message.title, {
+                                            body: message.body,
+                                            icon: '/favicon.ico',
+                                            tag: `order-${orderNumber}-${order.status}`
+                                        });
+
+                                        notification.onclick = () => {
+                                            log('Notification clicked');
+                                            notification.close();
+                                        };
+
+                                        log('Browser notification sent');
+                                    }
+                                } else {
+                                    log('Notification permission not granted - cannot show browser notification', 'warning');
+                                }
+                            }
+                        }
+                    )
+                    .subscribe();
+
+                document.getElementById('subscriptionStatus').className = 'status success';
+                document.getElementById('subscriptionStatus').textContent = `✅ Watching order: ${orderNumber}`;
+                
+                log(`Real-time subscription started for order: ${orderNumber}`);
+            } catch (error) {
+                log(`Error starting subscription: ${error.message}`, 'error');
+            }
+        }
+
+        async function stopWatching() {
+            if (currentSubscription) {
+                await supabase.removeChannel(currentSubscription);
+                currentSubscription = null;
+                
+                document.getElementById('subscriptionStatus').className = 'status info';
+                document.getElementById('subscriptionStatus').textContent = 'No active subscription';
+                
+                log('Real-time subscription stopped');
+            }
+        }
+
+        async function loadTestOrders() {
+            if (!supabase) {
+                log('Please initialize Supabase first', 'error');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) {
+                    log(`Error loading orders: ${error.message}`, 'error');
+                } else {
+                    const ordersList = document.getElementById('ordersList');
+                    ordersList.innerHTML = '';
+
+                    if (data.length === 0) {
+                        ordersList.innerHTML = '<p>No orders found</p>';
+                        return;
+                    }
+
+                    data.forEach(order => {
+                        const orderCard = document.createElement('div');
+                        orderCard.className = 'order-card';
+                        orderCard.innerHTML = `
+                            <h4>${order.order_number}</h4>
+                            <p><strong>Customer:</strong> ${order.customer_name}</p>
+                            <p><strong>Phone:</strong> ${order.customer_phone}</p>
+                            <p><strong>Status:</strong> ${order.status}</p>
+                            <p><strong>Amount:</strong> ${order.total_amount.toLocaleString()} so'm</p>
+                            <p><strong>Created:</strong> ${new Date(order.created_at).toLocaleString()}</p>
+                            <button onclick="selectOrder('${order.order_number}')">Select This Order</button>
+                        `;
+                        ordersList.appendChild(orderCard);
+                    });
+
+                    log(`Loaded ${data.length} orders`);
+                }
+            } catch (error) {
+                log(`Error loading orders: ${error.message}`, 'error');
+            }
+        }
+
+        function selectOrder(orderNumber) {
+            document.getElementById('orderNumber').value = orderNumber;
+            document.getElementById('watchOrderNumber').value = orderNumber;
+            log(`Selected order: ${orderNumber}`);
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            log('Order status change test page loaded');
+            
+            // Check notification permission
+            if (Notification.permission === 'granted') {
+                log('Notification permission is granted');
+            } else if (Notification.permission === 'denied') {
+                log('Notification permission is denied', 'warning');
+            } else {
+                log('Notification permission not requested yet', 'info');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -97,6 +97,8 @@ class NotificationService {
   async watchOrderStatus(orderNumber: string, customerPhone: string): Promise<void> {
     try {
       console.log(`🔔 Watching order status for: ${orderNumber}`);
+      console.log(`📱 Customer phone: ${customerPhone}`);
+      console.log(`🔐 Notification permission: ${this.permission}`);
       
       // Real-time subscription
       const subscription = supabase
@@ -111,17 +113,34 @@ class NotificationService {
           },
           async (payload) => {
             console.log('📦 Order status changed:', payload);
+            console.log('📦 Payload details:', {
+              new: payload.new,
+              old: payload.old,
+              eventType: payload.eventType
+            });
             
             const order = payload.new as any;
             const oldOrder = payload.old as any;
             
             // Agar status o'zgargan bo'lsa
             if (order.status !== oldOrder.status) {
+              console.log(`🔄 Status changed from ${oldOrder.status} to ${order.status}`);
               await this.handleOrderStatusChange(order, orderNumber);
+            } else {
+              console.log('⚠️ Status did not change, skipping notification');
             }
           }
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log(`📡 Subscription status: ${status}`);
+          if (status === 'SUBSCRIBED') {
+            console.log(`✅ Successfully subscribed to order: ${orderNumber}`);
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error(`❌ Channel error for order: ${orderNumber}`);
+          } else if (status === 'TIMED_OUT') {
+            console.error(`⏰ Subscription timed out for order: ${orderNumber}`);
+          }
+        });
 
       // 30 daqiqadan keyin subscription ni to'xtatish
       setTimeout(() => {
