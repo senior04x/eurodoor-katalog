@@ -1,7 +1,7 @@
-// Service Worker for Eurodoor Notifications - iOS Safari Compatible
+// Universal Service Worker for Eurodoor Notifications
 console.log('🔧 Service Worker loading...');
 
-// Push event - background notifications (iOS Safari compatible)
+// Push event - universal background notifications
 self.addEventListener('push', (event) => {
   console.log('📱 Push event received:', event);
   
@@ -15,7 +15,7 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'Eurodoor';
   const options = {
     body: data.body || '',
-    icon: '/favicon.ico',
+    icon: data.icon || '/favicon.ico',
     badge: '/favicon.ico',
     tag: data.tag || 'eurodoor',
     timestamp: Date.now()
@@ -25,16 +25,16 @@ self.addEventListener('push', (event) => {
   event.waitUntil(self.registration.showNotification(title, options));
 });
 
-// Notification click event (iOS Safari compatible)
+// Notification click event - universal compatibility
 self.addEventListener('notificationclick', (event) => {
   console.log('👆 Notification clicked:', event);
   event.notification.close();
   
-  const url = '/#orders';
+  const url = dataSafe(() => event?.notification?.data?.url) || '/#orders';
   event.waitUntil((async () => {
-    const list = await clients.matchAll({ type:'window', includeUncontrolled:true });
+    const list = await clients.matchAll({ type: 'window', includeUncontrolled: true });
     for (const c of list) { 
-      if (c.url.includes(self.location.origin)) { 
+      if ('focus' in c) { 
         c.focus(); 
         return; 
       } 
@@ -43,7 +43,7 @@ self.addEventListener('notificationclick', (event) => {
   })());
 });
 
-// Message event - main thread communication (iOS Safari compatible)
+// Message event - main thread communication
 self.addEventListener('message', (event) => {
   console.log('💬 Message received:', event.data);
   
@@ -51,3 +51,12 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 });
+
+// Safe data access helper
+function dataSafe(fn) { 
+  try { 
+    return fn(); 
+  } catch(_) { 
+    return undefined; 
+  } 
+}

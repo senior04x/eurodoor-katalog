@@ -15,7 +15,10 @@ import { AuthProvider } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import { ToastProvider } from './contexts/ToastContext'
 import AuthModal from './components/AuthModal'
-import { notificationService } from './lib/notificationService'
+// import { notificationService } from './lib/notificationService' // Replaced with new system
+import { installAutoAskNotifications } from './boot/autoAskNotifications'
+import NotificationGate from './components/NotificationGate'
+import { setCurrentUserId } from './lib/notificationService'
 
 function App() {
   // URL hash'dan current page ni olish
@@ -105,46 +108,11 @@ function App() {
       }
     }
 
-    // Notification permission tekshirish va Service Worker register qilish
-    const initializeNotifications = async () => {
-      try {
-        console.log('🔔 Checking notification permission...');
-        const permission = notificationService.getPermissionStatus();
-        console.log('🔔 Current permission status:', permission);
-        
-        if (permission === 'granted') {
-          console.log('✅ Notification permission already granted');
-          // Service Worker'ni register qilish
-          await notificationService.registerServiceWorker();
-          console.log('✅ Service Worker registered');
-          // Global order watching'ni boshlash
-          await notificationService.startGlobalOrderWatching();
-          console.log('✅ Global order watching started');
-        } else if (permission === 'default') {
-          console.log('🔔 Requesting notification permission...');
-          const hasPermission = await notificationService.requestPermission();
-          if (hasPermission) {
-            console.log('✅ Notification permission granted');
-            await notificationService.registerServiceWorker();
-            // Global order watching'ni boshlash
-            await notificationService.startGlobalOrderWatching();
-            console.log('✅ Global order watching started');
-          } else {
-            console.log('❌ Notification permission denied');
-          }
-        } else {
-          console.log('❌ Notification permission denied by user');
-        }
-      } catch (error) {
-        console.error('❌ Error initializing notifications:', error);
-      }
-    };
-
     window.addEventListener('hashchange', handleHashChange)
     navigator.serviceWorker?.addEventListener('message', handleServiceWorkerMessage)
     
-    // Notification permission tekshirish va Service Worker register qilish
-    initializeNotifications();
+    // Initialize auto-ask notifications system
+    installAutoAskNotifications();
 
     return () => {
       clearTimeout(timer)
@@ -331,6 +299,9 @@ function App() {
                 mode={authMode}
                 onModeChange={setAuthMode}
               />
+              
+              {/* Notification Gate Modal */}
+              <NotificationGate />
             </div>
           </ToastProvider>
         </CartProvider>

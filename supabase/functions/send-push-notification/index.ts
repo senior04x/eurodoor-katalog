@@ -8,7 +8,7 @@ webpush.setVapidDetails(
 );
 
 Deno.serve(async (req) => {
-  const { user_id, title, body, tag } = await req.json();
+  const { user_id, title, body, tag, icon } = await req.json();
   const supa = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -18,7 +18,12 @@ Deno.serve(async (req) => {
     .select('id, subscription')
     .eq('user_id', user_id);
 
-  const payload = JSON.stringify({ title, body, tag });
+  const payload = JSON.stringify({ 
+    title, 
+    body, 
+    tag, 
+    icon: icon || '/favicon.ico' 
+  });
   const results: any[] = [];
 
   for (const row of subs ?? []) {

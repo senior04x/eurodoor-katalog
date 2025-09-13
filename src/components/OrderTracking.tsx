@@ -4,7 +4,7 @@ import { Package, Clock, CheckCircle, Truck, Home, Search, AlertCircle } from 'l
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
-import { notificationService } from '../lib/notificationService'
+// import { notificationService } from '../lib/notificationService' // Replaced with new system
 
 interface Order {
   id: string

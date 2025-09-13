@@ -8,8 +8,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import CartSidebar from './CartSidebar';
-import { notificationService } from '../lib/notificationService';
-import { enablePushForCurrentUser, testPushNotification, isPWAInstalled, isPushSupported } from '../lib/iosNotificationService';
+import { testPushNotification } from '../lib/api';
+import { ensurePushSubscription, isStandalone, isPushSupported } from '../lib/notificationService';
 
 interface HeaderProps {
   currentPage: string;
@@ -34,13 +34,17 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
       console.log('🔔 Permission status:', Notification.permission);
       console.log('🔔 Is supported:', 'Notification' in window);
       
-      await notificationService.showNotification({
-        title: '🔔 Test Notification',
-        body: 'Bu test notification. Agar ko\'rsangiz, notification ishlayapti!',
-        tag: 'test-notification-' + Date.now(),
-        data: { orderNumber: 'TEST-123' }
-      });
-      showSuccess('Test notification yuborildi!');
+      // Simple browser notification test
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('🔔 Test Notification', {
+          body: 'Bu test notification. Agar ko\'rsangiz, notification ishlayapti!',
+          icon: '/favicon.ico',
+          tag: 'test-notification-' + Date.now()
+        });
+        showSuccess('Test notification yuborildi!');
+      } else {
+        showError('Notification permission yo\'q');
+      }
     } catch (error) {
       console.error('Test notification error:', error);
     }
@@ -70,7 +74,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
       }
 
       console.log('🔔 Enabling push notifications...');
-      await enablePushForCurrentUser(user.id);
+      await ensurePushSubscription(user.id);
       showSuccess('Push notifications yoqildi!');
     } catch (error: any) {
       console.error('Enable push notification error:', error);

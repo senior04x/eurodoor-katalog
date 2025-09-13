@@ -8,7 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { ordersApi } from '../lib/ordersApi';
 import { customersApi } from '../lib/customersApi';
-import { notificationService } from '../lib/notificationService';
+// import { notificationService } from '../lib/notificationService'; // Replaced with new system
 
 interface ContactPageProps {
   onNavigate?: (page: string, productId?: string) => void;
@@ -60,16 +60,16 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
     const initializeNotifications = async () => {
       try {
         // Service Worker ni register qilish
-        await notificationService.registerServiceWorker();
+        // await notificationService.registerServiceWorker(); // Replaced with new system
         
         // Notification permission so'rash
-        const hasPermission = await notificationService.requestPermission();
+        // const hasPermission = await notificationService.requestPermission(); // Replaced with new system
         
-        if (hasPermission) {
-          console.log('✅ Notification permission granted');
-        } else {
-          console.log('❌ Notification permission denied');
-        }
+        // if (hasPermission) {
+        //   console.log('✅ Notification permission granted');
+        // } else {
+        //   console.log('❌ Notification permission denied');
+        // }
       } catch (error) {
         console.error('Error initializing notifications:', error);
       }
@@ -121,7 +121,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
         
         // Notification service ni ishga tushirish
         try {
-          await notificationService.watchOrderStatus(order.order_number, formData.phone);
+          // await notificationService.watchOrderStatus(order.order_number, formData.phone); // Replaced with new system
           console.log('🔔 Order status watching started for:', order.order_number);
         } catch (error) {
           console.error('Error starting order status watching:', error);

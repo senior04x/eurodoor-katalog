@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Home, ShoppingBag, Phone, Bell } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { notificationService } from '../lib/notificationService';
+// import { notificationService } from '../lib/notificationService'; // Replaced with new system
 import { testNotificationSystem } from '../lib/notificationTest';
 
 interface OrderSuccessPageProps {
@@ -42,8 +42,8 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
 
   useEffect(() => {
     const checkNotificationStatus = () => {
-      const status = notificationService.getPermissionStatus();
-      setNotificationStatus(status === 'granted' ? 'granted' : 'denied');
+      // const status = notificationService.getPermissionStatus(); // Replaced with new system
+      // setNotificationStatus(status === 'granted' ? 'granted' : 'denied'); // Replaced with new system
     };
 
     checkNotificationStatus();
@@ -52,14 +52,14 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
   // Notification permission so'rash
   const requestNotificationPermission = async () => {
     try {
-      const hasPermission = await notificationService.requestPermission();
-      setNotificationStatus(hasPermission ? 'granted' : 'denied');
+      // const hasPermission = await notificationService.requestPermission(); // Replaced with new system
+      // setNotificationStatus(hasPermission ? 'granted' : 'denied'); // Replaced with new system
       
-      if (hasPermission) {
-        // Agar permission berilgan bo'lsa, order status ni kuzatishni boshlash
-        await notificationService.watchOrderStatus(orderData.orderNumber, orderData.customerPhone);
-        console.log('🔔 Order status watching started from success page');
-      }
+      // if (hasPermission) {
+      //   // Agar permission berilgan bo'lsa, order status ni kuzatishni boshlash
+      //   await notificationService.watchOrderStatus(orderData.orderNumber, orderData.customerPhone); // Replaced with new system
+      //   console.log('🔔 Order status watching started from success page');
+      // }
     } catch (error) {
       console.error('Error requesting notification permission:', error);
     }
@@ -85,12 +85,12 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
         console.error('❌ Test order status change failed:', testResult.error);
       }
 
-      await notificationService.showNotification({
-        title: '✅ Test Notification',
-        body: `Test notification for order ${orderData.orderNumber}. If you see this, notifications are working!`,
-        tag: `test-${orderData.orderNumber}`,
-        data: { orderNumber: orderData.orderNumber }
-      });
+      // await notificationService.showNotification({ // Replaced with new system
+      //   title: '✅ Test Notification',
+      //   body: `Test notification for order ${orderData.orderNumber}. If you see this, notifications are working!`,
+      //   tag: `test-${orderData.orderNumber}`,
+      //   data: { orderNumber: orderData.orderNumber }
+      // });
       
       console.log('✅ Test notification sent');
     } catch (error) {

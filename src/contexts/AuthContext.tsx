@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
+import { setCurrentUserId } from '../lib/notificationService'
 
 export interface User {
   id: string
@@ -75,13 +76,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.log('🔍 Initial session check for user:', session.user.id)
           const customerExists = await checkCustomerExists(session.user.id)
           if (customerExists) {
-            setUser({
+            const userData = {
               id: session.user.id,
               email: session.user.email || '',
               name: session.user.user_metadata?.name,
               phone: session.user.user_metadata?.phone,
               created_at: session.user.created_at
-            })
+            };
+            setUser(userData);
+            // Save user ID for notifications
+            setCurrentUserId(session.user.id);
           }
         }
       } catch (error) {
@@ -101,6 +105,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (event === 'SIGNED_OUT') {
           console.log('🚪 User signed out, clearing user state')
           setUser(null)
+          // Clear user ID for notifications
+          setCurrentUserId('');
           setLoading(false)
           return
         }
@@ -111,23 +117,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log('🔍 Auth state change - checking customer for:', session.user.id)
             const customerExists = await checkCustomerExists(session.user.id)
             if (customerExists) {
-              setUser({
+              const userData = {
                 id: session.user.id,
                 email: session.user.email || '',
                 name: session.user.user_metadata?.name,
                 phone: session.user.user_metadata?.phone,
                 created_at: session.user.created_at
-              })
+              };
+              setUser(userData);
+              // Save user ID for notifications
+              setCurrentUserId(session.user.id);
             }
           } else {
             // Boshqa event'lar uchun to'g'ridan-to'g'ri setUser
-            setUser({
+            const userData = {
               id: session.user.id,
               email: session.user.email || '',
               name: session.user.user_metadata?.name,
               phone: session.user.user_metadata?.phone,
               created_at: session.user.created_at
-            })
+            };
+            setUser(userData);
+            // Save user ID for notifications
+            setCurrentUserId(session.user.id);
           }
         } else {
           setUser(null)
@@ -447,6 +459,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('🚪 Signing out user...')
       await supabase.auth.signOut()
       setUser(null) // User state'ni tozalash
+      // Clear user ID for notifications
+      setCurrentUserId('');
       console.log('✅ User signed out successfully')
     } catch (error) {
       console.error('❌ Chiqishda xatolik:', error)
