@@ -155,7 +155,10 @@ self.addEventListener('message', (event) => {
   // Notification yuborish uchun message
   if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
     const data = event.data.data;
-    console.log('🔔 Showing notification from Service Worker:', data);
+    console.log('🔔 Service Worker: Showing notification:', data);
+    console.log('🔔 Service Worker: Notification title:', data.title);
+    console.log('🔔 Service Worker: Notification body:', data.body);
+    console.log('🔔 Service Worker: Notification tag:', data.tag);
     
     const options = {
       body: data.body,
@@ -179,8 +182,16 @@ self.addEventListener('message', (event) => {
       timestamp: Date.now()
     };
     
+    console.log('🔔 Service Worker: Notification options:', options);
+    
     event.waitUntil(
       self.registration.showNotification(data.title, options)
+        .then(() => {
+          console.log('✅ Service Worker: Notification shown successfully');
+        })
+        .catch((error) => {
+          console.error('❌ Service Worker: Failed to show notification:', error);
+        })
     );
   }
 });
