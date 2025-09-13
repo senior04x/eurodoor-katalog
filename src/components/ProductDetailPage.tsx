@@ -18,6 +18,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   const { showSuccess } = useToast();
   
   console.log('🎯 ProductDetailPage rendered with productId:', productId);
+  console.log('🎯 ProductDetailPage props:', { productId, onNavigate: !!onNavigate });
 
   // Real Supabase product
   const [product, setProduct] = useState<Product | null>(null);
@@ -32,8 +33,14 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
         setLoading(true);
         const fetchedProduct = await productsApi.getProductById(productId);
         console.log('📦 Fetched product:', fetchedProduct);
-        setProduct(fetchedProduct);
-        console.log('✅ Product loaded successfully');
+        
+        if (fetchedProduct) {
+          setProduct(fetchedProduct);
+          console.log('✅ Product loaded successfully');
+        } else {
+          console.error('❌ Product not found or inactive');
+          setProduct(null);
+        }
       } catch (error) {
         console.error('❌ Error loading product:', error);
         setProduct(null);

@@ -33,9 +33,13 @@ function App() {
   // Product ID ni hash'dan olish
   const getProductIdFromHash = () => {
     const hash = window.location.hash.replace('#', '')
+    console.log('🔍 getProductIdFromHash - hash:', hash)
     if (hash.startsWith('product-detail/')) {
-      return hash.split('/')[1]
+      const productId = hash.split('/')[1]
+      console.log('🔍 getProductIdFromHash - extracted productId:', productId)
+      return productId
     }
+    console.log('🔍 getProductIdFromHash - no product ID found')
     return null
   }
 
