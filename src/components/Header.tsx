@@ -239,7 +239,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                   </button>
                   
                   {showUserMenu && (
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-gradient-to-br from-blue-500/90 via-purple-500/90 to-blue-600/90 backdrop-blur-xl rounded-lg border border-white/30 shadow-2xl py-1 z-50">
+                    <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-white/30 shadow-2xl py-1 z-50" style={{ background: 'linear-gradient(135deg, #304675 0%, #451B6F 100%)', backdropFilter: 'blur(20px)' }}>
                     <button
                       onClick={() => {
                         setShowUserMenu(false);
