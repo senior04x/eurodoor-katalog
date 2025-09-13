@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import CartSidebar from './CartSidebar';
+import { notificationService } from '../lib/notificationService';
 
 interface HeaderProps {
   currentPage: string;
@@ -24,6 +25,21 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
   const { totalItems, isCartOpen, setIsCartOpen } = useCart();
   const { user, signOut } = useAuth();
   const { showSuccess } = useToast();
+
+  // Test notification function
+  const testNotification = async () => {
+    try {
+      await notificationService.showNotification({
+        title: '🔔 Test Notification',
+        body: 'Bu test notification. Agar ko\'rsangiz, notification ishlayapti!',
+        tag: 'test-notification',
+        data: { orderNumber: 'TEST-123' }
+      });
+      showSuccess('Test notification yuborildi!');
+    } catch (error) {
+      console.error('Test notification error:', error);
+    }
+  };
 
   // Telegram WebApp ni aniqlash
   useEffect(() => {
@@ -253,6 +269,16 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />
                       {t('header.orders')}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        testNotification();
+                      }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <span className="h-4 w-4 mr-2">🔔</span>
+                      Test Notification
                     </button>
                     <hr className="my-1" />
                     <button
