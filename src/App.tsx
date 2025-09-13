@@ -17,7 +17,29 @@ import { ToastProvider } from './contexts/ToastContext'
 import AuthModal from './components/AuthModal'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home')
+  // URL hash'dan current page ni olish
+  const getInitialPage = () => {
+    const hash = window.location.hash.replace('#', '')
+    const validPages = ['home', 'catalog', 'about', 'contact', 'orders', 'profile', 'order-success']
+    
+    // Product detail page uchun
+    if (hash.startsWith('product-detail/')) {
+      return 'product-detail'
+    }
+    
+    return validPages.includes(hash) ? hash : 'home'
+  }
+
+  // Product ID ni hash'dan olish
+  const getProductIdFromHash = () => {
+    const hash = window.location.hash.replace('#', '')
+    if (hash.startsWith('product-detail/')) {
+      return hash.split('/')[1]
+    }
+    return null
+  }
+
+  const [currentPage, setCurrentPage] = useState(getInitialPage())
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showAuthModal, setShowAuthModal] = useState(false)
@@ -41,8 +63,18 @@ function App() {
     document.body.style.overflow = 'auto'
     document.body.classList.remove('overflow-hidden')
 
+    // Hash change listener qo'shish
+    const handleHashChange = () => {
+      const newPage = getInitialPage()
+      console.log('🔄 Hash changed to:', newPage)
+      setCurrentPage(newPage)
+    }
+
+    window.addEventListener('hashchange', handleHashChange)
+
     return () => {
       clearTimeout(timer)
+      window.removeEventListener('hashchange', handleHashChange)
       // Cleanup
       document.body.style.overflow = 'auto'
       document.body.classList.remove('overflow-hidden')
@@ -85,11 +117,15 @@ function App() {
       // Product detail sahifasiga o'tish
       setSelectedProduct({ id: productId });
       setCurrentPage('product-detail');
+      // URL hash ni o'zgartirish
+      window.location.hash = `product-detail/${productId}`;
       console.log('✅ App: Product selected:', productId);
     } else {
       // Oddiy sahifa o'tish
       setCurrentPage(page);
       setSelectedProduct(null);
+      // URL hash ni o'zgartirish
+      window.location.hash = page;
       console.log('✅ App: Page set to:', page);
       
       // Force reload for catalog page to fix loading issues
@@ -122,9 +158,10 @@ function App() {
       case 'contact':
         return <ContactPage onNavigate={handleNavigate} />
       case 'product-detail':
-        return selectedProduct ? (
+        const productId = selectedProduct?.id || getProductIdFromHash()
+        return productId ? (
           <ProductDetailPage 
-            productId={selectedProduct.id} 
+            productId={productId} 
             onNavigate={handleNavigate}
           />
         ) : null
