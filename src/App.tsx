@@ -1,6 +1,7 @@
 import { useState, useEffect, Suspense, lazy, memo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Header from './components/Header'
+import FloatingButtons from './components/FloatingButtons'
 import AppLoader from './components/AppLoader'
 
 // Lazy load components with preloading for better performance
@@ -332,7 +333,12 @@ function App() {
             <ToastProvider>
               <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
                 <Header 
-                  currentPage={currentPage} 
+                  onNavigate={handleNavigate}
+                />
+                
+                {/* Floating Buttons - Korzinka va Burger */}
+                <FloatingButtons
+                  currentPage={currentPage}
                   onNavigate={handleNavigate}
                   onShowAuthModal={(mode) => {
                     setAuthMode(mode)
