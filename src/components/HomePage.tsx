@@ -43,10 +43,10 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     />
     <div className="fixed inset-0 bg-black/30" />
 
-    {/* Hero Section - Text centered on left side */}
+    {/* Hero Section - Text slightly higher */}
   <section className="relative h-screen flex items-center overflow-hidden">
   <div className="relative container mx-auto px-4 h-full flex items-center">
-    <div className="max-w-2xl text-white">
+    <div className="max-w-2xl text-white -mt-16">
       <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
         {t('home.hero_title')}
       </h1>
