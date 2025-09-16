@@ -83,7 +83,7 @@ const FloatingButtons = memo<FloatingButtonsProps>(({ currentPage, onNavigate, o
           {/* Cart Button */}
           <button
             onClick={() => setIsCartOpen(true)}
-            className="relative inline-flex h-12 w-12 items-center justify-center rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/30 text-white transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="relative inline-flex h-12 w-12 items-center justify-center rounded-full text-white transition-all duration-300 hover:bg-white/10"
             aria-label="Shopping cart"
           >
             <ShoppingCart className="h-6 w-6" />
@@ -99,7 +99,7 @@ const FloatingButtons = memo<FloatingButtonsProps>(({ currentPage, onNavigate, o
             aria-controls="burger-menu"
             aria-expanded={isBurgerMenuOpen}
             onClick={() => setIsBurgerMenuOpen(true)}
-            className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/30 text-white transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="inline-flex h-12 w-12 items-center justify-center rounded-full text-white transition-all duration-300 hover:bg-white/10"
             aria-label="Menu"
           >
             <Menu className="h-6 w-6" />
