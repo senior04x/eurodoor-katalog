@@ -32,7 +32,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
         
         // Add timeout for better error handling
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout after 10 seconds')), 10000)
+          setTimeout(() => reject(new Error('Request timeout after 8 seconds')), 8000)
         );
         
         const productsPromise = productsApi.getAllProducts();

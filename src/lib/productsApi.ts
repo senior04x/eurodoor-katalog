@@ -21,15 +21,16 @@ export const productsApi = {
         return productsCache;
       }
       
-      // Add timeout to the query
+      // Optimized query with shorter timeout
       const queryPromise = supabase
         .from('products')
-        .select('id, name, name_ru, name_en, description, material, material_ru, material_en, security, security_ru, security_en, dimensions, dimensions_ru, dimensions_en, lock_stages, lock_stages_ru, lock_stages_en, thickness, price, stock, currency, image, image_url, category, is_active, created_at, updated_at')
+        .select('id, name, material, security, dimensions, price, stock, currency, image, image_url, category, is_active')
         .eq('is_active', true)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(50); // Limit results for faster query
       
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Database query timeout')), 15000)
+        setTimeout(() => reject(new Error('Database query timeout')), 8000)
       );
       
       const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
@@ -69,6 +70,12 @@ export const productsApi = {
         console.log(`🔄 Retrying in ${RETRY_DELAY}ms... (${retryCount + 1}/${MAX_RETRIES})`);
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         return this.getAllProducts(forceRefresh, retryCount + 1);
+      }
+      
+      // Fallback to cached data if available
+      if (productsCache && productsCache.length > 0) {
+        console.log('⚠️ Using cached data due to error');
+        return productsCache;
       }
       
       throw error;
