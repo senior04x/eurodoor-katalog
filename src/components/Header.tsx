@@ -68,8 +68,8 @@ const Header = memo<HeaderProps>(({ onNavigate }) => {
       } : {}}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-center h-16">
-          {/* Logo - center */}
+        <div className="flex items-center justify-between h-16">
+          {/* Logo - left side */}
           <div
             onClick={(e) => {
               // Agar Ctrl yoki Shift bosilgan bo'lsa, admin toggle
@@ -88,6 +88,9 @@ const Header = memo<HeaderProps>(({ onNavigate }) => {
               className="h-8 w-auto"
             />
           </div>
+          
+          {/* Right side - empty space for floating buttons */}
+          <div className="w-24"></div>
         </div>
       </div>
     </motion.header>

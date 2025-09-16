@@ -79,7 +79,7 @@ const FloatingButtons = memo<FloatingButtonsProps>(({ currentPage, onNavigate, o
           right: 'calc(env(safe-area-inset-right, 0px) + 16px)'
         } : {}}
       >
-        <div className="flex flex-col gap-3">
+        <div className="flex gap-3">
           {/* Cart Button */}
           <button
             onClick={() => setIsCartOpen(true)}
