@@ -24,6 +24,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [productName, setProductName] = useState<string>('');
 
   // Load product data
   useEffect(() => {
@@ -50,10 +51,12 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
         
         if (fetchedProduct) {
           setProduct(fetchedProduct);
+          setProductName(fetchedProduct.name);
           console.log('✅ Product loaded successfully');
         } else {
           console.error('❌ Product not found or inactive');
           setProduct(null);
+          setProductName('');
         }
       } catch (error) {
         console.error('❌ Error loading product:', error);
@@ -109,14 +112,23 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   if (loading) {
     return (
       <div className="relative min-h-screen">
-        <div className="fixed inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }} />
+        <div
+          className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: "url('/images/hero-bg.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed'
+          }}
+        />
         <div className="fixed inset-0 bg-black/30" />
         <div className="relative z-10 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
             <p className="text-white text-lg">Mahsulot yuklanmoqda...</p>
-            <p className="text-white/60 text-sm mt-2">Product ID: {productId}</p>
-            <p className="text-white/60 text-sm">Loading state: {loading ? 'true' : 'false'}</p>
+            {productName && (
+              <p className="text-white/80 text-sm mt-2">{productName}</p>
+            )}
           </div>
         </div>
       </div>
@@ -127,15 +139,21 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   if (!product) {
     return (
       <div className="relative min-h-screen">
-        <div className="fixed inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }} />
+        <div
+          className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: "url('/images/hero-bg.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed'
+          }}
+        />
         <div className="fixed inset-0 bg-black/30" />
         <div className="relative z-10 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-white mb-2">Mahsulot topilmadi</h3>
-            <p className="text-gray-300 mb-2">Kechirasiz, bu mahsulot mavjud emas</p>
-            <p className="text-gray-400 text-sm mb-4">Product ID: {productId}</p>
-            <p className="text-gray-400 text-sm mb-4">Loading: {loading ? 'true' : 'false'}</p>
+            <p className="text-gray-300 mb-4">Kechirasiz, bu mahsulot mavjud emas</p>
             <button
               onClick={() => onNavigate('catalog')}
               className="bg-blue-500/20 text-blue-300 px-6 py-3 rounded-lg font-semibold hover:bg-blue-500/30 transition-colors"
@@ -150,8 +168,16 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
   return (
     <div className="relative min-h-screen">
-      {/* Fixed background */}
-      <div className="fixed inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }} />
+      {/* Optimized background with HomePage style */}
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: "url('/images/hero-bg.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      />
       <div className="fixed inset-0 bg-black/30" />
 
       {/* Back button */}
