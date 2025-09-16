@@ -231,14 +231,14 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
       />
       <div className="fixed inset-0 bg-black/30" />
 
-      {/* Hero Section - Left aligned text like HomePage */}
-      <section className="relative h-[50vh] flex items-center overflow-hidden">
-        <div className="relative container mx-auto px-4 h-full flex items-center">
+      {/* Hero Section - Compact layout */}
+      <section className="relative py-8 flex items-center overflow-hidden">
+        <div className="relative container mx-auto px-4 flex items-center">
           <div className="max-w-2xl text-white ml-8 md:ml-16">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 leading-tight bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
               {t('catalog.title')}
             </h1>
-            <p className="text-xl md:text-2xl mb-8 opacity-90 text-gray-100">
+            <p className="text-lg md:text-xl mb-4 opacity-90 text-gray-100">
               {t('catalog.description')}
             </p>
           </div>
