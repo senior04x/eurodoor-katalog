@@ -1,41 +1,46 @@
-/* Barcha kapsulalar uchun bazaviy klass */
+/* iOS 26 Liquid Glass Effect - Jozibador va Zamonaviy */
 .liquid-btn{
   position:relative; display:inline-flex; align-items:center; justify-content:center;
   border-radius:999px; background:transparent; color:inherit; text-decoration:none;
   padding:12px 28px; font-weight:600; line-height:1; isolation:isolate; overflow:hidden;
-  /* ichini qoraytiradigan shadow/overlay QO'YMA! */
+  /* iOS 26 liquid glass asosiy xususiyatlari */
+  background-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 -4px 6px rgba(255, 255, 255, 0.1),
+    0 0 20px rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 1) Feathered "oyna": markaz – tiniq, chet – yumshoq */
+/* 1) Liquid Glass Shaffoflik Effekti */
 .liquid-btn::before{
   content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
-  /* chetni yumshatish (feather ring) */
-  -webkit-mask: radial-gradient(closest-side, #000 72%, transparent 100%);
-          mask: radial-gradient(closest-side, #000 72%, transparent 100%);
-  /* ikki nuqtali specular highlight — KICHIK va HAR BUTTONGA HOS */
-  background:
-    radial-gradient(70% 120% at 28% 30%, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 55%),
-    radial-gradient(90% 140% at 72% 70%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 60%);
-  mix-blend-mode: screen;
-  /* gradient cho'zilib ketmasligi uchun */
-  background-repeat:no-repeat;
+  /* iOS 26 liquid glass shaffoflik */
+  background: 
+    radial-gradient(ellipse 80% 50% at 30% 20%, rgba(255,255,255,0.4) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 70% 80%, rgba(255,255,255,0.25) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+  mix-blend-mode: overlay;
+  opacity: 0.8;
 }
 
-/* 2) Yupqa rainbow edge — juda nozik, ko'zga yoqimli */
+/* 2) Iridescent Glass Edge - iOS 26 Style */
 .liquid-btn::after{
   content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
-  padding:1.5px;                     /* halqa qalinligi: yupqa! */
+  padding:1px;
   background: conic-gradient(
     from 0deg,
-    rgba(255,0,140,.55),
-    rgba(0,200,255,.55),
-    rgba(0,255,160,.55),
-    rgba(255,210,0,.55),
-    rgba(255,0,140,.55)
+    rgba(255,255,255,0.6),
+    rgba(255,255,255,0.3),
+    rgba(255,255,255,0.6),
+    rgba(255,255,255,0.4),
+    rgba(255,255,255,0.6)
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
-  opacity:.85;
+  opacity: 0.9;
 }
 
 /* O'lchamlar */
@@ -43,10 +48,31 @@
 .liquid-btn.md{ padding:12px 28px; font-size:16px; }
 .liquid-btn.lg{ padding:14px 40px; font-size:18px; }
 
-/* Interaksiya – vizualgina, funksiyani o'zgartirmaydi */
-.liquid-btn:hover{ transform:translateY(-1px); transition:transform .15s ease; }
-.liquid-btn:active{ transform:translateY(0); }
-.liquid-btn:focus-visible{ outline:2px solid rgba(212,175,55,.6); outline-offset:2px; }
+/* iOS 26 Liquid Glass Interaksiya Effektlari */
+.liquid-btn:hover{ 
+  transform: translateY(-2px) scale(1.02);
+  background-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 8px 12px rgba(0, 0, 0, 0.15),
+    0 -8px 12px rgba(255, 255, 255, 0.15),
+    0 0 30px rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.liquid-btn:active{ 
+  transform: translateY(0) scale(0.98);
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 -2px 4px rgba(255, 255, 255, 0.1);
+}
+.liquid-btn:focus-visible{ 
+  outline: 2px solid rgba(255, 255, 255, 0.6); 
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 0 4px rgba(255, 255, 255, 0.2),
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 -4px 6px rgba(255, 255, 255, 0.1);
+}
 
 /* Disabled */
 .liquid-btn[disabled], .liquid-btn[aria-disabled="true"]{ opacity:.55; pointer-events:none; }
@@ -56,60 +82,73 @@
   .liquid-btn::after{ background: linear-gradient(90deg, rgba(255,0,140,.45), rgba(0,200,255,.45)); }
 }
 
-/* Global opt-in: body.liquid-enabled bo'lsa qo'llanadi */
+/* iOS 26 Liquid Glass - Global Avtomatik Qo'llash */
 body.liquid-enabled :where(
   button:not([data-variant="ghost"]):not([data-variant="link"]),
   a[role="button"],
   .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
 ){
-  position:relative; border-radius:999px !important; background:transparent !important;
+  position:relative; border-radius:999px !important; 
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 -4px 6px rgba(255, 255, 255, 0.1),
+    0 0 20px rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   isolation:isolate; overflow:hidden;
 }
 
-/* Liquid vizualini avtomatik qo'llash */
+/* iOS 26 Liquid Glass Shaffoflik Effekti */
 body.liquid-enabled :where(
   button:not([data-variant="ghost"]):not([data-variant="link"]),
   a[role="button"],
   .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
 )::before{
   content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
-  -webkit-mask: radial-gradient(closest-side, #000 72%, transparent 100%);
-          mask: radial-gradient(closest-side, #000 72%, transparent 100%);
-  background:
-    radial-gradient(70% 120% at 28% 30%, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 55%),
-    radial-gradient(90% 140% at 72% 70%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 60%);
-  mix-blend-mode: screen;
-  background-repeat:no-repeat;
+  background: 
+    radial-gradient(ellipse 80% 50% at 30% 20%, rgba(255,255,255,0.4) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 70% 80%, rgba(255,255,255,0.25) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+  mix-blend-mode: overlay;
+  opacity: 0.8;
 }
 
+/* iOS 26 Iridescent Glass Edge */
 body.liquid-enabled :where(
   button:not([data-variant="ghost"]):not([data-variant="link"]),
   a[role="button"],
   .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
 )::after{
   content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
-  padding:1.5px;
+  padding:1px;
   background: conic-gradient(
     from 0deg,
-    rgba(255,0,140,.55),
-    rgba(0,200,255,.55),
-    rgba(0,255,160,.55),
-    rgba(255,210,0,.55),
-    rgba(255,0,140,.55)
+    rgba(255,255,255,0.6),
+    rgba(255,255,255,0.3),
+    rgba(255,255,255,0.6),
+    rgba(255,255,255,0.4),
+    rgba(255,255,255,0.6)
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
-  opacity:.85;
+  opacity: 0.9;
 }
 
-/* Hover effektlari */
+/* iOS 26 Liquid Glass Hover Effektlari */
 body.liquid-enabled :where(
   button:not([data-variant="ghost"]):not([data-variant="link"]),
   a[role="button"],
   .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
 ):hover{ 
-  transform:translateY(-1px); 
-  transition:transform .15s ease; 
+  transform: translateY(-2px) scale(1.02);
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 
+    0 8px 12px rgba(0, 0, 0, 0.15),
+    0 -8px 12px rgba(255, 255, 255, 0.15),
+    0 0 30px rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
 body.liquid-enabled :where(
@@ -117,7 +156,11 @@ body.liquid-enabled :where(
   a[role="button"],
   .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
 ):active{ 
-  transform:translateY(0); 
+  transform: translateY(0) scale(0.98);
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 -2px 4px rgba(255, 255, 255, 0.1) !important;
 }
 
 body.liquid-enabled :where(
@@ -125,8 +168,12 @@ body.liquid-enabled :where(
   a[role="button"],
   .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
 ):focus-visible{ 
-  outline:2px solid rgba(212,175,55,.6); 
-  outline-offset:2px; 
+  outline: 2px solid rgba(255, 255, 255, 0.6); 
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 0 4px rgba(255, 255, 255, 0.2),
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 -4px 6px rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Disabled holat */
