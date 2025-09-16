@@ -6,57 +6,8 @@ let productsCache: Product[] | null = null;
 let cacheTimestamp: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-// Mock data for fallback
-const mockProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Model 020',
-    material: 'Metal',
-    security: 'High',
-    dimensions: '2300 x 960',
-    price: 1500000,
-    stock: 5,
-    currency: 'UZS',
-    image_url: 'https://picsum.photos/400/300?random=1',
-    category: 'doors',
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '2',
-    name: 'Model 710',
-    material: 'MDF',
-    security: 'Medium',
-    dimensions: '2050 x 860',
-    price: 1200000,
-    stock: 3,
-    currency: 'UZS',
-    image_url: 'https://picsum.photos/400/300?random=2',
-    category: 'doors',
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '3',
-    name: 'Model 601',
-    material: 'Wood',
-    security: 'High',
-    dimensions: '2050 x 960',
-    price: 1800000,
-    stock: 2,
-    currency: 'UZS',
-    image_url: 'https://picsum.photos/400/300?random=3',
-    category: 'doors',
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  }
-];
-
 export const productsApi = {
-  // Optimized: Barcha faol mahsulotlarni olish with fallback to mock data
+  // Real database connection - barcha faol mahsulotlarni olish
   async getAllProducts(forceRefresh: boolean = false): Promise<Product[]> {
     try {
       // Check cache first
@@ -64,25 +15,15 @@ export const productsApi = {
         return productsCache;
       }
       
-      // Try to fetch from database with short timeout
-      const queryPromise = supabase
+      // Real database query
+      const { data, error } = await supabase
         .from('products')
         .select('id, name, material, security, dimensions, price, stock, currency, image, image_url, category, is_active')
         .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(20);
+        .order('created_at', { ascending: false });
       
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Database timeout')), 3000)
-      );
-      
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
-      
-      if (error || !data) {
-        // Use mock data as fallback
-        productsCache = mockProducts;
-        cacheTimestamp = Date.now();
-        return mockProducts;
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
       }
       
       // Update cache with real data
@@ -91,10 +32,8 @@ export const productsApi = {
       return productsCache;
       
     } catch (error) {
-      // Always fallback to mock data
-      productsCache = mockProducts;
-      cacheTimestamp = Date.now();
-      return mockProducts;
+      console.error('Database connection error:', error);
+      throw error;
     }
   },
 
@@ -118,7 +57,7 @@ export const productsApi = {
     }
   },
 
-  // Optimized: ID bo'yicha mahsulot olish with fallback
+  // Real database: ID bo'yicha mahsulot olish
   async getProductById(id: string): Promise<Product | null> {
     try {
       // Check cache first
@@ -129,29 +68,22 @@ export const productsApi = {
         }
       }
       
-      // Try database with short timeout
-      const queryPromise = supabase
+      // Real database query
+      const { data, error } = await supabase
         .from('products')
         .select('id, name, material, security, dimensions, price, stock, currency, image, image_url, category, is_active')
         .eq('id', id)
         .eq('is_active', true)
         .single();
       
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Database timeout')), 3000)
-      );
-      
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
-      
-      if (error || !data) {
-        // Fallback to mock data
-        return mockProducts.find(p => p.id === id) || null;
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
       }
       
       return data;
     } catch (error) {
-      // Fallback to mock data
-      return mockProducts.find(p => p.id === id) || null;
+      console.error('Database connection error:', error);
+      throw error;
     }
   },
 

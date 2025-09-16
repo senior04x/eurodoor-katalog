@@ -37,33 +37,21 @@ function App() {
     const hash = window.location.hash.replace('#', '')
     const validPages = ['home', 'catalog', 'about', 'contact', 'orders', 'profile', 'order-success', 'product-detail']
     
-    console.log('🔍 getInitialPage - hash:', hash)
-    console.log('🔍 getInitialPage - validPages:', validPages)
-    
     // Product detail page uchun
     if (hash.startsWith('product-detail/')) {
-      console.log('✅ getInitialPage - returning product-detail')
       return 'product-detail'
     }
     
     const isValidPage = validPages.includes(hash)
-    console.log('🔍 getInitialPage - isValidPage:', isValidPage)
-    const result = isValidPage ? hash : 'home'
-    console.log('🔍 getInitialPage - returning:', result)
-    
-    return result
+    return isValidPage ? hash : 'home'
   }
 
   // Product ID ni hash'dan olish
   const getProductIdFromHash = () => {
     const hash = window.location.hash.replace('#', '')
-    console.log('🔍 getProductIdFromHash - hash:', hash)
     if (hash.startsWith('product-detail/')) {
-      const productId = hash.split('/')[1]
-      console.log('🔍 getProductIdFromHash - extracted productId:', productId)
-      return productId
+      return hash.split('/')[1]
     }
-    console.log('🔍 getProductIdFromHash - no product ID found')
     return null
   }
 
@@ -108,15 +96,12 @@ function App() {
     const handleHashChange = () => {
       const newPage = getInitialPage()
       const productId = getProductIdFromHash()
-      console.log('🔄 Hash changed to:', newPage)
-      console.log('🔄 Product ID from hash:', productId)
       
       setCurrentPage(newPage)
       
       // Product detail page uchun selectedProduct ni o'rnatish
       if (newPage === 'product-detail' && productId) {
         setSelectedProduct({ id: productId })
-        console.log('✅ Set selectedProduct to:', { id: productId })
       } else {
         setSelectedProduct(null)
       }
@@ -140,13 +125,10 @@ function App() {
   // Initial selectedProduct ni o'rnatish
   useEffect(() => {
     const hash = window.location.hash.replace('#', '')
-    console.log('🔍 Initial hash check:', hash)
     
     if (hash.startsWith('product-detail/')) {
       const productId = hash.split('/')[1]
-      console.log('🔍 Initial product ID:', productId)
       setSelectedProduct({ id: productId })
-      console.log('✅ Initial selectedProduct set to:', { id: productId })
     } else {
       setSelectedProduct(null)
     }
@@ -163,38 +145,27 @@ function App() {
   }, [currentPage])
 
   const handleNavigate = useCallback((page: string, productId?: string) => {
-    console.log('🔄 App: Navigating to page:', page, 'productId:', productId);
-    console.log('🔄 App: Current state before navigation - currentPage:', currentPage, 'selectedProduct:', selectedProduct);
-    
     if (page === 'product-detail' && productId) {
       // Product detail sahifasiga o'tish
-      console.log('🔄 App: Setting selectedProduct to:', { id: productId });
       setSelectedProduct({ id: productId });
-      console.log('🔄 App: Setting currentPage to: product-detail');
       setCurrentPage('product-detail');
       // URL hash ni o'zgartirish
       window.location.hash = `product-detail/${productId}`;
-      console.log('✅ App: Product selected:', productId);
-      console.log('✅ App: Hash set to:', window.location.hash);
     } else {
       // Oddiy sahifa o'tish
       setCurrentPage(page);
       setSelectedProduct(null);
       // URL hash ni o'zgartirish
       window.location.hash = page;
-      console.log('✅ App: Page set to:', page);
       
       // Force reload for catalog page to fix loading issues
       if (page === 'catalog') {
-        console.log('🔄 Forcing catalog reload...');
         setTimeout(() => {
           // Trigger a small state change to force re-render
           setCurrentPage('catalog');
         }, 50);
       }
     }
-    
-    console.log('🔍 Current page state:', page);
   }, [currentPage, selectedProduct])
 
   // const handleProductSelect = (product: any) => {
@@ -305,8 +276,8 @@ function App() {
           </Suspense>
         )
       case 'admin':
-        // Admin panel alohida saytda: http://localhost:3000
-        window.open('http://localhost:5175', '_blank')
+        // Admin panel alohida saytda: http://localhost:3001
+        window.open('http://localhost:3001', '_blank')
         return (
           <Suspense fallback={<LoadingFallback />}>
             <HomePage onNavigate={handleNavigate} />
