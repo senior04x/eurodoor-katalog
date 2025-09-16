@@ -7,10 +7,13 @@ let cacheTimestamp: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export const productsApi = {
-  // Optimized: Barcha faol mahsulotlarni olish with caching
-  async getAllProducts(forceRefresh: boolean = false): Promise<Product[]> {
+  // Optimized: Barcha faol mahsulotlarni olish with caching and retry logic
+  async getAllProducts(forceRefresh: boolean = false, retryCount: number = 0): Promise<Product[]> {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000; // 1 second
+    
     try {
-      console.log('🔄 Fetching products...', forceRefresh ? '(force refresh)' : '');
+      console.log('🔄 Fetching products...', forceRefresh ? '(force refresh)' : '', retryCount > 0 ? `(retry ${retryCount})` : '');
       
       // Check cache first
       if (!forceRefresh && productsCache && (Date.now() - cacheTimestamp) < CACHE_DURATION) {
@@ -18,15 +21,33 @@ export const productsApi = {
         return productsCache;
       }
       
-      // Optimized query - only select necessary fields
-      const { data, error } = await supabase
+      // Add timeout to the query
+      const queryPromise = supabase
         .from('products')
         .select('id, name, name_ru, name_en, description, material, material_ru, material_en, security, security_ru, security_en, dimensions, dimensions_ru, dimensions_en, lock_stages, lock_stages_ru, lock_stages_en, thickness, price, stock, currency, image, image_url, category, is_active, created_at, updated_at')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
       
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Database query timeout')), 15000)
+      );
+      
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+      
       if (error) {
         console.error('❌ Supabase error fetching products:', error);
+        
+        // Retry logic for network errors
+        if (retryCount < MAX_RETRIES && (
+          error.message.includes('network') || 
+          error.message.includes('timeout') ||
+          error.message.includes('fetch')
+        )) {
+          console.log(`🔄 Retrying in ${RETRY_DELAY}ms... (${retryCount + 1}/${MAX_RETRIES})`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          return this.getAllProducts(forceRefresh, retryCount + 1);
+        }
+        
         throw new Error(`Supabase error: ${error.message}`);
       }
       
@@ -38,6 +59,18 @@ export const productsApi = {
       return productsCache;
     } catch (error) {
       console.error('❌ Error fetching products:', error);
+      
+      // Retry logic for general errors
+      if (retryCount < MAX_RETRIES && error instanceof Error && (
+        error.message.includes('timeout') ||
+        error.message.includes('network') ||
+        error.message.includes('fetch')
+      )) {
+        console.log(`🔄 Retrying in ${RETRY_DELAY}ms... (${retryCount + 1}/${MAX_RETRIES})`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        return this.getAllProducts(forceRefresh, retryCount + 1);
+      }
+      
       throw error;
     }
   },
