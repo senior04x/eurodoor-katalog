@@ -1,147 +1,132 @@
-/* iOS Liquid Capsule Button Effects */
-/* Hech qanday backdrop-filter ishlatilmaydi */
-
-.liquid-btn {
-  position: relative;
-  display: inline-block;
-  border-radius: 999px;
-  background: transparent;
-  color: inherit;
-  text-decoration: none;
-  isolation: isolate;
-  overflow: hidden;
+/* Barcha kapsulalar uchun bazaviy klass */
+.liquid-btn{
+  position:relative; display:inline-flex; align-items:center; justify-content:center;
+  border-radius:999px; background:transparent; color:inherit; text-decoration:none;
+  padding:12px 28px; font-weight:600; line-height:1; isolation:isolate; overflow:hidden;
+  /* ichini qoraytiradigan shadow/overlay QO'YMA! */
 }
 
-/* ichki yaltirash + chetlar "feather" — blur YO'Q */
+/* 1) Feathered "oyna": markaz – tiniq, chet – yumshoq */
 .liquid-btn::before{
-  content:"";
-  position:absolute; inset:0;
-  border-radius:inherit;
-  -webkit-mask: radial-gradient(closest-side, #000 70%, transparent 100%);
-          mask: radial-gradient(closest-side, #000 70%, transparent 100%);
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  /* chetni yumshatish (feather ring) */
+  -webkit-mask: radial-gradient(closest-side, #000 72%, transparent 100%);
+          mask: radial-gradient(closest-side, #000 72%, transparent 100%);
+  /* ikki nuqtali specular highlight — KICHIK va HAR BUTTONGA HOS */
   background:
-    radial-gradient(120% 140% at 20% 25%, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 60%),
-    radial-gradient(140% 180% at 80% 75%, rgba(255,255,255,.20) 0%, rgba(255,255,255,0) 60%);
+    radial-gradient(70% 120% at 28% 30%, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 55%),
+    radial-gradient(90% 140% at 72% 70%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 60%);
   mix-blend-mode: screen;
-  pointer-events: none;
+  /* gradient cho'zilib ketmasligi uchun */
+  background-repeat:no-repeat;
 }
 
-/* rangli chekka (iridescent) */
+/* 2) Yupqa rainbow edge — juda nozik, ko'zga yoqimli */
 .liquid-btn::after{
-  content:"";
-  position:absolute; inset:0;
-  border-radius:inherit;
-  padding:2px;
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  padding:1.5px;                     /* halqa qalinligi: yupqa! */
   background: conic-gradient(
-    from 10deg,
+    from 0deg,
     rgba(255,0,140,.55),
     rgba(0,200,255,.55),
     rgba(0,255,160,.55),
     rgba(255,210,0,.55),
     rgba(255,0,140,.55)
   );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  opacity:.9;
-  pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity:.85;
 }
 
-/* o'lchamlar: mavjud paddingni saqla; kerak bo'lsa util bilan ustiga ber */
-.liquid-btn.lg { padding: 14px 40px; font-weight:600; }
-.liquid-btn.md { padding: 12px 28px; font-weight:600; }
-.liquid-btn.sm { padding: 10px 18px; font-weight:600; font-size: 14px; }
+/* O'lchamlar */
+.liquid-btn.sm{ padding:10px 18px; font-size:14px; }
+.liquid-btn.md{ padding:12px 28px; font-size:16px; }
+.liquid-btn.lg{ padding:14px 40px; font-size:18px; }
 
-/* hover/focus vizual, lekin funksiyani o'zgartirmaydi */
-.liquid-btn:hover { transform: translateY(-1px); transition: transform .2s ease; }
-.liquid-btn:active { transform: translateY(0); }
+/* Interaksiya – vizualgina, funksiyani o'zgartirmaydi */
+.liquid-btn:hover{ transform:translateY(-1px); transition:transform .15s ease; }
+.liquid-btn:active{ transform:translateY(0); }
+.liquid-btn:focus-visible{ outline:2px solid rgba(212,175,55,.6); outline-offset:2px; }
 
-/* disabled holat */
-.liquid-btn[disabled], .liquid-btn[aria-disabled="true"]{
-  opacity:.6; pointer-events:none;
-}
+/* Disabled */
+.liquid-btn[disabled], .liquid-btn[aria-disabled="true"]{ opacity:.55; pointer-events:none; }
 
-/* Fallback (conic-gradient yo'q bo'lsa) */
-@supports not (background: conic-gradient(red, yellow)) {
-  .liquid-btn::after { background: linear-gradient(90deg, rgba(255,0,140,.4), rgba(0,200,255,.4)); }
+/* Fallback: conic-gradient bo'lmasa */
+@supports not (background: conic-gradient(red, yellow)){
+  .liquid-btn::after{ background: linear-gradient(90deg, rgba(255,0,140,.45), rgba(0,200,255,.45)); }
 }
 
 /* Global opt-in: body.liquid-enabled bo'lsa qo'llanadi */
 body.liquid-enabled :where(
-  button:not([data-variant="ghost"]):not([data-variant="link"]):not([disabled]),
+  button:not([data-variant="ghost"]):not([data-variant="link"]),
   a[role="button"],
   .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
 ){
-  /* mavjud padding/size saqlansin, shunchaki kapsula ramka qo'shamiz */
-  border-radius: 999px !important;
-  background: transparent !important; /* kapsula ichidan fon ko'rinadi */
-  position: relative !important;
-  isolation: isolate !important;
-  overflow: hidden !important;
+  position:relative; border-radius:999px !important; background:transparent !important;
+  isolation:isolate; overflow:hidden;
 }
 
 /* Liquid vizualini avtomatik qo'llash */
 body.liquid-enabled :where(
-  button:not([data-variant="ghost"]):not([data-variant="link"]):not([disabled]),
+  button:not([data-variant="ghost"]):not([data-variant="link"]),
   a[role="button"],
   .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
 )::before{
-  content:"";
-  position:absolute; inset:0;
-  border-radius:inherit;
-  -webkit-mask: radial-gradient(closest-side, #000 70%, transparent 100%);
-          mask: radial-gradient(closest-side, #000 70%, transparent 100%);
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  -webkit-mask: radial-gradient(closest-side, #000 72%, transparent 100%);
+          mask: radial-gradient(closest-side, #000 72%, transparent 100%);
   background:
-    radial-gradient(120% 140% at 20% 25%, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 60%),
-    radial-gradient(140% 180% at 80% 75%, rgba(255,255,255,.20) 0%, rgba(255,255,255,0) 60%);
+    radial-gradient(70% 120% at 28% 30%, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 55%),
+    radial-gradient(90% 140% at 72% 70%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 60%);
   mix-blend-mode: screen;
-  pointer-events: none;
+  background-repeat:no-repeat;
 }
 
 body.liquid-enabled :where(
-  button:not([data-variant="ghost"]):not([data-variant="link"]):not([disabled]),
+  button:not([data-variant="ghost"]):not([data-variant="link"]),
   a[role="button"],
   .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
 )::after{
-  content:"";
-  position:absolute; inset:0;
-  border-radius:inherit;
-  padding:2px;
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  padding:1.5px;
   background: conic-gradient(
-    from 10deg,
+    from 0deg,
     rgba(255,0,140,.55),
     rgba(0,200,255,.55),
     rgba(0,255,160,.55),
     rgba(255,210,0,.55),
     rgba(255,0,140,.55)
   );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  opacity:.9;
-  pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity:.85;
 }
 
 /* Hover effektlari */
 body.liquid-enabled :where(
-  button:not([data-variant="ghost"]):not([data-variant="link"]):not([disabled]),
+  button:not([data-variant="ghost"]):not([data-variant="link"]),
   a[role="button"],
   .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
-):hover { 
-  transform: translateY(-1px); 
-  transition: transform .2s ease; 
+):hover{ 
+  transform:translateY(-1px); 
+  transition:transform .15s ease; 
 }
 
 body.liquid-enabled :where(
-  button:not([data-variant="ghost"]):not([data-variant="link"]):not([disabled]),
+  button:not([data-variant="ghost"]):not([data-variant="link"]),
   a[role="button"],
   .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
-):active { 
-  transform: translateY(0); 
+):active{ 
+  transform:translateY(0); 
+}
+
+body.liquid-enabled :where(
+  button:not([data-variant="ghost"]):not([data-variant="link"]),
+  a[role="button"],
+  .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
+):focus-visible{ 
+  outline:2px solid rgba(212,175,55,.6); 
+  outline-offset:2px; 
 }
 
 /* Disabled holat */
@@ -151,17 +136,17 @@ body.liquid-enabled :where(
   a[role="button"][disabled],
   a[role="button"][aria-disabled="true"]
 ){
-  opacity:.6; 
+  opacity:.55; 
   pointer-events:none;
 }
 
 /* Fallback (conic-gradient yo'q bo'lsa) */
 @supports not (background: conic-gradient(red, yellow)) {
   body.liquid-enabled :where(
-    button:not([data-variant="ghost"]):not([data-variant="link"]):not([disabled]),
+    button:not([data-variant="ghost"]):not([data-variant="link"]),
     a[role="button"],
     .btn, .Button, .chakra-button, .MuiButton-root, .shadcn-button
   )::after { 
-    background: linear-gradient(90deg, rgba(255,0,140,.4), rgba(0,200,255,.4)); 
+    background: linear-gradient(90deg, rgba(255,0,140,.45), rgba(0,200,255,.45)); 
   }
 }
