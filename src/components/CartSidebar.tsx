@@ -82,7 +82,7 @@ export default function CartSidebar({ onNavigate }: CartSidebarProps) {
             </div>
 
             {/* Cart Items */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
               {items.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
                   <ShoppingBag className="h-16 w-16 text-white/50 mb-4" />

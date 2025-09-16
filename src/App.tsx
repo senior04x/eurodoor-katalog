@@ -1,9 +1,9 @@
-import { useState, useEffect, Suspense, lazy } from 'react'
+import { useState, useEffect, Suspense, lazy, memo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Header from './components/Header'
 import AppLoader from './components/AppLoader'
 
-// Lazy load components for better performance
+// Lazy load components with preloading for better performance
 const HomePage = lazy(() => import('./components/HomePage'))
 const CatalogPage = lazy(() => import('./components/CatalogPage'))
 const AboutPage = lazy(() => import('./components/AboutPage'))
@@ -13,6 +13,12 @@ const OrderSuccessPage = lazy(() => import('./components/OrderSuccessPage'))
 const OrderTracking = lazy(() => import('./components/OrderTracking'))
 const ProfilePage = lazy(() => import('./components/ProfilePage'))
 const NotificationCenter = lazy(() => import('./components/NotificationCenter'))
+
+// Preload critical components
+const preloadComponents = () => {
+  import('./components/HomePage')
+  import('./components/CatalogPage')
+}
 import { CartProvider } from './contexts/CartContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
@@ -68,12 +74,18 @@ function App() {
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false)
 
   useEffect(() => {
+    // Liquid capsule effektini yoqish
+    document.body.classList.add("liquid-enabled");
+
     // Telegram WebApp ni aniqlash
     const isTelegram = (window as any).Telegram?.WebApp || 
                       window.location.href.includes('t.me') ||
                       window.location.href.includes('telegram.me') ||
                       navigator.userAgent.includes('TelegramBot');
     setIsTelegramWebApp(!!isTelegram);
+
+    // Preload critical components
+    preloadComponents();
 
     // Listen for service worker messages (notification clicks)
     const handleServiceWorkerMessage = (event: MessageEvent) => {
@@ -88,7 +100,7 @@ function App() {
     // Sayt yuklanishini simulyatsiya qilish
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 2000)
+    }, 1500) // Loading vaqtini qisqartirish
 
     // Scroll muammosini hal qilish
     document.body.style.overflow = 'auto'
@@ -124,6 +136,7 @@ function App() {
       // Cleanup
       document.body.style.overflow = 'auto'
       document.body.classList.remove('overflow-hidden')
+      document.body.classList.remove('liquid-enabled')
     }
   }, [])
 
@@ -152,7 +165,7 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [currentPage])
 
-  const handleNavigate = (page: string, productId?: string) => {
+  const handleNavigate = useCallback((page: string, productId?: string) => {
     console.log('🔄 App: Navigating to page:', page, 'productId:', productId);
     console.log('🔄 App: Current state before navigation - currentPage:', currentPage, 'selectedProduct:', selectedProduct);
     
@@ -185,7 +198,7 @@ function App() {
     }
     
     console.log('🔍 Current page state:', page);
-  }
+  }, [currentPage, selectedProduct])
 
   // const handleProductSelect = (product: any) => {
   //   setSelectedProduct(product)
@@ -197,11 +210,11 @@ function App() {
     console.log('🎯 Current hash:', window.location.hash);
     console.log('🎯 Selected product:', selectedProduct);
     
-    const LoadingFallback = () => (
+    const LoadingFallback = memo(() => (
       <div className="min-h-screen flex items-center justify-center">
         <AppLoader isLoading={true} />
       </div>
-    );
+    ));
     
     switch (currentPage) {
       case 'home':

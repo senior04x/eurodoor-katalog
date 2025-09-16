@@ -194,10 +194,15 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
 
   return (
     <div className="relative min-h-screen">
-      {/* Fixed background */}
+      {/* Optimized background with new PNG */}
       <div
-        className="fixed inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }}
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: "url('/images/hero-bg.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
       />
       <div className="fixed inset-0 bg-black/30" />
 

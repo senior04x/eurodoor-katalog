@@ -1,14 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Menu, X, ShoppingCart, User, LogOut, LogIn, UserPlus, Bell, Package } from 'lucide-react';
+import { useEffect, useState, memo, useCallback } from 'react';
+import { Menu, ShoppingCart } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useLanguage } from '../contexts/LanguageContext';
+import { motion } from 'framer-motion';
 import { useCart } from '../contexts/CartContext';
-import { useAuth } from '../contexts/AuthContext';
-import { useToast } from '../contexts/ToastContext';
-import LanguageSwitcher from './LanguageSwitcher';
 import CartSidebar from './CartSidebar';
-import NotificationCenter from './NotificationCenter';
+import BurgerMenu from './BurgerMenu';
 
 interface HeaderProps {
   currentPage: string;
@@ -16,19 +12,26 @@ interface HeaderProps {
   onShowAuthModal: (mode: 'login' | 'register') => void;
 }
 
-export default function Header({ currentPage, onNavigate, onShowAuthModal }: HeaderProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const Header = memo<HeaderProps>(({ currentPage, onNavigate, onShowAuthModal }) => {
+  const [isBurgerMenuOpen, setIsBurgerMenuOpen] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
-  const { t } = useLanguage();
-  const { totalItems, isCartOpen, setIsCartOpen } = useCart();
-  const { user, signOut } = useAuth();
-  const { showSuccess } = useToast();
+  const { totalItems, setIsCartOpen } = useCart();
 
-  // Profile modal functions
+  // Optimized callbacks
+  const handleLogoClick = useCallback(() => {
+    setShowAdmin(prev => !prev);
+  }, []);
+
+  const handleNavigate = useCallback((page: string) => {
+    onNavigate(page);
+    setIsBurgerMenuOpen(false);
+  }, [onNavigate]);
+
+  const handleShowAuthModal = useCallback((mode: 'login' | 'register') => {
+    onShowAuthModal(mode);
+    setIsBurgerMenuOpen(false);
+  }, [onShowAuthModal]);
 
   // Telegram WebApp ni aniqlash
   useEffect(() => {
@@ -39,30 +42,27 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
     setIsTelegramWebApp(!!isTelegram);
   }, []);
 
-  // Body scrollni bloklash (mobil menyu ochilganda)
+  // Body scrollni bloklash (burger menyu ochilganda)
   useEffect(() => {
-    if (isMenuOpen) {
+    if (isBurgerMenuOpen) {
       document.body.classList.add('overflow-hidden');
       document.body.style.overflow = 'hidden';
     } else {
       document.body.classList.remove('overflow-hidden');
       document.body.style.overflow = 'auto';
     }
-    
-    // Cleanup function
+
     return () => {
       document.body.classList.remove('overflow-hidden');
       document.body.style.overflow = 'auto';
     };
-  }, [isMenuOpen]);
+  }, [isBurgerMenuOpen]);
 
-  // Maxsus kombinatsiya uchun event listener
+  // Admin panel uchun keyboard shortcut
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ctrl + Shift + A bosganda admin link ko'rinadi
       if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-        e.preventDefault();
-        setShowAdmin(!showAdmin);
+        setShowAdmin(prev => !prev);
       }
     };
 
@@ -70,90 +70,9 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [showAdmin]);
 
-  // Logo ustida 5 marta bosish (mobil uchun)
-  const [, setLogoClickCount] = useState(0);
-  const handleLogoClick = () => {
-    setLogoClickCount(prev => {
-      const newCount = prev + 1;
-      if (newCount >= 5) {
-        setShowAdmin(!showAdmin);
-        return 0;
-      }
-      // 3 soniyadan keyin counter reset
-      setTimeout(() => setLogoClickCount(0), 3000);
-      return newCount;
-    });
-  };
 
-  const navigation = [
-    { name: t('nav.catalog'), id: 'catalog' },
-    { name: t('nav.about'), id: 'about' },
-    { name: t('nav.contact'), id: 'contact' },
-    { name: t('nav.blog'), id: 'blog' },
-    // Admin link faqat maxsus kombinatsiya orqali ko'rinadi
-    ...(showAdmin ? [{ name: 'Admin', id: 'admin' }] : [])
-  ];
 
-  // Animatsiya variantlar (mobil menyu) - sekinroq va oddiyroq
-  const mobileMenuVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: -20,
-      scale: 0.95
-    },
-    show: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: 'tween',
-        ease: 'easeOut',
-        duration: 0.3,
-        staggerChildren: 0.05,
-        when: 'beforeChildren'
-      }
-    },
-    exit: {
-      opacity: 0,
-      y: -5,
-      scale: 0.98,
-      transition: { 
-        duration: 0.4,
-        ease: 'easeInOut',
-        staggerChildren: 0.03,
-        when: 'afterChildren'
-      }
-    }
-  };
-
-  const mobileItemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 10,
-      scale: 0.9
-    },
-    show: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: 'tween',
-        ease: 'easeOut',
-        duration: 0.25
-      }
-    },
-    exit: { 
-      opacity: 0, 
-      y: 3, 
-      scale: 0.95,
-      transition: { 
-        duration: 0.3,
-        ease: 'easeInOut'
-      } 
-    }
-  };
-
-  // Headerning mayin paydo bo‘lishi (ilk render)
+  // Headerning mayin paydo bo'lishi (ilk render)
   const headerVariants = {
     hidden: { opacity: 0, y: -12 },
     show: {
@@ -168,7 +87,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
       variants={headerVariants}
       initial="hidden"
       animate="show"
-      className={`bg-white/3 backdrop-blur-sm border border-white/20 z-40 shadow-lg rounded-md overflow-visible ${
+      className={`bg-transparent z-40 overflow-visible ${
         isTelegramWebApp 
           ? 'fixed top-0 left-0 right-0 m-4' 
           : 'sticky top-0 m-4'
@@ -181,8 +100,8 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
       } : {}}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20 md:h-15">
-          {/* Logo */}
+        <div className="flex items-center gap-3 flex-nowrap h-16">
+          {/* Logo - shrink-0 */}
           <div
             onClick={(e) => {
               // Agar Ctrl yoki Shift bosilgan bo'lsa, admin toggle
@@ -193,7 +112,7 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
                 window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
               }
             }}
-            className="cursor-pointer"
+            className="cursor-pointer shrink-0 w-28"
           >
             <ImageWithFallback
               src="https://iili.io/K2WCLJV.png"
@@ -202,125 +121,16 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
             />
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            {navigation.map((item) => {
-              const active = currentPage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    onNavigate(item.id);
-                    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-                  }}
-                  aria-current={active ? 'page' : undefined}
-                  className={[
-                    'text-sm font-medium transition-colors hover:text-white',
-                    'border-b-2 border-transparent pb-1',
-                    active ? 'text-white border-white' : 'text-white'
-                  ].join(' ')}
-                >
-                  {item.name}
-                </button>
-              );
-            })}
-            
-            {/* Auth buttons in nav */}
-            {user ? (
-              <div className="flex items-center space-x-2 ml-4">
-                {/* Notification Bell Button */}
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2 text-white/80 hover:text-white transition-colors"
-                >
-                  <Bell className="w-6 h-6" />
-                  {unreadCount > 0 && (
-                    <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </div>
-                  )}
-                </button>
-                
-                {/* Notification Center Dropdown */}
-                <NotificationCenter 
-                  isOpen={showNotifications} 
-                  onUnreadCountChange={setUnreadCount}
-                  onClose={() => setShowNotifications(false)}
-                />
-                
-                <div className="relative">
-                  <button
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center space-x-1 px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-md transition-colors"
-                  >
-                    <User className="h-4 w-4" />
-                    <span className="text-sm">{user.name || user.email}</span>
-                  </button>
-                  
-                  {showUserMenu && (
-                    <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-white/30 shadow-2xl py-1 z-50" style={{ background: 'linear-gradient(135deg, #304675 0%, #451B6F 100%)', backdropFilter: 'blur(20px)' }}>
-                    <button
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        onNavigate('profile');
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
-                    >
-                      <User className="h-4 w-4 mr-2" />
-                      {t('header.profile')}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        onNavigate('orders');
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
-                    >
-                      <Package className="h-4 w-4 mr-2" />
-                      {t('header.orders')}
-                    </button>
-                    <hr className="my-1 border-white/20" />
-                    <button
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        signOut();
-                        showSuccess('Tizimdan chiqildi!', 'Muvaffaqiyatli tizimdan chiqdingiz');
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      {t('header.logout')}
-                    </button>
-                    </div>
-                  )}
-                </div>
-                
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2 ml-4">
-                <button
-                  onClick={() => onShowAuthModal('login')}
-                  className="flex items-center space-x-1 px-3 py-1 text-sm text-white hover:text-gray-200 transition-colors"
-                >
-                  <LogIn className="h-4 w-4" />
-                  <span>{t('header.login')}</span>
-                </button>
-                <button
-                  onClick={() => onShowAuthModal('register')}
-                  className="flex items-center space-x-1 px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-md transition-colors"
-                >
-                  <UserPlus className="h-4 w-4" />
-                  <span>{t('header.register')}</span>
-                </button>
-              </div>
-            )}
-            
-            {/* Korzinka tugmasi */}
+
+          {/* Right side actions - ml-auto */}
+          <div className="ml-auto flex items-center gap-3">
+            {/* Cart Button */}
             <button
-              onClick={() => setIsCartOpen(!isCartOpen)}
-              className="relative p-2 text-white hover:text-gray-200 transition-colors"
+              onClick={() => setIsCartOpen(true)}
+              className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl hover:bg-white/10 text-white transition-colors"
+              aria-label="Shopping cart"
             >
-              <ShoppingCart className="h-6 w-6" />
+              <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {totalItems}
@@ -328,188 +138,37 @@ export default function Header({ currentPage, onNavigate, onShowAuthModal }: Hea
               )}
             </button>
 
-            <LanguageSwitcher />
-          </nav>
 
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden p-2 transition-all duration-300 hover:bg-white/10 rounded-lg"
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-nav"
-            data-burger-button
-            onClick={() => setIsMenuOpen((v) => !v)}
-          >
-            <motion.div
-              key={isMenuOpen ? 'close' : 'menu'}
-              initial={{ opacity: 0, rotate: -90 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: 90 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
+            {/* Burger Button - Always visible */}
+            <button
+              aria-controls="burger-menu"
+              aria-expanded={isBurgerMenuOpen}
+              onClick={() => setIsBurgerMenuOpen(true)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl hover:bg-white/10 text-white transition-colors"
+              aria-label="Menu"
             >
-              {isMenuOpen ? (
-                <X className="h-6 w-6 text-white" />
-              ) : (
-                <Menu className="h-6 w-6 text-white" />
-              )}
-            </motion.div>
-          </button>
+              <Menu className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-
-        {/* Mobile Navigation (animated) */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              id="mobile-nav"
-              key="mobile-nav"
-              variants={mobileMenuVariants}
-              initial="hidden"
-              animate="show"
-              exit="exit"
-              className="md:hidden py-4 border-t border-white/10"
-              data-mobile-menu
-            >
-              <nav className="flex flex-col space-y-3">
-                {navigation.map((item) => {
-                  const active = currentPage === item.id;
-                  return (
-                    <motion.button
-                      key={item.id}
-                      variants={mobileItemVariants}
-                      onClick={() => {
-                        onNavigate(item.id);
-                        setIsMenuOpen(false);
-                        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-                      }}
-                      className={[
-                        'text-left px-2 py-2 text-sm font-medium transition-colors',
-                        'hover:text-white rounded-md',
-                        active ? 'text-white' : 'text-gray-300'
-                      ].join(' ')}
-                    >
-                      {item.name}
-                    </motion.button>
-                  );
-                })}
-                
-                {/* Mobil korzinka va foydalanuvchi tugmalari */}
-                <div className="px-2 py-2 border-t border-white/10 mt-4 pt-4">
-                  {/* Mobile Notification Center */}
-                  {user && (
-                    <div className="mb-3">
-                      <button
-                        onClick={() => setShowNotifications(!showNotifications)}
-                        className="flex items-center w-full px-3 py-2 text-white hover:bg-white/10 transition-colors"
-                      >
-                        <Bell className="h-5 w-5 mr-3" />
-                        <span className="text-sm">Bildirishnomalar</span>
-                        {unreadCount > 0 && (
-                          <div className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                            {unreadCount > 9 ? '9+' : unreadCount}
-                          </div>
-                        )}
-                      </button>
-                      
-                      <NotificationCenter 
-                        isMobile={true} 
-                        isOpen={showNotifications}
-                        onMobileClose={() => {
-                          setIsMenuOpen(false);
-                          setShowNotifications(false);
-                        }}
-                        onUnreadCountChange={setUnreadCount}
-                        onClose={() => setShowNotifications(false)}
-                      />
-                    </div>
-                  )}
-                  
-                  <button
-                    onClick={() => {
-                      setIsCartOpen(!isCartOpen);
-                      setIsMenuOpen(false);
-                    }}
-                    className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                  >
-                    <ShoppingCart className="h-5 w-5 mr-3" />
-                    <span>{t('header.cart')}</span>
-                    {totalItems > 0 && (
-                      <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                        {totalItems}
-                      </span>
-                    )}
-                  </button>
-                  
-                  {user ? (
-                    <>
-                      <button
-                        onClick={() => {
-                          onNavigate('profile');
-                          setIsMenuOpen(false);
-                        }}
-                        className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                      >
-                        <User className="h-5 w-5 mr-3" />
-                        <span>{t('header.profile')}</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          onNavigate('orders');
-                          setIsMenuOpen(false);
-                        }}
-                        className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                      >
-                        <Package className="h-5 w-5 mr-3" />
-                        <span>{t('header.orders')}</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          signOut();
-                          setIsMenuOpen(false);
-                          showSuccess('Tizimdan chiqildi!', 'Muvaffaqiyatli tizimdan chiqdingiz');
-                        }}
-                        className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                      >
-                        <LogOut className="h-5 w-5 mr-3" />
-                        <span>{t('header.logout')}</span>
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => {
-                          onShowAuthModal('login');
-                          setIsMenuOpen(false);
-                        }}
-                        className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                      >
-                        <LogIn className="h-5 w-5 mr-3" />
-                        <span>{t('header.login')}</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          onShowAuthModal('register');
-                          setIsMenuOpen(false);
-                        }}
-                        className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                      >
-                        <UserPlus className="h-5 w-5 mr-3" />
-                        <span>{t('header.register')}</span>
-                      </button>
-                    </>
-                  )}
-                </div>
-                
-                <div className="px-2 py-2">
-                  <LanguageSwitcher />
-                </div>
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
+      
+      {/* Burger Menu */}
+      <BurgerMenu 
+        open={isBurgerMenuOpen} 
+        onClose={() => setIsBurgerMenuOpen(false)}
+        currentPage={currentPage}
+        onNavigate={handleNavigate}
+        onShowAuthModal={handleShowAuthModal}
+      />
       
       {/* Cart Sidebar */}
       <CartSidebar onNavigate={onNavigate} />
 
     </motion.header>
   );
-}
+});
+
+Header.displayName = 'Header';
+
+export default Header;

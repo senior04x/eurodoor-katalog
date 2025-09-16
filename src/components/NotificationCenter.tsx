@@ -306,7 +306,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
             </div>
 
             {/* Notifications List */}
-            <div className="max-h-96 overflow-y-auto">
+            <div className="max-h-96 overflow-y-auto custom-scrollbar">
               {loading ? (
                 <div className="p-4 text-center text-white/80">
                   <Clock className="w-6 h-6 mx-auto mb-2 animate-spin" />

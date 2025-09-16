@@ -31,26 +31,31 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
   return (
   <div className="relative min-h-screen">
-    {/* Fixed background (hamma qurilmalarda ishlaydi) */}
+    {/* Optimized background with new PNG */}
     <div
-      className="fixed inset-0 bg-cover bg-center"
-      style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }}
+      className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+      style={{ 
+        backgroundImage: "url('/images/hero-bg.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
     />
     <div className="fixed inset-0 bg-black/30" />
 
-    {/* Hero Section */}
-  <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
-  <div className="relative container mx-auto px-4 h-full flex items-center justify-center">
-    <div className="max-w-2xl text-white bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20 text-center shadow-2xl">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 leading-tight bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+    {/* Hero Section - Left aligned text */}
+  <section className="relative h-[70vh] flex items-center overflow-hidden">
+  <div className="relative container mx-auto px-4 h-full flex items-center">
+    <div className="max-w-2xl text-white ml-8 md:ml-16">
+      <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
         {t('home.hero_title')}
       </h1>
-      <p className="text-xl mb-8 opacity-90 text-gray-100">
+      <p className="text-xl md:text-2xl mb-8 opacity-90 text-gray-100">
         {t('home.hero_subtitle')}
       </p>
       <button 
         onClick={() => onNavigate('catalog')}
-        className="bg-gradient-to-r from-blue-500/30 to-purple-500/30 backdrop-blur-md text-white px-8 py-4 font-semibold rounded-xl hover:from-blue-500/40 hover:to-purple-500/40 transition-all duration-300 flex items-center gap-2 group border border-blue-500/50 shadow-lg hover:shadow-xl mx-auto transform hover:scale-105"
+        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-4 font-semibold rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 flex items-center gap-2 group shadow-lg hover:shadow-xl transform hover:scale-105"
       >
         {t('home.view_catalog')}
         <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />

@@ -126,6 +126,31 @@ const translations: Translations = {
     ru: 'Корзина',
     en: 'Cart'
   },
+  'header.menu': {
+    uz: 'Menyu',
+    ru: 'Меню',
+    en: 'Menu'
+  },
+  'header.menu_description': {
+    uz: 'Barcha sahifalar header navigatsiyasida mavjud',
+    ru: 'Все страницы доступны в навигации заголовка',
+    en: 'All pages are available in header navigation'
+  },
+  'header.notifications': {
+    uz: 'Bildirishnomalar',
+    ru: 'Уведомления',
+    en: 'Notifications'
+  },
+  'header.welcome': {
+    uz: 'Xush kelibsiz!',
+    ru: 'Добро пожаловать!',
+    en: 'Welcome!'
+  },
+  'header.language': {
+    uz: 'Til tanlash',
+    ru: 'Выбор языка',
+    en: 'Language Selection'
+  },
 
   // Cart translations
   'cart.title': {

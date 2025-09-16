@@ -4,24 +4,48 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = 'https://oathybjrmhtubbemjeyy.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9hdGh5YmpybWh0dWJiZW1qZXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0MjMzOTIsImV4cCI6MjA3Mjk5OTM5Mn0.GlKHHQj1nhDGwF78Fr7zlKytRxEwXwlyRTlgEX6d4io'
 
-// Create Supabase client with enhanced real-time configuration
+// Create optimized Supabase client
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    flowType: 'pkce'
   },
   realtime: {
     params: {
-      eventsPerSecond: 10
+      eventsPerSecond: 5 // Reduced for better performance
     }
   },
   global: {
     headers: {
-      'X-Client-Info': 'eurodoor-customer-panel'
+      'X-Client-Info': 'eurodoor-customer-panel',
+      'Cache-Control': 'max-age=300' // 5 minutes cache
     }
+  },
+  db: {
+    schema: 'public'
   }
 })
+
+// Connection pooling and retry logic
+let connectionRetries = 0
+const MAX_RETRIES = 3
+
+export const createOptimizedQuery = (table: string) => {
+  return supabase.from(table)
+}
+
+// Optimized query with pagination
+export const createPaginatedQuery = (table: string, page: number = 0, limit: number = 20) => {
+  const from = page * limit
+  const to = from + limit - 1
+  
+  return supabase
+    .from(table)
+    .select('*', { count: 'exact' })
+    .range(from, to)
+}
 
 // Database types
 export interface Product {

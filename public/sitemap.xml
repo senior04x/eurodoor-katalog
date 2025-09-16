@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
@@ -10,6 +11,11 @@
     <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://eurodoor.uz/icons/icon-512.png</image:loc>
+      <image:title>Eurodoor - Zamonaviy Eshiklar Katalogi</image:title>
+      <image:caption>O'zbekistondagi eng yaxshi eshiklar katalogi va buyurtma tizimi</image:caption>
+    </image:image>
   </url>
   
   <!-- Russian version -->
@@ -50,6 +56,20 @@
     <priority>0.8</priority>
   </url>
 
+  <url>
+    <loc>https://eurodoor.uz/catalog/deraza</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://eurodoor.uz/catalog/eshik</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- About page -->
   <url>
     <loc>https://eurodoor.uz/about</loc>
@@ -64,6 +84,22 @@
     <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+
+  <!-- Profile page -->
+  <url>
+    <loc>https://eurodoor.uz/profile</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Orders page -->
+  <url>
+    <loc>https://eurodoor.uz/orders</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
 
 </urlset>

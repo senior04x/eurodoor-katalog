@@ -2,33 +2,80 @@
 <html lang="uz">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="https://iili.io/Fy0g33Q.png" />
+    <link rel="icon" type="image/png" href="/icons/icon-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Eurodoor - Zamonaviy Eshiklar Katalogi</title>
     <meta name="description" content="Eurodoor - O'zbekistondagi eng yaxshi eshiklar katalogi va buyurtma tizimi. Zamonaviy UI/UX dizayn, to'liq funksional korzinka tizimi." />
     <meta name="keywords" content="eurodoor, eshiklar, katalog, buyurtma, o'zbekiston, tashkent" />
     <meta name="author" content="Eurodoor Team" />
+    
+    <!-- Performance optimizations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://*.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://*.supabase.co">
+    
+    <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Eurodoor">
-    <meta name="theme-color" content="#3b82f6">
+    <meta name="theme-color" content="#0f172a">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    
+    <!-- Critical CSS inline -->
+    <style>
+      /* Critical above-the-fold styles */
+      body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
+      #root { min-height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%); }
+      .loading-spinner { 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        min-height: 100vh; 
+        color: white; 
+      }
+    </style>
+    
+    <!-- SEO Meta Tags -->
+    <link rel="canonical" href="https://eurodoor.uz/" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://eurodoor.uz/" />
     <meta property="og:title" content="Eurodoor - Zamonaviy Eshiklar Katalogi" />
     <meta property="og:description" content="O'zbekistondagi eng yaxshi eshiklar katalogi va buyurtma tizimi" />
-    <meta property="og:image" content="https://iili.io/Fy0g33Q.png" />
+    <meta property="og:image" content="/icons/icon-512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:site_name" content="Eurodoor" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://eurodoor.uz/" />
     <meta property="twitter:title" content="Eurodoor - Zamonaviy Eshiklar Katalogi" />
     <meta property="twitter:description" content="O'zbekistondagi eng yaxshi eshiklar katalogi va buyurtma tizimi" />
-    <meta property="twitter:image" content="https://iili.io/Fy0g33Q.png" />
+    <meta property="twitter:image" content="/icons/icon-512.png" />
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Eurodoor",
+      "url": "https://eurodoor.uz",
+      "logo": "https://eurodoor.uz/icons/icon-512.png",
+      "description": "O'zbekistondagi eng yaxshi eshiklar katalogi va buyurtma tizimi",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "UZ"
+      },
+      "sameAs": []
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
