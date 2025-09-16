@@ -74,9 +74,6 @@ function App() {
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false)
 
   useEffect(() => {
-    // Liquid capsule effektini yoqish
-    document.body.classList.add("liquid-enabled");
-
     // Telegram WebApp ni aniqlash
     const isTelegram = (window as any).Telegram?.WebApp || 
                       window.location.href.includes('t.me') ||
@@ -136,7 +133,6 @@ function App() {
       // Cleanup
       document.body.style.overflow = 'auto'
       document.body.classList.remove('overflow-hidden')
-      document.body.classList.remove('liquid-enabled')
     }
   }, [])
 
