@@ -28,32 +28,12 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     const loadProducts = async () => {
       try {
         setLoading(true);
-        console.log('🔄 Loading products...');
         
-        // Add timeout for better error handling
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout after 8 seconds')), 8000)
-        );
-        
-        const productsPromise = productsApi.getAllProducts();
-        const fetchedProducts = await Promise.race([productsPromise, timeoutPromise]) as Product[];
-        
+        const fetchedProducts = await productsApi.getAllProducts();
         setProducts(fetchedProducts);
-        console.log('✅ Products loaded:', fetchedProducts.length);
-      } catch (error) {
-        console.error('❌ Error loading products:', error);
-        setProducts([]);
         
-        // Show user-friendly error message
-        if (error instanceof Error) {
-          if (error.message.includes('timeout')) {
-            console.error('⏰ Products loading timeout - check network connection');
-          } else if (error.message.includes('Supabase')) {
-            console.error('🗄️ Database connection issue');
-          } else {
-            console.error('🔧 Unknown error:', error.message);
-          }
-        }
+      } catch (error) {
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -65,12 +45,11 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     // Real-time subscription with error handling
     let subscription: any = null;
     try {
-      subscription = productsApi.subscribeToProducts((payload) => {
-        console.log('🔄 Products updated:', payload);
+      subscription = productsApi.subscribeToProducts(() => {
         loadProducts(); // Reload products when changes occur
       });
     } catch (error) {
-      console.error('❌ Failed to setup real-time subscription:', error);
+      // Silent fail
     }
 
     return () => {
@@ -84,15 +63,13 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        console.log('🔄 Page became visible, reloading products...');
         const loadProducts = async () => {
           try {
             setLoading(true);
             const fetchedProducts = await productsApi.getAllProducts(true); // Force refresh
             setProducts(fetchedProducts);
-            console.log('✅ Products reloaded:', fetchedProducts.length);
           } catch (error) {
-            console.error('❌ Error reloading products:', error);
+            // Silent fail
           } finally {
             setLoading(false);
           }
