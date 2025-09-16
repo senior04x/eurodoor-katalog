@@ -171,7 +171,15 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   if (loading) {
     return (
       <div className="relative min-h-screen">
-        <div className="fixed inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }} />
+        <div
+          className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ 
+            backgroundImage: "url('/images/hero-bg.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed'
+          }}
+        />
         <div className="fixed inset-0 bg-black/30" />
         <div className="relative z-10 flex items-center justify-center min-h-screen">
           <div className="text-center">
@@ -185,21 +193,26 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
 
   return (
     <div className="relative min-h-screen">
-      {/* Fixed background */}
+      {/* Optimized background with HomePage style */}
       <div
-        className="fixed inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('https://iili.io/KqAQo3g.jpg')" }}
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: "url('/images/hero-bg.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
       />
       <div className="fixed inset-0 bg-black/30" />
 
-      {/* Header */}
-      <section className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl py-16 mx-4 rounded-3xl border border-white/20 shadow-2xl">
-        <div className="container mx-auto px-4">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+      {/* Hero Section - Left aligned text like HomePage */}
+      <section className="relative h-[50vh] flex items-center overflow-hidden">
+        <div className="relative container mx-auto px-4 h-full flex items-center">
+          <div className="max-w-2xl text-white ml-8 md:ml-16">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
               {t('catalog.title')}
             </h1>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl mb-8 opacity-90 text-gray-100">
               {t('catalog.description')}
             </p>
           </div>
