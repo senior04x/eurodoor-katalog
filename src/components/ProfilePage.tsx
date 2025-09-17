@@ -138,90 +138,53 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
   }, [user])
 
 
-  // Avatar upload function using Supabase Storage
+  // Avatar upload function using ImgBB API
   const handleAvatarUpload = async (file: File) => {
     if (!user) return
 
     try {
       setUploadingAvatar(true)
       
-      // First, check available buckets
-      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets()
+      // Create FormData for ImgBB
+      const formData = new FormData()
+      formData.append('image', file)
       
-      if (bucketsError) {
-        console.error('Error listing buckets:', bucketsError)
-        alert('Storage xizmati mavjud emas. Iltimos, keyinroq urinib ko\'ring.')
-        return
-      }
+      const imgbbApiKey = '15ccd1b7ef91f19fe2f3c4d2600ab9ee'
       
-      console.log('Available buckets:', buckets)
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
+        method: 'POST',
+        body: formData
+      })
       
-      // Try to find a suitable bucket or use the first available one
-      let bucketName = 'user-uploads'
-      const availableBucket = buckets?.find(bucket => 
-        bucket.name === 'user-uploads' || 
-        bucket.name === 'avatars' || 
-        bucket.name === 'public'
-      )
+      const result = await response.json()
       
-      if (availableBucket) {
-        bucketName = availableBucket.name
-        console.log('Using bucket:', bucketName)
-      } else if (buckets && buckets.length > 0) {
-        bucketName = buckets[0].name
-        console.log('Using first available bucket:', bucketName)
-      } else {
-        alert('Storage bucket mavjud emas. Avatar yuklash imkoniyati yo\'q.')
-        return
-      }
-      
-      // Create unique filename
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`
-      const filePath = `avatars/${fileName}`
-      
-      // Upload to Supabase Storage
-      const { error } = await supabase.storage
-        .from(bucketName)
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        })
-      
-      if (error) {
-        console.error('Upload error:', error)
-        alert('Rasm yuklashda xatolik yuz berdi: ' + error.message)
-        return
-      }
-      
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from(bucketName)
-        .getPublicUrl(filePath)
-      
-      const avatarUrl = urlData.publicUrl
-      
-      // Update customer avatar using migration helper
-      try {
-        const { customerMigrationApi } = await import('../lib/customerMigration')
-        const updateResult = await customerMigrationApi.updateCustomer(user.id, { avatar_url: avatarUrl })
+      if (result.success) {
+        const avatarUrl = result.data.url
         
-        if (updateResult.success) {
-          console.log('✅ Avatar updated in database:', updateResult.data)
-          setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
-          setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
-          alert('Avatar muvaffaqiyatli yangilandi!')
-        } else {
-          console.warn('⚠️ Avatar database update failed:', updateResult.error)
+        // Update customer avatar using migration helper
+        try {
+          const { customerMigrationApi } = await import('../lib/customerMigration')
+          const updateResult = await customerMigrationApi.updateCustomer(user.id, { avatar_url: avatarUrl })
+          
+          if (updateResult.success) {
+            console.log('✅ Avatar updated in database:', updateResult.data)
+            setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
+            setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
+            alert('Avatar muvaffaqiyatli yangilandi!')
+          } else {
+            console.warn('⚠️ Avatar database update failed:', updateResult.error)
+            setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
+            setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
+            alert('Avatar yuklandi, lekin database yangilanmadi')
+          }
+        } catch (error) {
+          console.error('Error updating avatar:', error)
           setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
           setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
           alert('Avatar yuklandi, lekin database yangilanmadi')
         }
-      } catch (error) {
-        console.error('Error updating avatar:', error)
-        setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
-        setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
-        alert('Avatar yuklandi, lekin database yangilanmadi')
+      } else {
+        alert('Rasm yuklashda xatolik yuz berdi')
       }
     } catch (error) {
       console.error('Avatar upload error:', error)
