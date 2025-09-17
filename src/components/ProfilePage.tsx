@@ -145,6 +145,36 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
     try {
       setUploadingAvatar(true)
       
+      // First, check available buckets
+      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets()
+      
+      if (bucketsError) {
+        console.error('Error listing buckets:', bucketsError)
+        alert('Storage xizmati mavjud emas. Iltimos, keyinroq urinib ko\'ring.')
+        return
+      }
+      
+      console.log('Available buckets:', buckets)
+      
+      // Try to find a suitable bucket or use the first available one
+      let bucketName = 'user-uploads'
+      const availableBucket = buckets?.find(bucket => 
+        bucket.name === 'user-uploads' || 
+        bucket.name === 'avatars' || 
+        bucket.name === 'public'
+      )
+      
+      if (availableBucket) {
+        bucketName = availableBucket.name
+        console.log('Using bucket:', bucketName)
+      } else if (buckets && buckets.length > 0) {
+        bucketName = buckets[0].name
+        console.log('Using first available bucket:', bucketName)
+      } else {
+        alert('Storage bucket mavjud emas. Avatar yuklash imkoniyati yo\'q.')
+        return
+      }
+      
       // Create unique filename
       const fileExt = file.name.split('.').pop()
       const fileName = `${user.id}-${Date.now()}.${fileExt}`
@@ -152,7 +182,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
       
       // Upload to Supabase Storage
       const { error } = await supabase.storage
-        .from('user-uploads')
+        .from(bucketName)
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: false
@@ -166,7 +196,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
       
       // Get public URL
       const { data: urlData } = supabase.storage
-        .from('user-uploads')
+        .from(bucketName)
         .getPublicUrl(filePath)
       
       const avatarUrl = urlData.publicUrl
