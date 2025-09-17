@@ -138,55 +138,60 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
   }, [user])
 
 
-  // Avatar upload function
+  // Avatar upload function using Supabase Storage
   const handleAvatarUpload = async (file: File) => {
     if (!user) return
 
     try {
       setUploadingAvatar(true)
       
-      // Create FormData for ImageBB
-      const formData = new FormData()
-      formData.append('image', file)
+      // Create unique filename
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`
+      const filePath = `avatars/${fileName}`
       
-      const imgbbApiKey = '15ccd1b7ef91f19fe2f3c4d2600ab9ee'
+      // Upload to Supabase Storage
+      const { error } = await supabase.storage
+        .from('user-uploads')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
       
-      const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
-        method: 'POST',
-        body: formData
-      })
+      if (error) {
+        console.error('Upload error:', error)
+        alert('Rasm yuklashda xatolik yuz berdi: ' + error.message)
+        return
+      }
       
-      const result = await response.json()
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('user-uploads')
+        .getPublicUrl(filePath)
       
-      if (result.success) {
-        const avatarUrl = result.data.url
+      const avatarUrl = urlData.publicUrl
+      
+      // Update customer avatar using migration helper
+      try {
+        const { customerMigrationApi } = await import('../lib/customerMigration')
+        const updateResult = await customerMigrationApi.updateCustomer(user.id, { avatar_url: avatarUrl })
         
-        // Update customer avatar using migration helper
-        try {
-          const { customerMigrationApi } = await import('../lib/customerMigration')
-          const updateResult = await customerMigrationApi.updateCustomer(user.id, { avatar_url: avatarUrl })
-          
-          if (updateResult.success) {
-            console.log('✅ Avatar updated in database:', updateResult.data)
-            setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
-            setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
-            alert('Avatar muvaffaqiyatli yangilandi!')
-          } else {
-            console.warn('⚠️ Avatar database update failed:', updateResult.error)
-            // Avatar yuklandi, lekin database yangilanmadi
-            setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
-            setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
-            alert('Avatar yuklandi, lekin database yangilanmadi')
-          }
-        } catch (error) {
-          console.error('Error updating avatar:', error)
-          // Avatar yuklandi, lekin database yangilanmadi
+        if (updateResult.success) {
+          console.log('✅ Avatar updated in database:', updateResult.data)
+          setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
+          setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
+          alert('Avatar muvaffaqiyatli yangilandi!')
+        } else {
+          console.warn('⚠️ Avatar database update failed:', updateResult.error)
           setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
           setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
           alert('Avatar yuklandi, lekin database yangilanmadi')
         }
-      } else {
-        alert('Rasm yuklashda xatolik yuz berdi')
+      } catch (error) {
+        console.error('Error updating avatar:', error)
+        setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
+        setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
+        alert('Avatar yuklandi, lekin database yangilanmadi')
       }
     } catch (error) {
       console.error('Avatar upload error:', error)
@@ -315,7 +320,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                       </div>
                     )}
                     {isEditing && (
-                      <label className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors">
+                      <label className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors" title="Avatar yuklash">
                         <Camera className="w-3 h-3 text-white" />
                         <input
                           type="file"
