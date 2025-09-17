@@ -7,7 +7,7 @@ export const customerMigrationApi = {
   // Check if new customer_registrations table exists
   async checkNewSystemAvailable(): Promise<boolean> {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('customer_registrations')
         .select('id')
         .limit(1);
@@ -22,7 +22,7 @@ export const customerMigrationApi = {
   // Check if old customers table exists
   async checkOldSystemAvailable(): Promise<boolean> {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('customers')
         .select('id')
         .limit(1);

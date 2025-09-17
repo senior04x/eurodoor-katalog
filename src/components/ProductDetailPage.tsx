@@ -59,7 +59,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
 
     const cartItem = {
       id: product.id,
-      name: product.model_name || product.name,
+      name: product.model_name || product.name || 'Mahsulot',
       price: product.price,
       image: product.image_url || '',
       dimensions: product.dimensions,

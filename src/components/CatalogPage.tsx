@@ -39,7 +39,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
       const connectionTest = await Promise.race([
         productsApi.testConnection(),
         timeoutPromise
-      ]);
+      ]) as { success: boolean; error?: string };
       
       if (!connectionTest.success) {
         throw new Error(`Database connection failed: ${connectionTest.error}`);
@@ -48,7 +48,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
       const fetchedProducts = await Promise.race([
         productsApi.getAllProducts(),
         timeoutPromise
-      ]);
+      ]) as Product[];
       
       setProducts(fetchedProducts);
       console.log('✅ Products loaded:', fetchedProducts.length);
@@ -146,7 +146,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   const handleAddToCart = (product: Product) => {
     const cartItem = {
       id: product.id,
-        name: product.model_name || product.name,
+      name: product.model_name || product.name || 'Mahsulot',
       price: product.price,
       image: product.image_url || '',
       dimensions: product.dimensions,

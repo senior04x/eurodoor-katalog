@@ -5,8 +5,8 @@ import { supabase, Product } from './supabase';
 let productsCache: Product[] | null = null;
 let cacheTimestamp: number = 0;
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes cache
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second
+// const MAX_RETRIES = 3;
+// const RETRY_DELAY = 1000; // 1 second
 
 export const productsApi = {
   // Test database connection

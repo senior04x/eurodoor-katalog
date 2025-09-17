@@ -40,11 +40,13 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
 export interface Product {
   id: string;
   model_name: string; // Updated field name
+  name?: string; // Legacy field name for backward compatibility
   price: number;
   image_url?: string;
   dimensions: string;
   material: string;
   security_class: string; // Updated field name
+  security?: string; // Legacy field name for backward compatibility
   thickness: string; // New field
   lock_stages: string; // New field
   stock_quantity: number; // Updated field name

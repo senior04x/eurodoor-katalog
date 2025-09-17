@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { User, Phone, Mail, Edit, Save, X, ShoppingCart, Package, Calendar, Camera, Upload, Clock, CheckCircle, Check, RotateCcw } from 'lucide-react'
+import { User, Phone, Mail, Edit, ShoppingCart, Package, Camera, Clock, CheckCircle, Check, RotateCcw } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { supabase } from '../lib/supabase'
@@ -19,7 +19,14 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
     email: '',
     avatar_url: ''
   })
-  const [customerData, setCustomerData] = useState({
+  const [customerData, setCustomerData] = useState<{
+    total_purchases: number;
+    total_orders: number;
+    avatar_url: string;
+    name?: string;
+    phone?: string;
+    email?: string;
+  }>({
     total_purchases: 0,
     total_orders: 0,
     avatar_url: ''
@@ -61,7 +68,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
       }
       
       // Get user's orders for detailed tracking (optional)
-      let orders = [];
+      let orders: any[] = [];
       try {
         const { data: ordersData, error: ordersError } = await supabase
           .from('orders')
