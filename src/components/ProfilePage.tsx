@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { User, Phone, Mail, Edit, Save, X, ShoppingCart, Package, Calendar } from 'lucide-react'
+import { User, Phone, Mail, Edit, Save, X, ShoppingCart, Package, Calendar, Camera, Upload, Clock, CheckCircle, Check, RotateCcw } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { supabase } from '../lib/supabase'
@@ -15,8 +15,16 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState({
     name: '',
-    phone: ''
+    phone: '',
+    email: '',
+    avatar_url: ''
   })
+  const [customerData, setCustomerData] = useState({
+    total_purchases: 0,
+    total_orders: 0,
+    avatar_url: ''
+  })
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalSpent: 0,
@@ -24,22 +32,50 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
   })
   const [loading, setLoading] = useState(true)
 
-  // Load user statistics
+  // Load user statistics and customer data
   const loadUserStats = async () => {
     if (!user) return
 
     try {
       setLoading(true)
       
-      // Get user's orders
-      const { data: orders, error: ordersError } = await supabase
-        .from('orders')
-        .select('id, total_amount, status, created_at')
-        .eq('customer_email', user.email)
+      // Get customer data using migration helper
+      try {
+        const { customerMigrationApi } = await import('../lib/customerMigration')
+        const customerResult = await customerMigrationApi.getCustomerData(user.id)
+        
+        if (customerResult.data) {
+          console.log('✅ Customer data found:', customerResult.data)
+          setCustomerData({ 
+            total_purchases: customerResult.data.total_purchases || 0, 
+            total_orders: customerResult.data.total_orders || 0, 
+            avatar_url: customerResult.data.avatar_url || '' 
+          })
+        } else {
+          console.log('⚠️ Customer data not found in any system')
+          setCustomerData({ total_purchases: 0, total_orders: 0, avatar_url: '' })
+        }
+      } catch (error) {
+        console.warn('⚠️ Customer data loading failed:', error)
+        setCustomerData({ total_purchases: 0, total_orders: 0, avatar_url: '' })
+      }
+      
+      // Get user's orders for detailed tracking (optional)
+      let orders = [];
+      try {
+        const { data: ordersData, error: ordersError } = await supabase
+          .from('orders')
+          .select('id, total_amount, status, created_at, updated_at')
+          .eq('customer_id', user.id)
+          .order('created_at', { ascending: false })
 
-      if (ordersError) {
-        console.error('Error fetching orders:', ordersError)
-        return
+        if (ordersError) {
+          console.warn('⚠️ Orders data not available:', ordersError.message)
+        } else {
+          orders = ordersData || [];
+        }
+      } catch (error) {
+        console.warn('⚠️ Orders table not available:', error)
       }
 
       // Calculate statistics
@@ -72,32 +108,117 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
   useEffect(() => {
     if (user) {
       setEditData({
-        name: user.name || '',
-        phone: user.phone || ''
+        name: user.name || customerData.name || '',
+        phone: user.phone || customerData.phone || '',
+        email: user.email || customerData.email || '',
+        avatar_url: customerData.avatar_url || ''
       })
       loadUserStats()
+    }
+  }, [user, customerData.name, customerData.phone, customerData.email, customerData.avatar_url])
+
+  // Real-time subscription for customer data changes (disabled for now)
+  useEffect(() => {
+    if (!user) return
+
+    // Real-time subscription disabled to avoid table structure issues
+    // This can be re-enabled once the customer system is fully migrated
+    console.log('Real-time customer updates disabled during migration')
+    
+    return () => {
+      // Cleanup if needed
     }
   }, [user])
 
 
+  // Avatar upload function
+  const handleAvatarUpload = async (file: File) => {
+    if (!user) return
+
+    try {
+      setUploadingAvatar(true)
+      
+      // Create FormData for ImageBB
+      const formData = new FormData()
+      formData.append('image', file)
+      
+      const imgbbApiKey = '15ccd1b7ef91f19fe2f3c4d2600ab9ee'
+      
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
+        method: 'POST',
+        body: formData
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        const avatarUrl = result.data.url
+        
+        // Update customer avatar using migration helper
+        try {
+          const { customerMigrationApi } = await import('../lib/customerMigration')
+          const updateResult = await customerMigrationApi.updateCustomer(user.id, { avatar_url: avatarUrl })
+          
+          if (updateResult.success) {
+            console.log('✅ Avatar updated in database:', updateResult.data)
+            setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
+            setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
+            alert('Avatar muvaffaqiyatli yangilandi!')
+          } else {
+            console.warn('⚠️ Avatar database update failed:', updateResult.error)
+            // Avatar yuklandi, lekin database yangilanmadi
+            setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
+            setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
+            alert('Avatar yuklandi, lekin database yangilanmadi')
+          }
+        } catch (error) {
+          console.error('Error updating avatar:', error)
+          // Avatar yuklandi, lekin database yangilanmadi
+          setEditData(prev => ({ ...prev, avatar_url: avatarUrl }))
+          setCustomerData(prev => ({ ...prev, avatar_url: avatarUrl }))
+          alert('Avatar yuklandi, lekin database yangilanmadi')
+        }
+      } else {
+        alert('Rasm yuklashda xatolik yuz berdi')
+      }
+    } catch (error) {
+      console.error('Avatar upload error:', error)
+      alert('Avatar yuklashda xatolik yuz berdi')
+    } finally {
+      setUploadingAvatar(false)
+    }
+  }
+
   const handleSave = async () => {
     try {
+      console.log('🔄 Customer profile update started:', editData)
+      console.log('📡 This update will be reflected in admin panel via real-time sync')
+      console.log('🎯 User ID:', user?.id)
+      console.log('📝 Current user data:', user)
+      
       const result = await updateProfile(editData)
       if (result.success) {
         setIsEditing(false)
-        alert('Profil muvaffaqiyatli yangilandi!')
+        console.log('✅ Customer profile updated successfully')
+        console.log('📡 Admin panel should receive real-time update within seconds')
+        console.log('🔍 Check admin panel at localhost:5173 to see the changes!')
+        alert('✅ Profil muvaffaqiyatli yangilandi!\n\n📡 Admin panelida ham darhol ko\'rinadi.\n🔄 Real-time sinxronlash ishlayapti.\n\n🔍 Admin panelni tekshiring: localhost:5173')
       } else {
-        alert('Xatolik: ' + result.error)
+        console.error('❌ Customer profile update failed:', result.error)
+        alert('❌ Xatolik: ' + result.error)
       }
     } catch (error) {
-      alert('Profil yangilashda xatolik yuz berdi')
+      console.error('❌ Customer profile update error:', error)
+      alert('❌ Profil yangilashda xatolik yuz berdi')
     }
   }
 
   const handleCancel = () => {
     setEditData({
-      name: user?.name || '',
-      phone: user?.phone || ''
+      name: user?.name || customerData.name || '',
+      phone: user?.phone || customerData.phone || '',
+      email: user?.email || customerData.email || '',
+      avatar_url: customerData.avatar_url || ''
     })
     setIsEditing(false)
   }
@@ -145,36 +266,67 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                 {!isEditing ? (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                    className="flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                    title="Tahrirlash"
                   >
-                    <Edit className="w-4 h-4" />
-                    <span>Tahrirlash</span>
+                    <Edit className="w-5 h-5" />
                   </button>
                 ) : (
                   <div className="flex space-x-2">
                     <button
                       onClick={handleSave}
-                      className="flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                      className="flex items-center justify-center w-10 h-10 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                      title="Saqlash"
                     >
-                      <Save className="w-4 h-4" />
-                      <span>Saqlash</span>
+                      <Check className="w-5 h-5" />
                     </button>
                     <button
                       onClick={handleCancel}
-                      className="flex items-center space-x-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                      className="flex items-center justify-center w-10 h-10 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                      title="Bekor qilish"
                     >
-                      <X className="w-4 h-4" />
-                      <span>Bekor qilish</span>
+                      <RotateCcw className="w-5 h-5" />
                     </button>
                   </div>
                 )}
               </div>
 
               <div className="space-y-6">
+
                 {/* Ism */}
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                    <User className="w-6 h-6 text-blue-400" />
+                  <div className="relative">
+                    {customerData.avatar_url ? (
+                      <img 
+                        src={customerData.avatar_url} 
+                        alt="Avatar" 
+                        className="w-12 h-12 rounded-lg object-cover border-2 border-white/20"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                        <User className="w-6 h-6 text-blue-400" />
+                      </div>
+                    )}
+                    {isEditing && (
+                      <label className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors">
+                        <Camera className="w-3 h-3 text-white" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handleAvatarUpload(file)
+                          }}
+                          className="hidden"
+                          disabled={uploadingAvatar}
+                        />
+                      </label>
+                    )}
+                    {uploadingAvatar && (
+                      <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                        <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-300 mb-2">Ism</label>
@@ -219,28 +371,21 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                     <Mail className="w-6 h-6 text-purple-400" />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
-                    <p className="text-white font-medium">{user.email}</p>
-                    <p className="text-gray-400 text-sm">Email o'zgartirib bo'lmaydi</p>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Email (ixtiyoriy)</label>
+                    {isEditing ? (
+                      <input
+                        type="email"
+                        value={editData.email}
+                        onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+                        className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40 transition-colors"
+                        placeholder="Email manzilingiz (ixtiyoriy)"
+                      />
+                    ) : (
+                      <p className="text-white font-medium">{user.email || customerData.email || 'Kiritilmagan'}</p>
+                    )}
                   </div>
                 </div>
 
-                {/* Ro'yxatdan o'tgan sana */}
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                    <Calendar className="w-6 h-6 text-orange-400" />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Ro'yxatdan o'tgan sana</label>
-                    <p className="text-white font-medium">
-                      {new Date(user.created_at).toLocaleDateString('uz-UZ', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </motion.div>
@@ -296,20 +441,50 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-300">Buyurtmalar soni</span>
-                    <span className="text-white font-semibold">{stats.totalOrders}</span>
+                    <span className="text-white font-semibold">{customerData.total_orders || stats.totalOrders}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-300">Jami xarid</span>
                     <span className="text-white font-semibold">
-                      {stats.totalSpent.toLocaleString('uz-UZ')} UZS
+                      {(customerData.total_purchases || stats.totalSpent).toLocaleString('uz-UZ')} UZS
                     </span>
                   </div>
+                </div>
+              )}
+            </div>
+
+            {/* Real-time Order Tracking */}
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                <Clock className="w-5 h-5 text-yellow-400" />
+                <span>Buyurtmalar holati</span>
+              </h3>
+              {loading ? (
+                <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-300">A'zo bo'lgan</span>
-                    <span className="text-white font-semibold">
-                      {stats.memberDays} kun
-                    </span>
+                    <span className="text-gray-300">Yuklangan buyurtmalar</span>
+                    <div className="w-8 h-4 bg-white/20 rounded animate-pulse"></div>
                   </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {stats.totalOrders > 0 ? (
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300">Jami buyurtmalar</span>
+                        <span className="text-white font-semibold">{stats.totalOrders}</span>
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        Oxirgi yangilanish: {new Date().toLocaleString('uz-UZ')}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <CheckCircle className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-400">Hali buyurtma yo'q</p>
+                      <p className="text-gray-500 text-sm">Birinchi buyurtmangizni berish uchun katalogga o'ting</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

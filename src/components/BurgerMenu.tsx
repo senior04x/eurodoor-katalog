@@ -148,7 +148,7 @@ export default function BurgerMenu({ open, onClose, currentPage, onNavigate, onS
                 <div className="px-6 py-4 border-t border-white/20">
                   {/* User Info */}
                   <div className="px-4 py-3 bg-white/10 rounded-lg mb-4">
-                    <p className="text-white font-medium text-sm truncate">{user.email}</p>
+                    <p className="text-white font-medium text-sm truncate">{user.name || user.email}</p>
                     <p className="text-gray-300 text-xs">{t('header.welcome')}</p>
                   </div>
 

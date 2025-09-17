@@ -406,7 +406,7 @@ export default function OrderTracking() {
                     <div className="space-y-2">
                       {order.products?.map((product, index) => (
                         <div key={index} className="text-gray-300">
-                          <p className="font-medium">{product.name}</p>
+                          <p className="font-medium">{product.model_name || product.name}</p>
                           <p className="text-sm">
                             Miqdor: {product.quantity} | 
                             Narx: {formatPrice(product.price * product.quantity)}

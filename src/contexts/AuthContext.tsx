@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
+import { customerMigrationApi } from '../lib/customerMigration'
 import { setCurrentUserId, ensurePushSubscription } from '../lib/notificationService'
 
 export interface User {
@@ -42,23 +43,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       console.log('🔍 Checking customer existence for ID:', userId)
       
-      const { data, error } = await supabase
-        .from('customers')
-        .select('id, name, email')
-        .eq('id', userId)
-        .single()
+      const customerResult = await customerMigrationApi.getCustomerData(userId)
       
-      console.log('📤 Customer existence check response:', { data, error })
+      console.log('📤 Customer existence check response:', customerResult)
       
-      if (error || !data) {
-        console.log('🚫 Customer not found in database, signing out...')
-        console.log('🚫 Error details:', error)
+      if (!customerResult.data) {
+        console.log('🚫 Customer not found in any system, signing out...')
         await supabase.auth.signOut()
         setUser(null)
         return false
       }
       
-      console.log('✅ Customer found in database:', data)
+      console.log('✅ Customer found in database:', customerResult.data)
       return true
     } catch (error) {
       console.error('❌ Error checking customer existence:', error)
@@ -76,11 +72,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.log('🔍 Initial session check for user:', session.user.id)
           const customerExists = await checkCustomerExists(session.user.id)
           if (customerExists) {
+            // Mijoz ma'lumotlarini migration helper orqali olish
+            const customerResult = await customerMigrationApi.getCustomerData(session.user.id)
+            const customerData = customerResult.data
+            
             const userData = {
               id: session.user.id,
               email: session.user.email || '',
-              name: session.user.user_metadata?.name,
-              phone: session.user.user_metadata?.phone,
+              name: customerData?.name || session.user.user_metadata?.name || '',
+              phone: customerData?.phone || session.user.user_metadata?.phone || '',
               created_at: session.user.created_at
             };
             setUser(userData);
@@ -192,13 +192,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true)
       console.log('🚀 Starting signup process for:', { email, name, phone })
       
+      // Telefon raqamidan email yaratish (internal use)
+      const cleanPhone = phone?.replace(/\D/g, '') || ''
+      const internalEmail = `${cleanPhone}@eurodoor.uz`
+      
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: internalEmail, // Internal email ishlatish
         password,
         options: {
           data: {
             name,
-            phone
+            phone,
+            original_email: email // Asl email saqlash
           },
           emailRedirectTo: undefined // Email tasdiqlashni o'chirish
         }
@@ -216,7 +221,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Mavjud foydalanuvchini topish
           console.log('🔐 Attempting to sign in existing user...')
           const { data: existingUser, error: getUserError } = await supabase.auth.signInWithPassword({
-            email,
+            email: internalEmail, // Internal email ishlatish
             password
           })
           
@@ -225,119 +230,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (existingUser?.user) {
             console.log('👤 Found existing user:', existingUser.user.id)
             
-            // Mijoz ma'lumotlarini tayyorlash
+            // Mijoz ma'lumotlarini tayyorlash va migration helper orqali qo'shish
             const customerData = {
               id: existingUser.user.id,
               name: name || existingUser.user.user_metadata?.name || '',
               phone: phone || existingUser.user.user_metadata?.phone || '',
-              email: email
+              email: email || existingUser.user.email || ''
             }
             console.log('📋 Customer data to sync:', customerData)
             
-            // Avval mavjudligini tekshirish (timeout bilan)
-            console.log('🔍 Checking if customer already exists in customers table...')
+            // Migration helper orqali customer qo'shish
+            console.log('🔍 Creating/updating customer using migration helper...')
+            const result = await customerMigrationApi.createCustomer(customerData)
             
-            // Timeout qo'shamiz
-            const checkPromise = supabase
-              .from('customers')
-              .select('id')
-              .eq('id', existingUser.user.id)
-              .single()
-            
-            const timeoutPromise = new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Customer check timeout')), 10000)
-            )
-            
-            const { data: existingCustomer, error: checkError } = await Promise.race([
-              checkPromise,
-              timeoutPromise
-            ]) as any
-            
-            console.log('📤 Customer existence check:', { existingCustomer, checkError })
-            
-            if (checkError && checkError.code === 'PGRST116') {
-              // Mijoz mavjud emas, insert qilish
-              console.log('📝 Customer not found, inserting new customer...')
-              const { data: insertResult, error: insertError } = await supabase
-                .from('customers')
-                .insert([customerData])
-                .select()
-              
-              console.log('📤 Insert response:', { insertResult, insertError })
-              
-              if (insertError) {
-                console.error('❌ Insert failed:', insertError)
-                setLoading(false)
-                return { success: false, error: 'Mijoz ma\'lumotlarini saqlashda xatolik' }
-              } else {
-                console.log('✅ Customer inserted successfully:', insertResult)
-                setLoading(false)
-                return { success: true }
-              }
-            } else if (existingCustomer) {
-              // Mijoz mavjud, update qilish
-              console.log('📝 Customer exists, updating customer data...')
-              const { data: updateResult, error: updateError } = await supabase
-                .from('customers')
-                .update({
-                  name: customerData.name,
-                  phone: customerData.phone,
-                  email: customerData.email
-                })
-                .eq('id', existingUser.user.id)
-                .select()
-              
-              console.log('📤 Update response:', { updateResult, updateError })
-              
-              if (updateError) {
-                console.error('❌ Update failed:', updateError)
-                setLoading(false)
-                return { success: false, error: 'Mijoz ma\'lumotlarini yangilashda xatolik' }
-              } else {
-                console.log('✅ Customer updated successfully:', updateResult)
-                setLoading(false)
-                return { success: true }
-              }
-            } else if (checkError && checkError.message === 'Customer check timeout') {
-              console.error('❌ Customer check timeout, proceeding with insert...')
-              // Timeout bo'lsa, to'g'ridan-to'g'ri insert qilish
-              console.log('📝 Timeout occurred, inserting customer directly...')
-              const { data: insertResult, error: insertError } = await supabase
-                .from('customers')
-                .insert([customerData])
-                .select()
-              
-              console.log('📤 Direct insert response:', { insertResult, insertError })
-              
-              if (insertError) {
-                console.error('❌ Direct insert failed:', insertError)
-                setLoading(false)
-                return { success: false, error: 'Mijoz ma\'lumotlarini saqlashda xatolik' }
-              } else {
-                console.log('✅ Customer inserted successfully after timeout:', insertResult)
-                setLoading(false)
-                return { success: true }
-              }
+            if (result.success) {
+              console.log('✅ Customer synced successfully:', result.data)
+              setLoading(false)
+              return { success: true }
             } else {
-              console.error('❌ Unexpected error checking customer existence:', checkError)
-              // Fallback: to'g'ridan-to'g'ri insert qilish
-              console.log('🔄 Fallback: inserting customer directly...')
-              const { data: fallbackResult, error: fallbackError } = await supabase
-                .from('customers')
-                .insert([customerData])
-                .select()
-              
-              console.log('📤 Fallback insert response:', { fallbackResult, fallbackError })
-              
-              if (fallbackError) {
-                console.error('❌ Fallback insert also failed:', fallbackError)
-                setLoading(false)
-                return { success: false, error: 'Mijoz ma\'lumotlarini saqlashda xatolik' }
-              } else {
-                console.log('✅ Customer inserted via fallback:', fallbackResult)
-                setLoading(false)
-                return { success: true }
-              }
+              console.error('❌ Customer sync failed:', result.error)
+              // Don't fail the entire signup process if customer sync fails
+              console.log('⚠️ Continuing signup process despite customer sync failure')
+              setLoading(false)
+              return { success: true } // Still allow signup to succeed
             }
           } else {
             console.error('❌ Could not sign in existing user:', getUserError)
@@ -355,47 +270,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (data.user) {
         console.log('👤 User created successfully:', data.user.id)
         
-        // Customers jadvaliga mijoz qo'shish
+        // Customer qo'shish (migration helper orqali)
         try {
-          console.log('📝 Adding customer to customers table...')
+          console.log('📝 Adding customer using migration helper...')
           const customerData = {
             id: data.user.id,
             name: name || '',
             phone: phone || '',
-            email: email
+            email: email || data.user.email || ''
           }
           console.log('📋 Customer data to insert:', customerData)
           
-          const { data: customerResult, error: customerError } = await supabase
-            .from('customers')
-            .insert([customerData])
-            .select()
+          const result = await customerMigrationApi.createCustomer(customerData)
           
-          console.log('📤 Customer insert response:', { customerResult, customerError })
-          
-          if (customerError) {
-            console.error('❌ Customer creation error:', customerError)
-            console.error('❌ Error details:', {
-              message: customerError.message,
-              code: customerError.code,
-              details: customerError.details,
-              hint: customerError.hint
-            })
-            
-            // Fallback: upsert ishlatish
-            console.log('🔄 Attempting fallback with upsert...')
-            const { data: upsertResult, error: upsertError } = await supabase
-              .from('customers')
-              .upsert([customerData], { onConflict: 'id' })
-              .select()
-            
-            if (upsertError) {
-              console.error('❌ Upsert also failed:', upsertError)
-            } else {
-              console.log('✅ Customer upserted successfully:', upsertResult)
-            }
+          if (result.success) {
+            console.log('✅ Customer created successfully:', result.data)
           } else {
-            console.log('✅ Customer added to customers table successfully:', customerResult)
+            console.error('❌ Customer creation failed:', result.error)
+            // Don't fail the entire signup process if customer creation fails
+            console.log('⚠️ Continuing signup process despite customer creation failure')
           }
         } catch (err) {
           console.error('❌ Error adding customer to table:', err)
@@ -414,6 +307,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.error('❌ Auto sign-in error:', signInError)
         } else {
           console.log('✅ User auto-signed in successfully')
+          
+          // Mijoz ma'lumotlarini olish va user state'ni yangilash
+          const { data: { user } } = await supabase.auth.getUser()
+          if (user) {
+            const customerResult = await customerMigrationApi.getCustomerData(user.id)
+            const customerData = customerResult.data
+            
+            if (!customerData) {
+              console.warn('⚠️ Customer data not found in any system')
+            }
+            
+            const userData = {
+              id: user.id,
+              email: user.email || '',
+              name: customerData?.name || user.user_metadata?.name || '',
+              phone: customerData?.phone || user.user_metadata?.phone || '',
+              created_at: user.created_at
+            };
+            
+            console.log('📊 User data loaded (retry):', {
+              id: userData.id,
+              name: userData.name,
+              phone: userData.phone,
+              email: userData.email,
+              source: customerData ? 'customer_database' : 'user_metadata'
+            });
+            setUser(userData);
+            setCurrentUserId(user.id);
+          }
           
           // Trigger notification check after successful signup
           setTimeout(() => {
@@ -435,8 +357,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true)
+      
+      // Agar email @eurodoor.uz bilan tugasa, to'g'ridan-to'g'ri ishlatish
+      // Aks holda telefon raqamidan email yaratish
+      let loginEmail = email
+      if (!email.includes('@eurodoor.uz')) {
+        const cleanPhone = email.replace(/\D/g, '')
+        loginEmail = `${cleanPhone}@eurodoor.uz`
+      }
+      
       const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: loginEmail,
         password
       })
 
@@ -452,11 +383,39 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (!updateError) {
               // Qayta kirishga urinish
               const { error: retryError } = await supabase.auth.signInWithPassword({
-                email,
+                email: loginEmail,
                 password
               })
               
               if (!retryError) {
+                // Mijoz ma'lumotlarini olish
+                const { data: { user } } = await supabase.auth.getUser()
+                if (user) {
+                  const customerResult = await customerMigrationApi.getCustomerData(user.id)
+                  const customerData = customerResult.data
+                  
+                  if (!customerData) {
+                    console.warn('⚠️ Customer data not found in any system')
+                  }
+                  
+            const userData = {
+              id: user.id,
+              email: user.email || '',
+              name: customerData?.name || user.user_metadata?.name || '',
+              phone: customerData?.phone || user.user_metadata?.phone || '',
+              created_at: user.created_at
+            };
+            
+            console.log('📊 User data loaded (signup):', {
+              id: userData.id,
+              name: userData.name,
+              phone: userData.phone,
+              email: userData.email,
+              source: customerData ? 'customer_database' : 'user_metadata'
+            });
+            setUser(userData);
+            setCurrentUserId(user.id);
+                }
                 return { success: true }
               }
             }
@@ -465,6 +424,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         }
         return { success: false, error: error.message }
+      }
+
+      // Muvaffaqiyatli kirishdan keyin mijoz ma'lumotlarini olish
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const customerResult = await customerMigrationApi.getCustomerData(user.id)
+        const customerData = customerResult.data
+        
+        if (!customerData) {
+          console.warn('⚠️ Customer data not found in any system')
+        }
+        
+        const userData = {
+          id: user.id,
+          email: user.email || '',
+          name: customerData?.name || user.user_metadata?.name || '',
+          phone: customerData?.phone || user.user_metadata?.phone || '',
+          created_at: user.created_at
+        };
+        
+        console.log('📊 User data loaded:', {
+          id: userData.id,
+          name: userData.name,
+          phone: userData.phone,
+          email: userData.email,
+          source: customerData ? 'customer_database' : 'user_metadata'
+        });
+        setUser(userData);
+        setCurrentUserId(user.id);
       }
 
       return { success: true }
@@ -491,25 +479,85 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }
 
-  const updateProfile = async (updates: { name?: string; phone?: string }) => {
+  const updateProfile = async (updates: { name?: string; phone?: string; email?: string; avatar_url?: string }) => {
     try {
       if (!user) {
         return { success: false, error: 'Foydalanuvchi topilmadi' }
       }
 
-      const { error } = await supabase.auth.updateUser({
-        data: updates
-      })
+      console.log('🔄 Starting profile update for user:', user.id)
+      console.log('📝 Updates to apply:', updates)
 
-      if (error) {
-        return { success: false, error: error.message }
+      // 1. Avval customer_registrations jadvaliga to'g'ridan-to'g'ri yozish
+      try {
+        console.log('🎯 Direct update to customer_registrations table...')
+        
+        const updateData = {
+          ...updates,
+          updated_at: new Date().toISOString()
+        }
+        
+        const { data, error } = await supabase
+          .from('customer_registrations')
+          .update(updateData)
+          .eq('id', user.id)
+          .select()
+          .single()
+
+        if (error) {
+          console.error('❌ Direct customer_registrations update failed:', error)
+          throw error
+        }
+
+        console.log('✅ Direct customer_registrations update successful:', data)
+        console.log('📡 Real-time update will trigger in admin panel!')
+        
+      } catch (directUpdateError: any) {
+        console.warn('⚠️ Direct update failed, trying migration helper:', directUpdateError.message)
+        
+        // 2. Migration helper orqali urinish
+        try {
+          const updateResult = await customerMigrationApi.updateCustomer(user.id, updates)
+          
+          if (updateResult.success) {
+            console.log('✅ Migration helper update successful:', updateResult.data)
+            console.log('📡 Real-time update will trigger in admin panel!')
+          } else {
+            console.error('❌ Migration helper update failed:', updateResult.error)
+            throw new Error(updateResult.error)
+          }
+        } catch (migrationError: any) {
+          console.error('❌ Migration helper also failed:', migrationError.message)
+          throw migrationError
+        }
       }
 
-      // Local state ni yangilash
+      // 3. Supabase Auth ni ham yangilash (user_metadata uchun)
+      try {
+        console.log('🔐 Updating Supabase Auth metadata...')
+        const { error: authError } = await supabase.auth.updateUser({
+          data: updates
+        })
+
+        if (authError) {
+          console.warn('⚠️ Auth metadata update failed:', authError.message)
+        } else {
+          console.log('✅ Auth metadata updated successfully')
+        }
+      } catch (authError: any) {
+        console.warn('⚠️ Auth update error:', authError.message)
+      }
+
+      // 4. Local state ni yangilash
       setUser(prev => prev ? { ...prev, ...updates } : null)
+      console.log('✅ Profile update completed successfully')
+      console.log('📊 Updated user state:', { ...user, ...updates })
+      console.log('🎉 Admin panel should show updated data within seconds!')
+      
       return { success: true }
-    } catch (error) {
-      return { success: false, error: 'Profil yangilashda xatolik' }
+    } catch (error: any) {
+      console.error('❌ Profile update error:', error)
+      return { success: false, error: error.message || 'Profil yangilashda xatolik' }
     }
   }
 

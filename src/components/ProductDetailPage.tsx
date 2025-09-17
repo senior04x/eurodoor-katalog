@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from '../contexts/CartContext';
 import { useToast } from '../contexts/ToastContext';
 import { productsApi } from '../lib/productsApi';
-import { Product, supabase } from '../lib/supabase';
+import { Product } from '../lib/supabase';
 
 interface ProductDetailPageProps {
   productId: string;
@@ -17,8 +17,6 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   const { addToCart } = useCart();
   const { showSuccess } = useToast();
   
-  console.log('🎯 ProductDetailPage rendered with productId:', productId);
-  console.log('🎯 ProductDetailPage props:', { productId, onNavigate: !!onNavigate });
 
   // Real Supabase product
   const [product, setProduct] = useState<Product | null>(null);
@@ -30,31 +28,14 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   useEffect(() => {
     const loadProduct = async () => {
       try {
-        console.log('🔄 Loading product with ID:', productId);
-        console.log('🔄 ProductId type:', typeof productId);
-        console.log('🔄 ProductId length:', productId?.length);
         setLoading(true);
         
-        // Direct Supabase call for debugging
-        console.log('🔄 Making direct Supabase call...');
-        const { data: directData, error: directError } = await supabase
-          .from('products')
-          .select('*')
-          .eq('id', productId)
-          .eq('is_active', true)
-          .single();
-        
-        console.log('📦 Direct Supabase response:', { data: directData, error: directError });
-        
         const fetchedProduct = await productsApi.getProductById(productId);
-        console.log('📦 API fetched product:', fetchedProduct);
         
         if (fetchedProduct) {
           setProduct(fetchedProduct);
-          setProductName(fetchedProduct.name);
-          console.log('✅ Product loaded successfully');
+          setProductName(fetchedProduct.model_name || fetchedProduct.name || '');
         } else {
-          console.error('❌ Product not found or inactive');
           setProduct(null);
           setProductName('');
         }
@@ -67,10 +48,8 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
     };
 
     if (productId) {
-      console.log('🎯 ProductId exists, loading product...');
       loadProduct();
     } else {
-      console.log('❌ No productId provided');
       setLoading(false);
     }
   }, [productId]);
@@ -78,25 +57,14 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
   const handleAddToCart = () => {
     if (!product) return;
 
-    // Check stock availability
-    if (product.stock <= 0) {
-      showSuccess('Xatolik!', 'Bu mahsulot omborda yo\'q');
-      return;
-    }
-
-    if (quantity > product.stock) {
-      showSuccess('Xatolik!', `Omborda faqat ${product.stock} dona mavjud`);
-      return;
-    }
-
     const cartItem = {
       id: product.id,
-      name: product.name,
+      name: product.model_name || product.name,
       price: product.price,
-      image: product.image || product.image_url || '',
+      image: product.image_url || '',
       dimensions: product.dimensions,
       material: product.material,
-      stock: product.stock
+      stock: quantity // Use quantity as stock
     };
 
     // Har bir miqdor uchun alohida qo'shish
@@ -105,7 +73,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
     }
 
     // Muvaffaqiyat xabari
-    showSuccess('Mahsulot qo\'shildi!', `${quantity} ta ${product.name} korzinkaga qo'shildi`);
+    showSuccess('Mahsulot qo\'shildi!', `${quantity} ta ${product.model_name || product.name} korzinkaga qo'shildi`);
   };
 
   // Loading state
@@ -197,7 +165,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
           {/* Product Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
-              {product.name}
+              {product.model_name || product.name || 'Product'}
             </h1>
           </div>
 
@@ -206,8 +174,8 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
             <div className="lg:col-span-1">
               <div className="aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 shadow-2xl hover:border-blue-500/50 transition-all duration-300">
                 <img
-                  src={product.image || product.image_url || 'https://picsum.photos/600/600?random=1'}
-                  alt={product.name}
+                  src={product.image_url || 'https://picsum.photos/600/600?random=1'}
+                  alt={product.model_name || product.name || 'Product'}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
               </div>
@@ -253,13 +221,8 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                     </button>
                     <span className="w-16 text-center text-white font-semibold">{quantity}</span>
                     <button
-                      onClick={() => setQuantity(Math.min(product?.stock || 1, quantity + 1))}
-                      disabled={quantity >= (product?.stock || 0)}
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
-                        quantity >= (product?.stock || 0)
-                          ? 'bg-gray-500/20 cursor-not-allowed opacity-50'
-                          : 'bg-white/20 hover:bg-white/30'
-                      }`}
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="w-10 h-10 rounded-lg flex items-center justify-center transition-colors bg-white/20 hover:bg-white/30"
                     >
                       <Plus className="h-4 w-4 text-white" />
                     </button>
@@ -270,15 +233,15 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                 {/* Add to Cart Button */}
                 <button
                   onClick={handleAddToCart}
-                  disabled={!product || product.stock <= 0}
+                  disabled={!product}
                   className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg ${
-                    !product || product.stock <= 0
+                    !product
                       ? 'bg-gray-500/20 text-gray-400 cursor-not-allowed border border-gray-500/50'
                       : 'bg-gradient-to-r from-blue-500/30 to-purple-500/30 text-blue-300 hover:from-blue-500/40 hover:to-purple-500/40 border border-blue-500/50 hover:shadow-xl transform hover:scale-105'
                   }`}
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  {!product || product.stock <= 0 ? "Omborda yo'q" : "Korzinkaga qo'shish"}
+                  {!product ? "Mahsulot yuklanmoqda..." : "Korzinkaga qo'shish"}
                 </button>
               </div>
 
@@ -297,7 +260,7 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-white/10">
                     <span className="text-gray-300 font-medium">Xavfsizlik:</span>
-                    <span className="text-white font-semibold">{product.security}</span>
+                    <span className="text-white font-semibold">{product.security_class || product.security || 'N/A'}</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-white/10">
                     <span className="text-gray-300 font-medium">O'lcham:</span>
@@ -316,9 +279,9 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                     </div>
                   )}
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-300 font-medium">Omborda:</span>
-                    <span className={`font-semibold ${product.stock > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {product.stock} dona
+                    <span className="text-gray-300 font-medium">Holat:</span>
+                    <span className="font-semibold text-green-400">
+                      Mavjud
                     </span>
                   </div>
                 </div>

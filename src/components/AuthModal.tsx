@@ -98,8 +98,8 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange }: AuthM
           setError(t('auth.phone_required'))
           return
         }
-        if (formData.password.length < 6) {
-          setError(t('auth.password_min_length'))
+        if (formData.password.length < 4) {
+          setError('Parol kamida 4 ta belgi bo\'lishi kerak')
           return
         }
         if (formData.password !== formData.confirmPassword) {

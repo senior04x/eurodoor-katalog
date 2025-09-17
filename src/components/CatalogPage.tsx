@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from '../contexts/CartContext';
 import { useToast } from '../contexts/ToastContext';
 import { productsApi } from '../lib/productsApi';
-import { Product } from '../lib/supabase';
+import { Product, supabase } from '../lib/supabase';
 
 interface CatalogPageProps {
   onNavigate: (page: string, productId?: string) => void;
@@ -24,23 +24,47 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   const [selectedDimensions, setSelectedDimensions] = useState<string>('all');
   const [selectedMaterial, setSelectedMaterial] = useState<string>('all');
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        console.log('🔄 Loading products from database...');
-        
-        const fetchedProducts = await productsApi.getAllProducts();
-        setProducts(fetchedProducts);
-        console.log('✅ Products loaded:', fetchedProducts.length);
-        
-      } catch (error) {
-        console.error('❌ Error loading products:', error);
-        setProducts([]);
-      } finally {
-        setLoading(false);
+  // Load products function
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      console.log('🔄 Loading products from database...');
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 10000)
+      );
+      
+      // Test database connection first
+      const connectionTest = await Promise.race([
+        productsApi.testConnection(),
+        timeoutPromise
+      ]);
+      
+      if (!connectionTest.success) {
+        throw new Error(`Database connection failed: ${connectionTest.error}`);
       }
-    };
+      
+      const fetchedProducts = await Promise.race([
+        productsApi.getAllProducts(),
+        timeoutPromise
+      ]);
+      
+      setProducts(fetchedProducts);
+      console.log('✅ Products loaded:', fetchedProducts.length);
+      
+    } catch (error) {
+      console.error('❌ Error loading products:', error);
+      console.error('❌ Error details:', error);
+      setProducts([]);
+      // Show error message to user
+      alert('Mahsulotlar yuklanmadi. Iltimos, qaytadan urinib ko\'ring.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
 
     // Load products immediately
     loadProducts();
@@ -48,47 +72,34 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     // Real-time subscription with error handling
     let subscription: any = null;
     try {
-      subscription = productsApi.subscribeToProducts((payload) => {
-        console.log('🔄 Products updated:', payload);
-        loadProducts(); // Reload products when changes occur
-      });
+      subscription = supabase
+        .channel('products-realtime')
+        .on('postgres_changes', 
+          { event: '*', schema: 'public', table: 'products' },
+          (payload) => {
+            console.log('🔄 Products updated:', payload);
+            // Only reload if we're not already loading
+            if (!loading) {
+              loadProducts();
+            }
+          }
+        )
+        .subscribe((status) => {
+          console.log('📡 Products subscription status:', status);
+        });
     } catch (error) {
       console.error('❌ Failed to setup real-time subscription:', error);
     }
 
     return () => {
       if (subscription) {
+        console.log('🔌 Unsubscribing from products real-time updates');
         subscription.unsubscribe();
       }
     };
   }, []);
 
-  // Force reload products when component mounts (for navigation issues)
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        console.log('🔄 Page became visible, reloading products...');
-        const loadProducts = async () => {
-          try {
-            setLoading(true);
-            const fetchedProducts = await productsApi.getAllProducts(true); // Force refresh
-            setProducts(fetchedProducts);
-            console.log('✅ Products reloaded:', fetchedProducts.length);
-          } catch (error) {
-            console.error('❌ Error reloading products:', error);
-          } finally {
-            setLoading(false);
-          }
-        };
-        loadProducts();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
+  // Remove visibility change handler to prevent infinite loops
 
   // Filter products based on search, dimensions, and material
   const filteredProducts = useMemo(() => {
@@ -97,9 +108,9 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     // Search filter
     if (searchQuery) {
       filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.material.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        (product.model_name || product.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (product.material || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (product.description || '').toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -113,7 +124,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
     // Material filter
     if (selectedMaterial !== 'all') {
       filtered = filtered.filter(product => 
-        product.material.toLowerCase().includes(selectedMaterial.toLowerCase())
+        (product.material || '').toLowerCase().includes(selectedMaterial.toLowerCase())
       );
     }
 
@@ -127,30 +138,24 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   }, [products]);
 
   const materials = useMemo(() => {
-    const mats = ['all', ...new Set(products.map(p => p.material))];
+    const mats = ['all', ...new Set(products.map(p => p.material).filter(Boolean))];
     return mats;
   }, [products]);
 
   // Add to cart handler
   const handleAddToCart = (product: Product) => {
-    // Check stock availability
-    if (product.stock <= 0) {
-      showSuccess('Xatolik!', 'Bu mahsulot omborda yo\'q');
-      return;
-    }
-
     const cartItem = {
       id: product.id,
-      name: product.name,
+        name: product.model_name || product.name,
       price: product.price,
-      image: product.image || product.image_url || '',
+      image: product.image_url || '',
       dimensions: product.dimensions,
       material: product.material,
-      stock: product.stock
+      stock: 1 // Default stock value
     };
 
     addToCart(cartItem);
-    showSuccess('Mahsulot qo\'shildi!', `${product.name} korzinkaga qo'shildi`);
+    showSuccess('Mahsulot qo\'shildi!', `${product.model_name || product.name} korzinkaga qo'shildi`);
   };
 
   // Animation variants
@@ -313,8 +318,8 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden">
                   <img
-                    src={product.image || product.image_url || 'https://picsum.photos/400/300?random=1'}
-                    alt={product.name}
+                    src={product.image_url || 'https://picsum.photos/400/300?random=1'}
+                    alt={product.model_name || product.name || 'Product'}
                     loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
@@ -324,7 +329,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                 {/* Product Info */}
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">
-                    {product.name}
+                    {product.model_name || product.name || 'Product'}
                   </h3>
                   
                   <div className="space-y-2 mb-4">
@@ -334,7 +339,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                 </div>
                     <div className="flex items-center text-sm text-gray-300">
                       <span className="font-medium">Xavfsizlik:</span>
-                      <span className="ml-2">{product.security}</span>
+                      <span className="ml-2">{product.security_class || product.security || 'N/A'}</span>
                     </div>
                     <div className="flex items-center text-sm text-gray-300">
                       <span className="font-medium">O'lcham:</span>
@@ -351,10 +356,10 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-2xl font-bold text-white">
-                        {product.price.toLocaleString()} {product.currency}
+                        {product.price.toLocaleString()} {product.currency || 'UZS'}
                       </div>
                       <div className="text-sm text-gray-300">
-                        Qoldiq: {product.stock} dona
+                        Mavjud
                       </div>
                     </div>
                     
@@ -371,13 +376,8 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                       </button>
                             <button
                         onClick={() => handleAddToCart(product)}
-                        disabled={product.stock <= 0}
-                        className={`p-2 rounded-lg transition-colors ${
-                          product.stock <= 0 
-                            ? 'bg-gray-500/20 cursor-not-allowed opacity-50' 
-                            : 'bg-blue-500/20 hover:bg-blue-500/30'
-                        }`}
-                        title={product.stock <= 0 ? "Omborda yo'q" : "Korzinkaga qo'shish"}
+                        className="p-2 rounded-lg transition-colors bg-blue-500/20 hover:bg-blue-500/30"
+                        title="Korzinkaga qo'shish"
                       >
                         <ShoppingCart className="w-5 h-5 text-white" />
                       </button>

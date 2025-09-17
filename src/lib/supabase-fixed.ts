@@ -34,32 +34,50 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
 // let connectionRetries = 0
 // const MAX_RETRIES = 3
 
-
-
 // Database types
 export interface Product {
   id: string;
-  model_name: string; // Updated field name
-  price: number;
-  image_url?: string;
-  dimensions: string;
-  material: string;
-  security_class: string; // Updated field name
-  thickness: string; // New field
-  lock_stages: string; // New field
-  stock_quantity: number; // Updated field name
+  name: string;
+  name_ru?: string;
+  name_en?: string;
   description?: string;
+  description_ru?: string;
+  description_en?: string;
+  material: string;
+  material_ru?: string;
+  material_en?: string;
+  security: string;
+  security_ru?: string;
+  security_en?: string;
+  dimensions: string;
+  dimensions_ru?: string;
+  dimensions_en?: string;
+  lock_stages?: string;
+  lock_stages_ru?: string;
+  lock_stages_en?: string;
+  thickness?: string;
+  price: number;
+  currency: string;
+  image?: string;
+  image_url?: string;
+  category: string;
   is_active: boolean;
+  stock?: number; // Admin panel uchun qo'shildi
+  slug?: string;
+  meta_title?: string;
+  meta_description?: string;
+  view_count?: number;
+  is_featured?: boolean;
+  sort_order?: number;
   created_at: string;
   updated_at: string;
-  currency?: string;
 }
 
 export interface Customer {
   id: string;
-  name: string;
-  email: string;
   phone: string;
+  name: string;
+  email?: string;
   created_at: string;
   updated_at: string;
 }
@@ -75,21 +93,8 @@ export interface Order {
   notes?: string;
   total_amount: number;
   products: any[];
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  delivery_date?: string;
+  status: string;
   created_at: string;
   updated_at: string;
 }
 
-export interface OrderItem {
-  id: string;
-  order_id: string;
-  product_id?: string;
-  product_name: string;
-  quantity: number;
-  price: number;
-  custom_dimensions?: string;
-  color?: string;
-  notes?: string;
-  created_at: string;
-}

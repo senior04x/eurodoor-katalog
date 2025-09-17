@@ -1,41 +1,104 @@
+// Service Worker for EuroDoor Customer App
+const CACHE_NAME = 'eurodoor-cache-v1';
+const urlsToCache = [
+  '/',
+  '/static/js/bundle.js',
+  '/static/css/main.css',
+  '/manifest.json',
+  '/vite.svg'
+];
+
+// Install event
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
+  );
+});
+
+// Fetch event
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        // Return cached version or fetch from network
+        return response || fetch(event.request);
+      }
+    )
+  );
+});
+
+// Push event
 self.addEventListener('push', (event) => {
-  let data = {}
-  try { if (event.data) data = event.data.json() } catch(e){}
-  const title = data.title || 'Eurodoor'
-  const options = {
-    body: data.body || '',
-    icon: data.icon || '/icons/icon-192.png',
-    badge: '/icons/icon-192.png',
-    tag: data.tag || 'eurodoor',
-    timestamp: Date.now(),
-    data: { 
-      url: data.url || '/orders',
-      orderId: data.orderId,
-      orderNumber: data.orderNumber,
-      status: data.status
+  console.log('Push event received:', event);
+  
+  let data = {};
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data = { title: 'EuroDoor', body: event.data.text() };
     }
   }
-  event.waitUntil(self.registration.showNotification(title, options))
-})
 
+  const options = {
+    body: data.body || 'Yangi xabar',
+    icon: '/vite.svg',
+    badge: '/vite.svg',
+    vibrate: [100, 50, 100],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: data.primaryKey || 1
+    },
+    actions: [
+      {
+        action: 'explore',
+        title: 'Ko\'rish',
+        icon: '/vite.svg'
+      },
+      {
+        action: 'close',
+        title: 'Yopish',
+        icon: '/vite.svg'
+      }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'EuroDoor', options)
+  );
+});
+
+// Notification click event
 self.addEventListener('notificationclick', (event) => {
-  event.notification.close()
-  const targetUrl = event?.notification?.data?.url || '/orders'
+  console.log('Notification click received:', event);
   
-  event.waitUntil((async () => {
-    // Try to focus existing window first
-    const list = await clients.matchAll({ type: 'window', includeUncontrolled: true })
-    for (const c of list) { 
-      if ('focus' in c) { 
-        c.focus()
-        // If it's an order notification, navigate to orders page
-        if (event.notification.data?.orderId) {
-          c.postMessage({ type: 'NAVIGATE_TO_ORDERS' })
-        }
-        return 
-      } 
-    }
-    // Open new window if no existing window
-    await clients.openWindow(targetUrl)
-  })())
-})
+  event.notification.close();
+
+  if (event.action === 'explore') {
+    // Open the app
+    event.waitUntil(
+      clients.openWindow('/')
+    );
+  } else if (event.action === 'close') {
+    // Just close the notification
+    return;
+  } else {
+    // Default action - open the app
+    event.waitUntil(
+      clients.openWindow('/')
+    );
+  }
+});
+
+// Message event (for communication with main thread)
+self.addEventListener('message', (event) => {
+  console.log('Service worker received message:', event.data);
+  
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});

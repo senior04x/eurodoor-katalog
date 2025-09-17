@@ -26,10 +26,8 @@ import { LanguageProvider } from './contexts/LanguageContext'
 import { ToastProvider } from './contexts/ToastContext'
 import AuthModal from './components/AuthModal'
 import ErrorBoundary from './components/ErrorBoundary'
-// import { notificationService } from './lib/notificationService' // Replaced with new system
 import { installAutoAskNotifications } from './boot/autoAskNotifications'
 import NotificationGate from './components/NotificationGate'
-// import { setCurrentUserId } from './lib/notificationService'
 
 function App() {
   // URL hash'dan current page ni olish
@@ -83,10 +81,10 @@ function App() {
 
     navigator.serviceWorker?.addEventListener('message', handleServiceWorkerMessage)
 
-    // Sayt yuklanishini simulyatsiya qilish
+    // Sayt yuklanishini simulyatsiya qilish - tezroq
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 1500) // Loading vaqtini qisqartirish
+    }, 800) // Loading vaqtini qisqartirish - 800ms
 
     // Scroll muammosini hal qilish
     document.body.style.overflow = 'auto'
@@ -168,16 +166,8 @@ function App() {
     }
   }, [currentPage, selectedProduct])
 
-  // const handleProductSelect = (product: any) => {
-  //   setSelectedProduct(product)
-  //   setCurrentPage('product-detail')
-  // }
 
   const renderPage = () => {
-    console.log('🎯 Rendering page:', currentPage);
-    console.log('🎯 Current hash:', window.location.hash);
-    console.log('🎯 Selected product:', selectedProduct);
-    
     const LoadingFallback = memo(() => (
       <div className="min-h-screen flex items-center justify-center">
         <AppLoader isLoading={true} />
@@ -211,14 +201,8 @@ function App() {
         )
       case 'product-detail': {
         const productId = selectedProduct?.id || getProductIdFromHash()
-        console.log('🎯 ProductDetail case - productId:', productId, 'selectedProduct:', selectedProduct)
-        console.log('🎯 Current hash:', window.location.hash)
-        console.log('🎯 getProductIdFromHash result:', getProductIdFromHash())
-        console.log('🎯 selectedProduct?.id:', selectedProduct?.id)
-        console.log('🎯 getProductIdFromHash():', getProductIdFromHash())
         
         if (productId) {
-          console.log('✅ Rendering ProductDetailPage with productId:', productId)
           return (
             <Suspense fallback={<LoadingFallback />}>
               <ProductDetailPage 
@@ -228,17 +212,11 @@ function App() {
             </Suspense>
           )
         } else {
-          console.log('❌ No productId found, showing error page')
-          console.log('❌ selectedProduct:', selectedProduct)
-          console.log('❌ getProductIdFromHash():', getProductIdFromHash())
           return (
             <div className="min-h-screen flex items-center justify-center">
               <div className="text-center">
                 <h2 className="text-2xl font-bold text-white mb-4">Mahsulot topilmadi</h2>
                 <p className="text-gray-300 mb-4">Product ID: {productId || 'undefined'}</p>
-                <p className="text-gray-300 mb-4">Current hash: {window.location.hash}</p>
-                <p className="text-gray-300 mb-4">Selected product: {selectedProduct ? JSON.stringify(selectedProduct) : 'null'}</p>
-                <p className="text-gray-300 mb-4">getProductIdFromHash(): {getProductIdFromHash() || 'null'}</p>
                 <button
                   onClick={() => handleNavigate('catalog')}
                   className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600"
@@ -251,7 +229,6 @@ function App() {
         }
       }
       case 'order-success':
-        console.log('🎉 Rendering OrderSuccessPage!');
         return (
           <Suspense fallback={<LoadingFallback />}>
             <OrderSuccessPage onNavigate={handleNavigate} />

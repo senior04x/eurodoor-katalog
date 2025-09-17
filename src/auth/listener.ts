@@ -17,7 +17,7 @@ export function attachAuthListener() {
     // NEVER block UI: try customer check, but continue on any error/timeout
     try {
       const result = await withTimeout(
-        supabase.from('customers').select('id').eq('user_id', session.user.id).maybeSingle(),
+        supabase.from('customers').select('id').eq('id', session.user.id).maybeSingle(),
         6000
       )
       console.log('[EURODOOR] customer row:', result.data)

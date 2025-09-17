@@ -34,7 +34,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
         // Form data ga product nomini qo'shish
         setFormData(prev => ({
           ...prev,
-          product: product.name
+          product: product.model_name || product.name
         }));
         // localStorage ni tozalash - faqat form submit qilinganda
         // localStorage.removeItem('selectedProduct');
@@ -311,7 +311,7 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-300">{t('contact.security')}:</span>
-                          <span className="text-white">{selectedProduct.security}</span>
+                          <span className="text-white">{selectedProduct.security_class || selectedProduct.security}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-300">{t('contact.dimensions')}:</span>

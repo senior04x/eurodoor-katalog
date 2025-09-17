@@ -82,7 +82,7 @@ export function isInViewport(element: Element): boolean {
 // Lazy load images
 export function lazyLoadImage(img: HTMLImageElement, src: string): void {
   if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries, observer) => {
+    const imageObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const image = entry.target as HTMLImageElement;
