@@ -83,7 +83,6 @@ function App() {
       
       if (distance > 0) {
         e.preventDefault()
-        const progress = Math.min(distance / pullThreshold, 1)
         setPullDistance(distance)
       }
     }
