@@ -59,18 +59,18 @@ const Toast: React.FC<ToastProps> = ({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -50, scale: 0.9 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className={`${getBgColor()} backdrop-blur-lg border rounded-xl p-4 shadow-xl max-w-sm w-full`}
+      className={`${getBgColor()} backdrop-blur-lg border rounded-lg p-3 shadow-lg max-w-xs w-full`}
     >
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
           {getIcon()}
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-white font-semibold text-sm">
+          <h4 className="text-white font-medium text-xs">
             {title}
           </h4>
           {message && (
-            <p className="text-gray-300 text-xs mt-1">
+            <p className="text-gray-300 text-xs mt-0.5">
               {message}
             </p>
           )}
