@@ -71,11 +71,11 @@ export class AdminTelegramService {
         }
       }
 
-      console.log('📱 Using Telegram chat_id:', telegramUser.chat_id);
+      console.log('📱 Using Telegram chat_id:', telegramUser?.chat_id);
 
       const { data, error } = await supabase.functions.invoke('telegram-bot-complete', {
         body: {
-          chat_id: telegramUser.chat_id, // To'g'ri chat_id
+          chat_id: telegramUser?.chat_id, // To'g'ri chat_id
           order_number: params.order_number,
           customer_name: params.customer_name,
           customer_phone: params.customer_phone,
