@@ -1,5 +1,3 @@
-import { supabase } from './supabase';
-
 export class PushNotificationService {
   private static instance: PushNotificationService;
   private notificationPermission: NotificationPermission = 'default';
