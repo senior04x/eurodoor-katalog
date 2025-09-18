@@ -21,6 +21,16 @@ self.addEventListener('install', (event) => {
 
 // Fetch event
 self.addEventListener('fetch', (event) => {
+  // Skip caching for navigation requests (refresh, back/forward)
+  if (event.request.mode === 'navigate') {
+    return;
+  }
+  
+  // Skip caching for POST requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
