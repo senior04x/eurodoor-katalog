@@ -59,6 +59,53 @@ function App() {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [pullDistance, setPullDistance] = useState(0)
+
+  // Pull-to-refresh functionality
+  useEffect(() => {
+    let startY = 0
+    let currentY = 0
+    let isPulling = false
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].clientY
+        isPulling = true
+      }
+    }
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isPulling) return
+      
+      currentY = e.touches[0].clientY
+      const distance = currentY - startY
+      
+      if (distance > 0) {
+        e.preventDefault()
+        setPullDistance(Math.min(distance, 100))
+      }
+    }
+
+    const handleTouchEnd = () => {
+      if (isPulling && pullDistance > 60) {
+        setIsRefreshing(true)
+        window.location.reload()
+      }
+      isPulling = false
+      setPullDistance(0)
+    }
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: false })
+    document.addEventListener('touchmove', handleTouchMove, { passive: false })
+    document.addEventListener('touchend', handleTouchEnd)
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart)
+      document.removeEventListener('touchmove', handleTouchMove)
+      document.removeEventListener('touchend', handleTouchEnd)
+    }
+  }, [pullDistance])
 
   useEffect(() => {
     // Telegram WebApp ni aniqlash
@@ -280,6 +327,19 @@ function App() {
           <CartProvider>
             <ToastProvider>
               <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
+                {/* Pull-to-refresh indicator */}
+                {pullDistance > 0 && (
+                  <div 
+                    className="fixed top-0 left-0 right-0 z-50 bg-blue-500 text-white text-center py-2 transition-all duration-200"
+                    style={{ 
+                      transform: `translateY(${Math.min(pullDistance - 60, 40)}px)`,
+                      opacity: Math.min(pullDistance / 60, 1)
+                    }}
+                  >
+                    {pullDistance > 60 ? 'Yangilash uchun qo\'yib bering' : 'Yangilash uchun torting'}
+                  </div>
+                )}
+                
                 <Header 
                   onNavigate={handleNavigate}
                 />
