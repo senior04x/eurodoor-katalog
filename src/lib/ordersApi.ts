@@ -139,6 +139,14 @@ export const ordersApi = {
   // Buyurtma holatini yangilash
   async updateOrderStatus(orderId: string, status: string): Promise<boolean> {
     try {
+      // Avval eski status'ni olish
+      const { data: oldOrder } = await supabase
+        .from('orders')
+        .select('status, customer_phone, order_number, customer_name, total_amount, delivery_address')
+        .eq('id', orderId)
+        .single();
+
+      // Status'ni yangilash
       const { error } = await supabase
         .from('orders')
         .update({ status })
@@ -147,6 +155,28 @@ export const ordersApi = {
       if (error) {
         console.error('❌ Supabase error updating order status:', error);
         throw new Error(`Supabase error: ${error.message}`);
+      }
+
+      // Telegram notification yuborish (agar status o'zgargan bo'lsa)
+      if (oldOrder && oldOrder.status !== status) {
+        try {
+          const { adminTelegramService } = await import('./adminTelegramService');
+          await adminTelegramService.triggerOrderStatusNotification({
+            order_id: orderId,
+            status: status,
+            customer_id: orderId,
+            order_number: oldOrder.order_number,
+            customer_name: oldOrder.customer_name,
+            customer_phone: oldOrder.customer_phone,
+            total_amount: oldOrder.total_amount,
+            delivery_address: oldOrder.delivery_address,
+            products: [] // Mahsulotlar alohida olinadi
+          });
+          console.log('✅ Telegram notification sent for order status change');
+        } catch (telegramError) {
+          console.error('❌ Telegram notification error:', telegramError);
+          // Telegram xatosi buyurtma yangilanishini to'xtatmaydi
+        }
       }
       
       return true;

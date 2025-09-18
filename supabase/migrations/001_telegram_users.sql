@@ -2,12 +2,13 @@
 CREATE TABLE IF NOT EXISTS telegram_users (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   chat_id BIGINT UNIQUE NOT NULL,
-  user_id BIGINT NOT NULL,
+  user_id TEXT NOT NULL, -- Telefon raqam yoki user ID
   first_name TEXT,
   last_name TEXT,
   username TEXT,
   language_code TEXT,
   language TEXT DEFAULT 'uzbek',
+  phone_number TEXT, -- Telefon raqam alohida saqlash
   is_bot BOOLEAN DEFAULT FALSE,
   state TEXT DEFAULT 'idle',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

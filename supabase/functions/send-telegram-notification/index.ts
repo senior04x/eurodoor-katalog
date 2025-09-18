@@ -56,24 +56,47 @@ serve(async (req) => {
     const statusText = getStatusText(status)
     const statusEmoji = getStatusEmoji(status)
 
-    // Create Telegram message
+    // Format products list
+    let productsList = '';
+    if (products && products.length > 0) {
+      productsList = products.map((p: any, index: number) => `${index + 1}. ${p.product_name || 'N/A'}
+   Miqdor: ${p.quantity || 1} ta
+   Narx: ${p.unit_price ? p.unit_price.toLocaleString() + ' so\'m' : 'N/A'}
+   Jami: ${p.total_price ? p.total_price.toLocaleString() + ' so\'m' : 'N/A'}${p.product_model ? `\n   Model: ${p.product_model}` : ''}${p.color ? `\n   Rang: ${p.color}` : ''}${p.material ? `\n   Material: ${p.material}` : ''}`).join('\n');
+    } else {
+      productsList = 'Mahsulotlar ro\'yxati mavjud emas';
+    }
+
+    // Create Telegram message in HTML quote format
     const telegramMessage = `
-${statusEmoji} *${title}*
+<blockquote>
+EURODOOR
+────────────────────────
+BUYURTMA CHEKI
+────────────────────────
 
-👤 *Mijoz:* ${customer_name}
-📞 *Telefon:* ${customer_phone}
-📋 *Buyurtma raqami:* ${order_number}
-💰 *Jami summa:* ${total_amount ? total_amount.toLocaleString() + ' so\'m' : 'N/A'}
-📍 *Manzil:* ${delivery_address || 'N/A'}
+Mijoz: ${customer_name}
+Telefon: ${customer_phone}
+Buyurtma: #${order_number}
+Sana: ${new Date().toLocaleDateString('uz-UZ')}
+Vaqt: ${new Date().toLocaleTimeString('uz-UZ')}
 
-📊 *Holat:* ${statusEmoji} ${statusText}
+${productsList}
 
-${message}
+────────────────────────
+TO'LOV MA'LUMOTLARI
+────────────────────────
+Jami summa: ${total_amount ? total_amount.toLocaleString() + ' so\'m' : 'N/A'}
+Yetkazib berish: ${delivery_address || 'Kiritilmagan'}
 
----
-🏠 *Eurodoor*
-📞 +998 90 123 45 67
-🌐 www.eurodoor.uz
+────────────────────────
+BUYURTMA HOLATI
+────────────────────────
+Holat: ${statusText}
+
+${getStatusDescription(status)}
+────────────────────────
+</blockquote>
     `.trim()
 
     // Send message to Telegram
@@ -85,20 +108,24 @@ ${message}
       body: JSON.stringify({
         chat_id: chat_id,
         text: telegramMessage,
-        parse_mode: 'Markdown',
+        parse_mode: 'HTML',
         disable_web_page_preview: true,
         reply_markup: {
           inline_keyboard: [
             [
               {
-                text: "📋 Buyurtmalarimni ko'rish",
-                url: `https://eurodoor.uz/#orders`
+                text: "Buyurtmalarimni ko'rish",
+                web_app: {
+                  url: `https://eurodoor.uz/#orders`
+                }
               }
             ],
             [
               {
-                text: "🏠 Bosh sahifa",
-                url: `https://eurodoor.uz/#home`
+                text: "Bosh sahifa",
+                web_app: {
+                  url: `https://eurodoor.uz/#home`
+                }
               }
             ]
           ]
@@ -173,4 +200,17 @@ function getStatusEmoji(status: string): string {
     'cancelled': '❌'
   }
   return emojiMap[status] || '📋'
+}
+
+function getStatusDescription(status: string): string {
+  const descriptions: Record<string, string> = {
+    'pending': 'Buyurtmangiz qabul qilindi va tasdiqlanishi kutilmoqda.',
+    'confirmed': 'Buyurtmangiz tasdiqlandi. Tez orada tayyorlanishga kirishamiz.',
+    'processing': 'Buyurtmangiz tayyorlanish jarayonida.',
+    'ready': 'Buyurtmangiz tayyor bo\'ldi va yetkazib berishga tayyor.',
+    'shipped': 'Buyurtmangiz yo\'lda! Tez orada yetkazib beriladi.',
+    'delivered': 'Buyurtmangiz muvaffaqiyatli yetkazib berildi. Xaridingiz uchun rahmat!',
+    'cancelled': 'Buyurtmangiz bekor qilindi. Qo\'shimcha ma\'lumot uchun biz bilan bog\'laning.'
+  }
+  return descriptions[status] || 'Buyurtma holati yangilandi.'
 }
