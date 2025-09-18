@@ -59,7 +59,6 @@ function App() {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false)
-  const [pullDistance, setPullDistance] = useState(0)
 
   useEffect(() => {
     // Telegram WebApp ni aniqlash
