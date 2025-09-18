@@ -59,58 +59,6 @@ function App() {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false)
-  const [pullDistance, setPullDistance] = useState(0)
-
-  // Professional pull-to-refresh functionality
-  useEffect(() => {
-    let startY = 0
-    let currentY = 0
-    let isPulling = false
-    let pullThreshold = 80
-
-    const handleTouchStart = (e: TouchEvent) => {
-      if (window.scrollY === 0 && !isPulling) {
-        startY = e.touches[0].clientY
-        isPulling = true
-      }
-    }
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!isPulling || window.scrollY > 0) return
-      
-      currentY = e.touches[0].clientY
-      const distance = currentY - startY
-      
-      if (distance > 0) {
-        e.preventDefault()
-        setPullDistance(distance)
-      }
-    }
-
-    const handleTouchEnd = () => {
-      if (isPulling && pullDistance >= pullThreshold) {
-        // Smooth reload with visual feedback
-        setTimeout(() => {
-          window.location.reload()
-        }, 100)
-      }
-      isPulling = false
-      setPullDistance(0)
-    }
-
-    // Only add listeners on mobile devices
-    if ('ontouchstart' in window) {
-      document.addEventListener('touchstart', handleTouchStart, { passive: false })
-      document.addEventListener('touchmove', handleTouchMove, { passive: false })
-      document.addEventListener('touchend', handleTouchEnd)
-    }
-
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart)
-      document.removeEventListener('touchmove', handleTouchMove)
-      document.removeEventListener('touchend', handleTouchEnd)
-    }
-  }, [pullDistance])
 
   useEffect(() => {
     // Telegram WebApp ni aniqlash
@@ -332,26 +280,6 @@ function App() {
           <CartProvider>
             <ToastProvider>
               <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
-                {/* Professional pull-to-refresh indicator */}
-                {pullDistance > 0 && (
-                  <div 
-                    className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center transition-all duration-200"
-                    style={{ 
-                      transform: `translateY(${Math.min(pullDistance - 40, 60)}px)`,
-                      opacity: Math.min(pullDistance / 80, 1)
-                    }}
-                  >
-                    <div className="bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg">
-                      <div 
-                        className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"
-                        style={{
-                          transform: `rotate(${pullDistance * 4}deg)`,
-                          opacity: pullDistance >= 80 ? 1 : 0.5
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
                 
                 <Header 
                   onNavigate={handleNavigate}
