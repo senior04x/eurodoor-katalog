@@ -27,39 +27,42 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   // Load products function
   const loadProducts = async () => {
     try {
+      console.log('🔄 CatalogPage: Starting to load products...');
       setLoading(true);
-      console.log('🔄 Loading products from database...');
       
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout')), 10000)
+        setTimeout(() => reject(new Error('Request timeout')), 15000)
       );
       
       // Test database connection first
+      console.log('🔍 CatalogPage: Testing database connection...');
       const connectionTest = await Promise.race([
         productsApi.testConnection(),
         timeoutPromise
       ]) as { success: boolean; error?: string };
       
       if (!connectionTest.success) {
+        console.error('❌ CatalogPage: Database connection failed:', connectionTest.error);
         throw new Error(`Database connection failed: ${connectionTest.error}`);
       }
       
+      console.log('✅ CatalogPage: Database connection OK, fetching products...');
       const fetchedProducts = await Promise.race([
         productsApi.getAllProducts(),
         timeoutPromise
       ]) as Product[];
       
+      console.log('✅ CatalogPage: Products loaded successfully:', fetchedProducts.length);
       setProducts(fetchedProducts);
-      console.log('✅ Products loaded:', fetchedProducts.length);
       
     } catch (error) {
-      console.error('❌ Error loading products:', error);
-      console.error('❌ Error details:', error);
+      console.error('❌ CatalogPage: Error loading products:', error);
       setProducts([]);
       // Show error message to user
       alert('Mahsulotlar yuklanmadi. Iltimos, qaytadan urinib ko\'ring.');
     } finally {
+      console.log('✅ CatalogPage: Setting loading to false');
       setLoading(false);
     }
   };

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ShoppingCart, User, LogOut, Bell, Package } from "lucide-react";
+import { X, ShoppingCart, User, LogOut, Package } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useCart } from "../contexts/CartContext";
 import { useAuth } from "../contexts/AuthContext";
@@ -178,16 +178,6 @@ export default function BurgerMenu({ open, onClose, currentPage, onNavigate, onS
                       <ShoppingCart className="h-4 w-4 mr-3 flex-shrink-0" />
                       <span className="truncate">{t('header.cart')} ({totalItems})</span>
                     </button>
-                    <button
-                      onClick={() => {
-                        // setShowNotifications(!showNotifications);
-                        onClose();
-                      }}
-                      className="flex items-center w-full px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors text-sm"
-                    >
-                      <Bell className="h-4 w-4 mr-3 flex-shrink-0" />
-                      <span className="truncate">{t('header.notifications')}</span>
-                    </button>
                     <hr className="border-white/20 my-2" />
                     <button
                       onClick={handleSignOut}
@@ -246,5 +236,6 @@ export default function BurgerMenu({ open, onClose, currentPage, onNavigate, onS
         </>
       )}
     </AnimatePresence>
+
   );
 }

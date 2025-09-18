@@ -46,10 +46,24 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
       setLoading(true)
       console.log('🔔 Loading notifications for user:', user.id)
       
+      // First try to get customer ID from customers table
+      const { data: customerData, error: customerError } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('email', user.email)
+        .single()
+
+      if (customerError || !customerData) {
+        console.log('❌ Customer not found for email:', user.email)
+        return
+      }
+
+      console.log('🔔 Loading notifications for customer ID:', customerData.id)
+      
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', customerData.id)
         .order('created_at', { ascending: false })
         .limit(50)
 
@@ -129,10 +143,22 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
     try {
       console.log('🔔 Marking all notifications as read for user:', user.id)
       
+      // Get customer ID from customers table
+      const { data: customerData, error: customerError } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('email', user.email)
+        .single()
+
+      if (customerError || !customerData) {
+        console.log('❌ Customer not found for email:', user.email)
+        return
+      }
+      
       const { data, error } = await supabase
         .from('notifications')
         .update({ is_read: true })
-        .eq('user_id', user.id)
+        .eq('user_id', customerData.id)
         .eq('is_read', false)
         .select()
 
@@ -207,60 +233,98 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
   useEffect(() => {
     if (!user) return
 
-    const subscription = supabase
-      .channel('notifications-realtime')
-      .on('postgres_changes', 
-        { 
-          event: 'INSERT', 
-          schema: 'public', 
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`
-        },
-        (payload) => {
-          console.log('🔔 New notification received:', payload.new)
-          setNotifications(prev => [payload.new as Notification, ...prev])
-          const newUnreadCount = unreadCount + 1
-          setUnreadCount(newUnreadCount)
-          
-          // Notify parent component about unread count change
-          if (onUnreadCountChange) {
-            onUnreadCountChange(newUnreadCount)
-          }
+    // Get customer ID for real-time subscription
+    const setupRealtimeSubscription = async () => {
+      try {
+        const { data: customerData, error: customerError } = await supabase
+          .from('customers')
+          .select('id')
+          .eq('email', user.email)
+          .single()
+
+        if (customerError || !customerData) {
+          console.log('❌ Customer not found for real-time subscription:', user.email)
+          return
         }
-      )
-      .on('postgres_changes', 
-        { 
-          event: 'UPDATE', 
-          schema: 'public', 
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`
-        },
-        (payload) => {
-          console.log('🔔 Notification updated:', payload.new)
-          const updatedNotification = payload.new as Notification
-          
-          setNotifications(prev => 
-            prev.map(n => n.id === updatedNotification.id ? updatedNotification : n)
-          )
-          
-          // Update unread count based on the update
-          if (updatedNotification.is_read) {
-            const newUnreadCount = Math.max(0, unreadCount - 1)
-            setUnreadCount(newUnreadCount)
-            
-            // Notify parent component about unread count change
-            if (onUnreadCountChange) {
-              onUnreadCountChange(newUnreadCount)
+
+        console.log('🔔 Setting up real-time subscription for customer ID:', customerData.id)
+        console.log('🔔 Customer email:', user.email)
+        console.log('🔔 Customer data:', customerData)
+
+        const subscription = supabase
+          .channel('notifications-realtime')
+          .on('postgres_changes', 
+            { 
+              event: 'INSERT', 
+              schema: 'public', 
+              table: 'notifications',
+              filter: `user_id=eq.${customerData.id}`
+            },
+            (payload) => {
+              console.log('🔔 New notification received:', payload.new)
+              setNotifications(prev => {
+                const newNotifications = [payload.new as Notification, ...prev]
+                const newUnreadCount = newNotifications.filter(n => !n.is_read).length
+                setUnreadCount(newUnreadCount)
+                
+                // Notify parent component about unread count change
+                if (onUnreadCountChange) {
+                  onUnreadCountChange(newUnreadCount)
+                }
+                
+                return newNotifications
+              })
             }
-            
-            console.log('✅ Unread count decreased due to notification read')
-          }
-        }
-      )
-      .subscribe()
+          )
+          .on('postgres_changes', 
+            { 
+              event: 'UPDATE', 
+              schema: 'public', 
+              table: 'notifications',
+              filter: `user_id=eq.${customerData.id}`
+            },
+            (payload) => {
+              console.log('🔔 Notification updated:', payload.new)
+              const updatedNotification = payload.new as Notification
+              
+              setNotifications(prev => {
+                const updatedNotifications = prev.map(n => n.id === updatedNotification.id ? updatedNotification : n)
+                const newUnreadCount = updatedNotifications.filter(n => !n.is_read).length
+                setUnreadCount(newUnreadCount)
+                
+                // Notify parent component about unread count change
+                if (onUnreadCountChange) {
+                  onUnreadCountChange(newUnreadCount)
+                }
+                
+                console.log('✅ Unread count updated:', newUnreadCount)
+                return updatedNotifications
+              })
+            }
+          )
+          .subscribe((status) => {
+            console.log('📡 Real-time subscription status:', status)
+            if (status === 'SUBSCRIBED') {
+              console.log('✅ Real-time notifications are active!')
+            }
+          })
+
+        return subscription
+      } catch (error) {
+        console.error('❌ Error setting up real-time subscription:', error)
+        return null
+      }
+    }
+
+    let subscription: any = null
+    setupRealtimeSubscription().then((sub) => {
+      subscription = sub
+    })
 
     return () => {
-      subscription.unsubscribe()
+      if (subscription) {
+        subscription.unsubscribe()
+      }
     }
   }, [user])
 
@@ -270,21 +334,38 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
     <div className="relative">
       {/* No bell button - only dropdown */}
 
-      {/* Notification Dropdown */}
+      {/* Notification Modal */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className={`absolute ${isMobile ? 'left-0 right-0 mx-4' : 'right-0'} top-full mt-2 ${isMobile ? 'w-auto' : 'w-80'} rounded-lg shadow-2xl border border-white/30 z-50`}
-            style={{ 
-              background: 'linear-gradient(135deg, #304675 0%, #451B6F 100%)',
-              backdropFilter: 'blur(20px)'
-            }}
-          >
+          <>
+            {/* Overlay for mobile */}
+            {isMobile && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                onClick={handleMobileClose}
+                className="fixed inset-0 bg-black/30 cart-backdrop-blur z-[9998]"
+              />
+            )}
+
+            <motion.div
+              initial={isMobile ? { x: "100%" } : { opacity: 0, y: -10, scale: 0.95 }}
+              animate={isMobile ? { x: 0 } : { opacity: 1, y: 0, scale: 1 }}
+              exit={isMobile ? { x: "100%" } : { opacity: 0, y: -10, scale: 0.95 }}
+              transition={isMobile ? { type: "tween", duration: 0.3, ease: "easeInOut" } : { duration: 0.2 }}
+              className={`${isMobile ? 'fixed right-0 top-0 h-screen w-full md:w-2/5 bg-black/30 cart-modal-blur shadow-2xl z-[9999] flex flex-col border-l border-white/30' : `absolute ${isMobile ? 'left-0 right-0 mx-4' : 'right-0'} top-full mt-2 ${isMobile ? 'w-auto' : 'w-80'} rounded-lg shadow-2xl border border-white/30 z-50`}`}
+              style={isMobile ? {
+                backdropFilter: 'blur(24px) saturate(150%) !important',
+                WebkitBackdropFilter: 'blur(24px) saturate(150%) !important'
+              } : { 
+                background: 'linear-gradient(135deg, #304675 0%, #451B6F 100%)',
+                backdropFilter: 'blur(20px)'
+              }}
+            >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/30" style={{ background: 'linear-gradient(90deg, rgba(48, 70, 117, 0.3) 0%, rgba(69, 27, 111, 0.3) 100%)' }}>
+            <div className={`flex items-center justify-between ${isMobile ? 'px-6 py-4' : 'p-4'} border-b border-white/30`} style={{ background: 'linear-gradient(90deg, rgba(48, 70, 117, 0.3) 0%, rgba(69, 27, 111, 0.3) 100%)' }}>
               <h3 className="text-white font-semibold">Bildirishnomalar</h3>
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
@@ -306,7 +387,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
             </div>
 
             {/* Notifications List */}
-            <div className="max-h-96 overflow-y-auto custom-scrollbar">
+            <div className={`${isMobile ? 'flex-1' : 'max-h-96'} overflow-y-auto custom-scrollbar`}>
               {loading ? (
                 <div className="p-4 text-center text-white/80">
                   <Clock className="w-6 h-6 mx-auto mb-2 animate-spin" />
@@ -362,7 +443,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
             </div>
 
             {/* No footer - removed "View all notifications" button */}
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>

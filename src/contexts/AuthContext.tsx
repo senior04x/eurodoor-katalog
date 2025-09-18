@@ -66,7 +66,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Joriy foydalanuvchini olish
     const getSession = async () => {
       try {
+        console.log('🔄 AuthContext: Starting session check...')
+        setLoading(true)
+        
         const { data: { session } } = await supabase.auth.getSession()
+        console.log('📤 AuthContext: Session data received:', !!session?.user)
+        
         if (session?.user) {
           // Mijoz mavjudligini tekshirish (faqat bir marta)
           console.log('🔍 Initial session check for user:', session.user.id)
@@ -83,14 +88,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               phone: customerData?.phone || session.user.user_metadata?.phone || '',
               created_at: session.user.created_at
             };
+            console.log('✅ AuthContext: User data loaded successfully')
             setUser(userData);
             // Save user ID for notifications
             setCurrentUserId(session.user.id);
+          } else {
+            console.log('⚠️ AuthContext: Customer not found, signing out')
+            setUser(null)
           }
+        } else {
+          console.log('ℹ️ AuthContext: No active session found')
+          setUser(null)
         }
       } catch (error) {
-        console.error('Session olishda xatolik:', error)
+        console.error('❌ AuthContext: Session olishda xatolik:', error)
+        setUser(null)
       } finally {
+        console.log('✅ AuthContext: Setting loading to false')
         setLoading(false)
       }
     }

@@ -1,9 +1,10 @@
 import { useState, useEffect, memo, useCallback } from 'react';
-import { Menu, ShoppingCart } from 'lucide-react';
+import { Menu, ShoppingCart, Bell } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCart } from '../contexts/CartContext';
 import CartSidebar from './CartSidebar';
 import BurgerMenu from './BurgerMenu';
+import NotificationCenter from './NotificationCenter';
 
 interface FloatingButtonsProps {
   currentPage: string;
@@ -14,6 +15,8 @@ interface FloatingButtonsProps {
 const FloatingButtons = memo<FloatingButtonsProps>(({ currentPage, onNavigate, onShowAuthModal }) => {
   const [isBurgerMenuOpen, setIsBurgerMenuOpen] = useState(false);
   const [isTelegramWebApp, setIsTelegramWebApp] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { totalItems, setIsCartOpen } = useCart();
 
   // Optimized callbacks
@@ -80,6 +83,20 @@ const FloatingButtons = memo<FloatingButtonsProps>(({ currentPage, onNavigate, o
         } : {}}
       >
         <div className="flex gap-3">
+          {/* Notifications Button */}
+          <button
+            onClick={() => setShowNotifications(true)}
+            className="relative inline-flex h-12 w-12 items-center justify-center rounded-full text-white transition-all duration-300 hover:bg-white/10"
+            aria-label="Notifications"
+          >
+            <Bell className="h-6 w-6" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-semibold">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+
           {/* Cart Button */}
           <button
             onClick={() => setIsCartOpen(true)}
@@ -118,6 +135,14 @@ const FloatingButtons = memo<FloatingButtonsProps>(({ currentPage, onNavigate, o
       
       {/* Cart Sidebar */}
       <CartSidebar onNavigate={onNavigate} />
+      
+      {/* Notification Center */}
+      <NotificationCenter 
+        isMobile={true}
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+        onUnreadCountChange={setUnreadCount}
+      />
     </>
   );
 });

@@ -24,7 +24,6 @@ export const ordersApi = {
         delivery_address: orderData.delivery_address,
         notes: orderData.notes,
         total_amount: orderData.total_amount,
-        products: orderData.products,
         status: 'pending' as const
       };
 
@@ -37,6 +36,35 @@ export const ordersApi = {
       if (error) {
         console.error('❌ Supabase error creating order:', error);
         throw new Error(`Supabase error: ${error.message}`);
+      }
+      
+      // Order items yaratish (agar order_items jadvali mavjud bo'lsa)
+      if (orderData.products && orderData.products.length > 0) {
+        try {
+          const orderItems = orderData.products.map(product => ({
+            order_id: data.id,
+            product_name: product.name || product.model_name,
+            quantity: product.quantity || 1,
+            unit_price: product.price || 0,
+            total_price: (product.price || 0) * (product.quantity || 1),
+            custom_dimensions: product.dimensions,
+            color: product.color,
+            material: product.material,
+            notes: product.notes
+          }));
+
+          const { error: itemsError } = await supabase
+            .from('order_items')
+            .insert(orderItems);
+
+          if (itemsError) {
+            console.error('❌ Error creating order items:', itemsError);
+            // Order items yaratishda xatolik bo'lsa ham, order yaratilgan bo'ladi
+          }
+        } catch (error) {
+          console.error('❌ Error creating order items:', error);
+          // Order items yaratishda xatolik bo'lsa ham, order yaratilgan bo'ladi
+        }
       }
       
       return data;

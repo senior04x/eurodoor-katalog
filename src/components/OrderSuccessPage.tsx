@@ -167,38 +167,38 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
             </h3>
             
             <div className="space-y-3">
-              <div className="flex justify-between items-center py-2 border-b border-white/20">
-                <span className="text-gray-300 font-medium">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-2 border-b border-white/20 gap-1 sm:gap-0">
+                <span className="text-gray-300 font-medium text-sm sm:text-base">
                   {t('orderSuccess.orderNumber')}
                 </span>
-                <span className="text-white font-bold text-lg">
+                <span className="text-white font-bold text-base sm:text-lg break-all">
                   {orderData.orderNumber}
                 </span>
               </div>
               
-              <div className="flex justify-between items-center py-2 border-b border-white/20">
-                <span className="text-gray-300 font-medium">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-2 border-b border-white/20 gap-1 sm:gap-0">
+                <span className="text-gray-300 font-medium text-sm sm:text-base">
                   {t('orderSuccess.customerName')}
                 </span>
-                <span className="text-white font-semibold">
+                <span className="text-white font-semibold text-sm sm:text-base break-all">
                   {orderData.customerName}
                 </span>
               </div>
               
-              <div className="flex justify-between items-center py-2 border-b border-white/20">
-                <span className="text-gray-300 font-medium">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-2 border-b border-white/20 gap-1 sm:gap-0">
+                <span className="text-gray-300 font-medium text-sm sm:text-base">
                   {t('orderSuccess.phone')}
                 </span>
-                <span className="text-white font-semibold">
+                <span className="text-white font-semibold text-sm sm:text-base break-all">
                   {orderData.customerPhone}
                 </span>
               </div>
               
-              <div className="flex justify-between items-center py-2">
-                <span className="text-gray-300 font-medium">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-2 gap-1 sm:gap-0">
+                <span className="text-gray-300 font-medium text-sm sm:text-base">
                   {t('orderSuccess.totalAmount')}
                 </span>
-                <span className="text-green-400 font-bold text-xl">
+                <span className="text-green-400 font-bold text-lg sm:text-xl break-all">
                   {orderData.totalAmount.toLocaleString()} so'm
                 </span>
               </div>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { User, Phone, Mail, Edit, ShoppingCart, Package, Camera, Clock, CheckCircle, Check, RotateCcw } from 'lucide-react'
+import { User, Phone, Mail, Edit, ShoppingCart, Package, Camera, Clock, CheckCircle, Check, RotateCcw, MessageSquare } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { supabase } from '../lib/supabase'
+import TelegramTest from './TelegramTest'
 
 interface ProfilePageProps {
   onNavigate: (page: string) => void
@@ -38,32 +39,35 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
     memberDays: 0
   })
   const [loading, setLoading] = useState(true)
+  const [showTelegramTest, setShowTelegramTest] = useState(false)
 
   // Load user statistics and customer data
   const loadUserStats = async () => {
     if (!user) return
 
     try {
+      console.log('🔄 ProfilePage: Loading user stats...')
       setLoading(true)
       
       // Get customer data using migration helper
       try {
+        console.log('🔍 ProfilePage: Fetching customer data...')
         const { customerMigrationApi } = await import('../lib/customerMigration')
         const customerResult = await customerMigrationApi.getCustomerData(user.id)
         
         if (customerResult.data) {
-          console.log('✅ Customer data found:', customerResult.data)
+          console.log('✅ ProfilePage: Customer data found:', customerResult.data)
           setCustomerData({ 
             total_purchases: customerResult.data.total_purchases || 0, 
             total_orders: customerResult.data.total_orders || 0, 
             avatar_url: customerResult.data.avatar_url || '' 
           })
         } else {
-          console.log('⚠️ Customer data not found in any system')
+          console.log('⚠️ ProfilePage: Customer data not found in any system')
           setCustomerData({ total_purchases: 0, total_orders: 0, avatar_url: '' })
         }
       } catch (error) {
-        console.warn('⚠️ Customer data loading failed:', error)
+        console.warn('⚠️ ProfilePage: Customer data loading failed:', error)
         setCustomerData({ total_purchases: 0, total_orders: 0, avatar_url: '' })
       }
       
@@ -104,10 +108,11 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
         memberDays
       })
 
-      console.log('📊 User stats loaded:', { totalOrders, totalSpent, memberDays })
+      console.log('✅ ProfilePage: User stats loaded:', { totalOrders, totalSpent, memberDays })
     } catch (error) {
-      console.error('Error loading user stats:', error)
+      console.error('❌ ProfilePage: Error loading user stats:', error)
     } finally {
+      console.log('✅ ProfilePage: Setting loading to false')
       setLoading(false)
     }
   }
@@ -421,6 +426,14 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                   <Package className="w-5 h-5" />
                   <span>Mahsulotlar</span>
                 </button>
+                
+                <button
+                  onClick={() => setShowTelegramTest(true)}
+                  className="w-full flex items-center space-x-3 px-4 py-3 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 rounded-lg transition-colors"
+                >
+                  <MessageSquare className="w-5 h-5" />
+                  <span>Telegram Bot Test</span>
+                </button>
               </div>
             </div>
 
@@ -496,6 +509,11 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
           </motion.div>
         </div>
       </div>
+
+      {/* Telegram Test Modal */}
+      {showTelegramTest && (
+        <TelegramTest onClose={() => setShowTelegramTest(false)} />
+      )}
     </div>
   )
 }

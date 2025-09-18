@@ -5,11 +5,12 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { pushNotificationService } from '../lib/pushNotificationService'
+import { telegramNotificationService } from '../lib/telegramNotificationService'
 
 interface Order {
   id: string
   order_number: string
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
+  status: 'pending' | 'confirmed' | 'processing' | 'ready' | 'shipped' | 'delivered' | 'cancelled'
   created_at: string
   updated_at: string
   total_amount: number
@@ -25,7 +26,8 @@ const statusSteps = [
   { key: 'pending', label: 'Kutilmoqda', icon: Clock, color: 'text-yellow-600' },
   { key: 'confirmed', label: 'Tasdiqlangan', icon: CheckCircle, color: 'text-blue-600' },
   { key: 'processing', label: 'Tayyorlanmoqda', icon: Package, color: 'text-purple-600' },
-  { key: 'shipped', label: 'Yuborilgan', icon: Truck, color: 'text-indigo-600' },
+  { key: 'ready', label: 'Tayyor', icon: Package, color: 'text-indigo-600' },
+  { key: 'shipped', label: 'Yuborilgan', icon: Truck, color: 'text-cyan-600' },
   { key: 'delivered', label: 'Yetkazilgan', icon: Home, color: 'text-green-600' }
 ]
 
@@ -41,6 +43,20 @@ export default function OrderTracking() {
 
   useEffect(() => {
     if (user) {
+      // Push notification permission so'rash
+      const requestNotificationPermission = async () => {
+        try {
+          const granted = await pushNotificationService.requestPermission();
+          if (granted) {
+            console.log('✅ Notification permission granted');
+          } else {
+            console.log('⚠️ Notification permission denied');
+          }
+        } catch (error) {
+          console.error('❌ Error requesting notification permission:', error);
+        }
+      };
+
       // Test Supabase connection first
       const testConnection = async () => {
         try {
@@ -55,7 +71,8 @@ export default function OrderTracking() {
         }
       }
       
-      testConnection()
+      requestNotificationPermission();
+      testConnection();
       loadUserOrders()
       
       // Enhanced real-time subscription for order updates (matching admin panel)
@@ -76,15 +93,8 @@ export default function OrderTracking() {
         )
         .on('postgres_changes', 
           { event: 'UPDATE', schema: 'public', table: 'orders' },
-          (payload) => {
+          async (payload) => {
             console.log('✏️ Order updated:', payload.new)
-            console.log('🔄 Payload details:', {
-              new: payload.new,
-              old: payload.old,
-              eventType: payload.eventType,
-              schema: payload.schema,
-              table: payload.table
-            })
             
             // Check if this is a status change
             const oldStatus = payload.old?.status
@@ -93,42 +103,39 @@ export default function OrderTracking() {
             if (oldStatus && newStatus && oldStatus !== newStatus) {
               console.log('🔔 Order status changed:', { oldStatus, newStatus })
               
-              // Show browser notification
-              if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-                const statusMessages: { [key: string]: string } = {
-                  'pending': 'Buyurtmangiz qabul qilindi va ko\'rib chiqilmoqda',
-                  'confirmed': 'Buyurtmangiz tasdiqlandi va ishlab chiqarishga yuborildi',
-                  'processing': 'Buyurtmangiz ishlab chiqarilmoqda',
-                  'ready': 'Buyurtmangiz tayyor! Yetkazib berish uchun tayyorlanmoqda',
-                  'shipped': 'Buyurtmangiz yuborildi va yo\'lda',
-                  'delivered': 'Buyurtmangiz yetkazib berildi! Rahmat!',
-                  'cancelled': 'Buyurtmangiz bekor qilindi'
-                };
-
-                const message = statusMessages[newStatus] || `Buyurtma holati o'zgartirildi: ${newStatus}`;
-                
-                new Notification(`Eurodoor - Buyurtma #${payload.new.order_number}`, {
-                  body: message,
-                  icon: '/favicon.ico',
-                  tag: `order-${payload.new.order_number}`,
-                  requireInteraction: true
-                });
-              }
-              
-              // Send push notification to user's device
+              // Push notification service orqali notification yuborish
               if (user && user.id) {
                 try {
-                  pushNotificationService.notifyOrderStatusChange(
+                  await pushNotificationService.notifyOrderStatusChange(
                     payload.new.order_number,
                     newStatus,
                     user.id
-                  ).then(() => {
-                    console.log('✅ Push notification sent to user device');
-                  }).catch((error) => {
-                    console.error('❌ Push notification error:', error);
-                  });
+                  );
+                  console.log('✅ Push notification sent for order status change');
                 } catch (error) {
                   console.error('❌ Push notification error:', error);
+                }
+              }
+
+              // Telegram notification yuborish
+              if (user && user.phone) {
+                try {
+                  // Telegram chat ID ni telefon raqamidan olish (bu sizning bot logikangizga qarab o'zgaradi)
+                  const chatId = user.phone.replace(/\D/g, ''); // Faqat raqamlarni olish
+                  
+                  await telegramNotificationService.sendOrderStatusNotification(
+                    chatId,
+                    payload.new.order_number,
+                    payload.new.customer_name || user.name || 'Mijoz',
+                    user.phone,
+                    newStatus,
+                    payload.new.total_amount,
+                    payload.new.delivery_address,
+                    payload.new.products
+                  );
+                  console.log('✅ Telegram notification sent for order status change');
+                } catch (error) {
+                  console.error('❌ Telegram notification error:', error);
                 }
               }
             }
@@ -184,19 +191,30 @@ export default function OrderTracking() {
     if (!user) return
 
     try {
+      console.log('🔄 OrderTracking: Loading user orders...')
       setLoading(true)
+      setError('')
+      
       const { data, error } = await supabase
         .from('orders')
         .select('*')
         .eq('customer_email', user.email)
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ OrderTracking: Database error:', error)
+        throw error
+      }
+      
+      console.log('✅ OrderTracking: Orders loaded:', data?.length || 0)
       setOrders(data || [])
+      setLastUpdate(new Date())
     } catch (error) {
-      console.error('Buyurtmalarni yuklashda xatolik:', error)
+      console.error('❌ OrderTracking: Buyurtmalarni yuklashda xatolik:', error)
       setError('Buyurtmalarni yuklashda xatolik yuz berdi')
+      setOrders([])
     } finally {
+      console.log('✅ OrderTracking: Setting loading to false')
       setLoading(false)
     }
   }
@@ -219,9 +237,6 @@ export default function OrderTracking() {
       
       if (!data || data.length === 0) {
         setError('Buyurtma topilmadi')
-      } else {
-        // Real-time subscription global notification service orqali ishlayapti
-        console.log('✅ Orders loaded, real-time updates handled by global notification service');
       }
     } catch (error) {
       console.error('Qidiruvda xatolik:', error)
@@ -331,19 +346,37 @@ export default function OrderTracking() {
                 className="bg-white/10 backdrop-blur-sm rounded-2xl p-6"
               >
                 {/* Order Header */}
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-1">
-                      Buyurtma #{order.order_number}
-                    </h3>
-                    <p className="text-gray-300">
+                <div className="mb-6">
+                  {/* Mobile: Stacked layout */}
+                  <div className="md:hidden space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-white">
+                        Buyurtma #{order.order_number}
+                      </h3>
+                      <span className="text-lg font-bold text-blue-400">
+                        {formatPrice(order.total_amount)}
+                      </span>
+                    </div>
+                    <p className="text-gray-300 text-sm">
                       {formatDate(order.created_at)}
                     </p>
                   </div>
-                  <div className="mt-4 md:mt-0">
-                    <span className="text-2xl font-bold text-blue-400">
-                      {formatPrice(order.total_amount)}
-                    </span>
+                  
+                  {/* Desktop: Side by side layout */}
+                  <div className="hidden md:flex md:items-center md:justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl font-semibold text-white mb-1">
+                        Buyurtma #{order.order_number}
+                      </h3>
+                      <p className="text-gray-300">
+                        {formatDate(order.created_at)}
+                      </p>
+                    </div>
+                    <div className="flex-shrink-0">
+                      <span className="text-2xl font-bold text-blue-400">
+                        {formatPrice(order.total_amount)}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -423,6 +456,7 @@ export default function OrderTracking() {
                     <p className="text-gray-300">{order.notes}</p>
                   </div>
                 )}
+
               </motion.div>
             ))}
           </div>

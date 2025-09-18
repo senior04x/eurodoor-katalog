@@ -7,11 +7,17 @@ export const customersApi = {
     name: string;
     phone: string;
     email?: string;
+    password?: string;
   }): Promise<Customer | null> {
     try {
       const { data, error } = await supabase
         .from('customers')
-        .insert([customerData])
+        .insert([{
+          name: customerData.name,
+          phone: customerData.phone,
+          email: customerData.email || null,
+          password: customerData.password || null
+        }])
         .select()
         .single();
       
@@ -36,7 +42,7 @@ export const customersApi = {
         .eq('phone', phone)
         .single();
       
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error('❌ Supabase error fetching customer:', error);
         return null;
       }
@@ -73,17 +79,18 @@ export const customersApi = {
     name: string;
     phone: string;
     email?: string;
+    password?: string;
   }): Promise<Customer> {
     try {
-      // Avval mijoz mavjudligini tekshirish
       const customer = await this.getCustomerByPhone(customerData.phone);
       
       if (customer) {
-        // Mavjud mijoz ma'lumotlarini yangilash
-        await this.updateCustomer(customer.id, customerData);
+        await this.updateCustomer(customer.id, {
+          name: customerData.name,
+          email: customerData.email || customer.email
+        });
         return { ...customer, ...customerData };
       } else {
-        // Yangi mijoz yaratish
         const newCustomer = await this.createCustomer(customerData);
         if (!newCustomer) {
           throw new Error('Failed to create customer');
@@ -102,7 +109,6 @@ export const customersApi = {
       const { data, error } = await supabase
         .from('customers')
         .select('*')
-        .eq('is_active', true)
         .order('created_at', { ascending: false });
       
       if (error) {
