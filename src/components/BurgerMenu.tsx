@@ -20,6 +20,7 @@ export default function BurgerMenu({ open, onClose, currentPage, onNavigate, onS
   const { totalItems, setIsCartOpen } = useCart();
   const { user, signOut } = useAuth();
   const { showSuccess } = useToast();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // body scroll lock
   useEffect(() => {
@@ -56,6 +57,7 @@ export default function BurgerMenu({ open, onClose, currentPage, onNavigate, onS
   };
 
   const handleSignOut = async () => {
+    setShowLogoutConfirm(false); // Modalni yopish
     onClose(); // Menuni darhol yopish
     try {
       await signOut();
@@ -180,7 +182,7 @@ export default function BurgerMenu({ open, onClose, currentPage, onNavigate, onS
                     </button>
                     <hr className="border-white/20 my-2" />
                     <button
-                      onClick={handleSignOut}
+                      onClick={() => setShowLogoutConfirm(true)}
                       className="flex items-center w-full px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm"
                     >
                       <LogOut className="h-4 w-4 mr-3 flex-shrink-0" />
@@ -236,6 +238,48 @@ export default function BurgerMenu({ open, onClose, currentPage, onNavigate, onS
         </>
       )}
     </AnimatePresence>
-
+    
+    {/* Logout Confirmation Modal - Menudan tashqarida, mustaqil ishlaydi */}
+    <AnimatePresence>
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+            onClick={() => setShowLogoutConfirm(false)} 
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="bg-gradient-to-br from-slate-900 to-slate-800 border border-white/20 rounded-2xl p-6 shadow-2xl relative z-10 w-full max-w-sm"
+          >
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="p-3 bg-red-500/20 rounded-full">
+                <LogOut className="w-6 h-6 text-red-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-white">Tizimdan chiqish</h3>
+            </div>
+            <p className="text-gray-300 mb-6">Rostdan ham profilingizdan chiqmoqchimisiz?</p>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-colors"
+              >
+                Yo'q, qolish
+              </button>
+              <button
+                onClick={handleSignOut}
+                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-colors shadow-lg shadow-red-500/25"
+              >
+                Ha, chiqish
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }
