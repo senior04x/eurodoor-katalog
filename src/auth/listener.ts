@@ -26,7 +26,6 @@ export function attachAuthListener() {
     } finally {
       if (!routed) {
         routed = true
-        location.hash = 'orders'
       }
     }
   })
