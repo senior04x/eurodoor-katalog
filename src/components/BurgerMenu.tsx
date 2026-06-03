@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingCart, User, LogOut, Package } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -80,6 +80,7 @@ export default function BurgerMenu({ open, onClose, currentPage, onNavigate, onS
   ];
 
   return (
+    <>
     <AnimatePresence>
       {open && (
         <>
@@ -281,5 +282,6 @@ export default function BurgerMenu({ open, onClose, currentPage, onNavigate, onS
         </div>
       )}
     </AnimatePresence>
+    </>
   );
 }
