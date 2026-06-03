@@ -5,15 +5,17 @@ export async function savePushSubscription(userId: string, subscription: any) {
   try {
     console.log('💾 Saving push subscription for user:', userId);
     
+    // Delete existing subscriptions for this user
+    await supabase.from('push_subscriptions').delete().eq('user_id', userId);
+    
     const { data, error } = await supabase
       .from('push_subscriptions')
-      .upsert({
+      .insert([{
         user_id: userId,
         subscription: subscription,
         created_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id'
-      });
+      }])
+      .select();
 
     if (error) {
       console.error('❌ Failed to save subscription:', error);

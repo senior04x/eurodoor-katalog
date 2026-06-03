@@ -111,11 +111,13 @@ export async function ensurePushSubscription(userId: string) {
     }
     console.log('📋 Subscription data:', subscriptionData)
     
+    // Delete existing subscriptions for this user to avoid duplicates and constraint errors
+    await supabase.from('push_subscriptions').delete().eq('user_id', userId);
+    
     const { data, error } = await supabase
       .from('push_subscriptions')
-      .upsert(subscriptionData, {
-        onConflict: 'user_id'
-      })
+      .insert([subscriptionData])
+      .select();
 
     if (error) {
       console.error('❌ Subscription save error:', error)

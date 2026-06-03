@@ -88,7 +88,7 @@ export const customerMigrationApi = {
           .from('customer_registrations')
           .select('*')
           .eq('id', customerId)
-          .single();
+          .maybeSingle();
 
         // Add 5 second timeout
         const timeoutPromise = new Promise((_, reject) => 
@@ -116,7 +116,7 @@ export const customerMigrationApi = {
           .from('customers')
           .select('*')
           .eq('id', customerId)
-          .single();
+          .maybeSingle();
 
         // Add 5 second timeout
         const timeoutPromise = new Promise((_, reject) => 
