@@ -361,11 +361,10 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
           animate="show"
           className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4"
         >
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence>
             {filteredProducts.slice(0, displayLimit).map((product) => (
               <motion.div
                 key={product.id}
-                layout
                 variants={cardVariants}
                 initial="hidden"
                 animate="show"
