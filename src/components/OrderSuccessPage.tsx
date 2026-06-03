@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, Home, ShoppingBag, Phone, Bell } from 'lucide-react';
+import { CheckCircle, Home, ClipboardList, Phone } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 // import { notificationService } from '../lib/notificationService'; // Replaced with new system
-import { testNotificationSystem } from '../lib/notificationTest';
 
 interface OrderSuccessPageProps {
   orderNumber?: string;
@@ -25,7 +24,8 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
     orderNumber: orderNumber || '',
     customerName: customerName || '',
     customerPhone: customerPhone || '',
-    totalAmount: totalAmount || 0
+    totalAmount: totalAmount || 0,
+    products: [] as any[]
   });
 
   useEffect(() => {
@@ -37,75 +37,15 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
     }
   }, []);
 
-  // Notification permission holatini tekshirish
-  const [notificationStatus] = useState<'checking' | 'granted' | 'denied'>('checking');
-
-  useEffect(() => {
-    const checkNotificationStatus = () => {
-      // const status = notificationService.getPermissionStatus(); // Replaced with new system
-      // setNotificationStatus(status === 'granted' ? 'granted' : 'denied'); // Replaced with new system
-    };
-
-    checkNotificationStatus();
-  }, []);
-
-  // Notification permission so'rash
-  const requestNotificationPermission = async () => {
-    try {
-      // const hasPermission = await notificationService.requestPermission(); // Replaced with new system
-      // setNotificationStatus(hasPermission ? 'granted' : 'denied'); // Replaced with new system
-      
-      // if (hasPermission) {
-      //   // Agar permission berilgan bo'lsa, order status ni kuzatishni boshlash
-      //   await notificationService.watchOrderStatus(orderData.orderNumber, orderData.customerPhone); // Replaced with new system
-      //   console.log('🔔 Order status watching started from success page');
-      // }
-    } catch (error) {
-      console.error('Error requesting notification permission:', error);
-    }
-  };
-
-  // Manual notification test
-  const testNotification = async () => {
-    try {
-      if (notificationStatus !== 'granted') {
-        console.log('❌ Notification permission not granted');
-        return;
-      }
-
-      // Test order status change
-      const testResult = await testNotificationSystem.testOrderStatusChange(
-        orderData.orderNumber, 
-        'confirmed'
-      );
-
-      if (testResult.success) {
-        console.log('✅ Test order status change successful');
-      } else {
-        console.error('❌ Test order status change failed:', testResult.error);
-      }
-
-      // await notificationService.showNotification({ // Replaced with new system
-      //   title: '✅ Test Notification',
-      //   body: `Test notification for order ${orderData.orderNumber}. If you see this, notifications are working!`,
-      //   tag: `test-${orderData.orderNumber}`,
-      //   data: { orderNumber: orderData.orderNumber }
-      // });
-      
-      console.log('✅ Test notification sent');
-    } catch (error) {
-      console.error('Error sending test notification:', error);
-    }
-  };
-
   const handleGoHome = () => {
     localStorage.removeItem('lastOrderData');
     onNavigate('home');
   };
 
-  const handleNewOrder = () => {
+  const handleViewDetails = () => {
     localStorage.removeItem('lastOrderData');
-    onNavigate('catalog');
+    localStorage.removeItem('pendingCheckout');
+    onNavigate('orders');
   };
 
   return (
@@ -193,6 +133,35 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
                   {orderData.customerPhone}
                 </span>
               </div>
+
+              {/* Product Images Stack (oysimon card) */}
+              {orderData.products && orderData.products.length > 0 && (
+                <div className="flex justify-center py-4 border-b border-white/20">
+                  <div className="flex -space-x-4 hover:space-x-1 transition-all duration-300">
+                    {orderData.products.slice(0, 5).map((prod: any, idx: number) => (
+                      <div 
+                        key={idx} 
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#1E1B4B] overflow-hidden shadow-lg relative group transition-transform duration-300 hover:-translate-y-2 hover:scale-110"
+                        style={{ zIndex: 10 - idx }}
+                      >
+                        <img 
+                          src={prod.image_url || prod.image || 'https://picsum.photos/100?random=1'} 
+                          alt="product" 
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                          <span className="text-white text-xs font-bold px-1 text-center">{prod.quantity || 1} ta</span>
+                        </div>
+                      </div>
+                    ))}
+                    {orderData.products.length > 5 && (
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#1E1B4B] overflow-hidden shadow-lg bg-white/10 backdrop-blur-md flex items-center justify-center text-white font-bold text-lg z-0">
+                        +{orderData.products.length - 5}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
               
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-2 gap-1 sm:gap-0">
                 <span className="text-gray-300 font-medium text-sm sm:text-base">
@@ -223,60 +192,6 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
             </p>
           </motion.div>
 
-          {/* Notification Settings */}
-          {notificationStatus !== 'granted' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.95 }}
-              className="bg-yellow-500/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-yellow-400/20"
-            >
-              <div className="flex items-center justify-center mb-3">
-                <Bell className="w-5 h-5 text-yellow-400 mr-2" />
-                <h4 className="text-lg font-semibold text-yellow-300">
-                  {t('orderSuccess.notificationTitle')}
-                </h4>
-              </div>
-              <p className="text-yellow-200 text-center mb-4">
-                {t('orderSuccess.notificationText')}
-              </p>
-              <div className="flex gap-2">
-                <button
-                  onClick={requestNotificationPermission}
-                  className="flex-1 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-200 font-semibold py-3 px-6 rounded-xl border border-yellow-400/30 transition-all duration-300 hover:scale-105"
-                >
-                  {t('orderSuccess.enableNotifications')}
-                </button>
-                <button
-                  onClick={testNotification}
-                  className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 font-semibold py-3 px-4 rounded-xl border border-blue-400/30 transition-all duration-300 hover:scale-105"
-                  title="Test notification"
-                >
-                  🧪
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {notificationStatus === 'granted' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.95 }}
-              className="bg-green-500/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-green-400/20"
-            >
-              <div className="flex items-center justify-center mb-3">
-                <Bell className="w-5 h-5 text-green-400 mr-2" />
-                <h4 className="text-lg font-semibold text-green-300">
-                  {t('orderSuccess.notificationsEnabled')}
-                </h4>
-              </div>
-              <p className="text-green-200 text-center">
-                {t('orderSuccess.notificationsEnabledText')}
-              </p>
-            </motion.div>
-          )}
-
           {/* Action Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -293,11 +208,11 @@ const OrderSuccessPage: React.FC<OrderSuccessPageProps> = ({
             </button>
             
             <button
-              onClick={handleNewOrder}
-              className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-emerald-500/20 to-green-500/20 backdrop-blur-sm border border-emerald-400/30 text-emerald-300 rounded-2xl font-semibold hover:from-emerald-500/30 hover:to-green-500/30 hover:border-emerald-400/50 hover:text-emerald-200 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105"
+              onClick={handleViewDetails}
+              className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 backdrop-blur-sm border border-blue-400/30 text-blue-300 rounded-2xl font-semibold hover:from-blue-500/30 hover:to-indigo-500/30 hover:border-blue-400/50 hover:text-blue-200 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105"
             >
-              <ShoppingBag className="w-5 h-5 mr-2" />
-              {t('orderSuccess.newOrder')}
+              <ClipboardList className="w-5 h-5 mr-2" />
+              Tafsilotlar
             </button>
           </motion.div>
         </motion.div>

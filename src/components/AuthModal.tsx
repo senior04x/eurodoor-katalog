@@ -11,9 +11,10 @@ interface AuthModalProps {
   onClose: () => void
   mode: 'login' | 'register'
   onModeChange: (mode: 'login' | 'register') => void
+  onNavigate?: (page: string) => void
 }
 
-export default function AuthModal({ isOpen, onClose, mode, onModeChange }: AuthModalProps) {
+export default function AuthModal({ isOpen, onClose, mode, onModeChange, onNavigate }: AuthModalProps) {
   const [formData, setFormData] = useState({
     phone: '',
     password: '',
@@ -73,7 +74,11 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange }: AuthM
           onClose()
           setFormData({ phone: '', password: '', name: '', confirmPassword: '' })
           setError('')
-          // listener will route; no extra awaits here
+          // pendingCheckout tekshirish
+          if (localStorage.getItem('pendingCheckout') === 'true' && onNavigate) {
+            localStorage.removeItem('pendingCheckout')
+            onNavigate('contact')
+          }
         } else {
           // Email tasdiqlash xatoligini yashirish
           if (result.error?.includes('Email not confirmed') || result.error?.includes('email_not_confirmed')) {
@@ -81,6 +86,11 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange }: AuthM
             onClose()
             setFormData({ phone: '', password: '', name: '', confirmPassword: '' })
             setError('')
+            // pendingCheckout tekshirish
+            if (localStorage.getItem('pendingCheckout') === 'true' && onNavigate) {
+              localStorage.removeItem('pendingCheckout')
+              onNavigate('contact')
+            }
           } else {
             showError('Xatolik', result.error || t('auth.login_error'))
           }
@@ -115,6 +125,11 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange }: AuthM
           showSuccess('Ro\'yxatdan o\'tdingiz!', 'Muvaffaqiyatli ro\'yxatdan o\'tdingiz')
           onClose()
           setFormData({ phone: '', password: '', name: '', confirmPassword: '' })
+          // pendingCheckout tekshirish
+          if (localStorage.getItem('pendingCheckout') === 'true' && onNavigate) {
+            localStorage.removeItem('pendingCheckout')
+            onNavigate('contact')
+          }
         } else {
           setError(result.error || t('auth.register_error'))
         }

@@ -3,15 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react'
 import { useCart } from '../contexts/CartContext'
 import { useLanguage } from '../contexts/LanguageContext'
+import { useAuth } from '../contexts/AuthContext'
 import { ImageWithFallback } from './figma/ImageWithFallback'
 
 interface CartSidebarProps {
   onNavigate: (page: string) => void
+  onShowAuthModal?: (mode: 'login' | 'register') => void
 }
 
-export default function CartSidebar({ onNavigate }: CartSidebarProps) {
+export default function CartSidebar({ onNavigate, onShowAuthModal }: CartSidebarProps) {
   const { items, totalItems, totalPrice, updateQuantity, removeFromCart, clearCart, isCartOpen, setIsCartOpen } = useCart()
   const { t } = useLanguage()
+  const { user } = useAuth()
 
   // Modal ochilganda header blur ni o'chirish
   useEffect(() => {
@@ -34,6 +37,13 @@ export default function CartSidebar({ onNavigate }: CartSidebarProps) {
   }
 
   const handleCheckout = () => {
+    if (!user && onShowAuthModal) {
+      localStorage.setItem('pendingCheckout', 'true')
+      setIsCartOpen(false)
+      onShowAuthModal('login')
+      return
+    }
+
     setIsCartOpen(false)
     onNavigate('contact')
   }

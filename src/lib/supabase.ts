@@ -50,6 +50,8 @@ export interface Product {
   thickness: string; // New field
   lock_stages: string; // New field
   stock_quantity: number; // Updated field name
+  stock_left?: number;
+  stock_right?: number;
   description?: string;
   is_active: boolean;
   created_at: string;

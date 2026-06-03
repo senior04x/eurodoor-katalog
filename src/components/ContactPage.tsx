@@ -113,7 +113,8 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
           orderNumber: order.order_number,
           customerName: formData.name,
           customerPhone: formData.phone,
-          totalAmount: cartItems.length > 0 ? totalPrice : (selectedProduct?.price || 0)
+          totalAmount: cartItems.length > 0 ? totalPrice : (selectedProduct?.price || 0),
+          products: cartItems.length > 0 ? cartItems : (selectedProduct ? [selectedProduct] : [])
         };
         localStorage.setItem('lastOrderData', JSON.stringify(orderData));
         
@@ -336,11 +337,66 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               {/* Contact Form */}
-              <motion.div variants={fadeUp} className="w-full bg-white/10 backdrop-blur-xl rounded-2xl p-6 py-16 shadow-2xl border border-white/20">
-                <h2 className="text-2xl font-bold text-white mb-6">
-                  {selectedProduct ? t('contact.order_form') : t('contact.contact_form')}
-                </h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <motion.div variants={fadeUp} className="w-full bg-white/10 backdrop-blur-xl rounded-2xl p-6 py-16 shadow-2xl border border-white/20">
+                  <h2 className="text-2xl font-bold text-white mb-6">
+                    {user && (cartItems.length > 0 || selectedProduct) ? 'Buyurtmani tasdiqlash' : (selectedProduct ? t('contact.order_form') : t('contact.contact_form'))}
+                  </h2>
+                  
+                  {user && (cartItems.length > 0 || selectedProduct) ? (
+                    <div className="space-y-6">
+                      <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <h3 className="text-lg font-semibold text-white mb-4">Buyurtma tafsilotlari</h3>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center text-gray-300">
+                            <span>Sizning ismingiz:</span>
+                            <span className="text-white font-medium">{user.name || formData.name}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-gray-300">
+                            <span>Telefon raqam:</span>
+                            <span className="text-white font-medium">{user.phone || formData.phone}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-gray-300">
+                            <span>Jami mahsulotlar:</span>
+                            <span className="text-white font-medium">{cartItems.length > 0 ? cartItems.length : 1} ta</span>
+                          </div>
+                          <div className="flex justify-between items-center pt-4 border-t border-white/10 mt-4">
+                            <span className="text-lg font-medium text-gray-300">Jami summa:</span>
+                            <span className="text-2xl font-bold text-blue-400">
+                              {(cartItems.length > 0 ? totalPrice : (selectedProduct?.price || 0)).toLocaleString()} UZS
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <label className="block text-sm font-medium text-gray-300 mb-3">Promokod (agar bo'lsa)</label>
+                        <div className="flex gap-3">
+                          <input
+                            type="text"
+                            placeholder="Promokodni kiriting"
+                            className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50 transition-colors uppercase"
+                          />
+                          <button
+                            type="button"
+                            className="px-6 py-3 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors font-medium whitespace-nowrap"
+                            onClick={() => showError('Xatolik', 'Hozircha promokodlar tizimi ishga tushirilmagan')}
+                          >
+                            Qo'llash
+                          </button>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] transform transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-3"
+                      >
+                        <ShoppingCart className="h-6 w-6" />
+                        {isSubmitting ? 'Kuting...' : 'Buyurtmani tasdiqlash'}
+                      </button>
+                    </div>
+                  ) : (
+                  <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <input
                       type="text"
@@ -395,16 +451,17 @@ export default function ContactPage({ onNavigate }: ContactPageProps): JSX.Eleme
                       className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:border-white/40 transition-colors resize-none"
                     />
                   </div>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-white/20 text-white py-3 px-6 rounded-lg font-semibold hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 flex items-center justify-center gap-2"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                    {isSubmitting ? t('contact.sending') : (cartItems.length > 0 ? t('contact.place_order') : selectedProduct ? t('contact.place_order') : t('contact.send_message'))}
-                  </button>
-                </form>
-              </motion.div>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full bg-white/20 text-white py-3 px-6 rounded-lg font-semibold hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 flex items-center justify-center gap-2"
+                    >
+                      <MessageCircle className="h-5 w-5" />
+                      {isSubmitting ? t('contact.sending') : (cartItems.length > 0 ? t('contact.place_order') : selectedProduct ? t('contact.place_order') : t('contact.send_message'))}
+                    </button>
+                  </form>
+                  )}
+                </motion.div>
 
               {/* Contact Information */}
               <motion.div variants={fadeUp} className="w-full bg-white/10 backdrop-blur-xl rounded-2xl p-6 py-16 shadow-2xl border border-white/20">

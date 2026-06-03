@@ -172,11 +172,11 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Product Image */}
             <div className="lg:col-span-1">
-              <div className="aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 shadow-2xl hover:border-blue-500/50 transition-all duration-300">
+              <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-black/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:border-blue-500/50 transition-all duration-300 flex items-center justify-center p-6">
                 <img
-                  src={product.image_url || 'https://picsum.photos/600/600?random=1'}
+                  src={product.image_url || 'https://picsum.photos/600/800?random=1'}
                   alt={product.model_name || product.name || 'Product'}
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  className="w-full h-full object-contain drop-shadow-2xl transition-transform duration-300 hover:scale-105"
                 />
               </div>
             </div>
@@ -278,12 +278,20 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                       <span className="text-white font-semibold">{product.lock_stages}</span>
                     </div>
                   )}
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-300 font-medium">Holat:</span>
-                    <span className="font-semibold text-green-400">
-                      Mavjud
-                    </span>
-                  </div>
+                    <div className="flex flex-col gap-2 py-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300 font-medium">Chap qoldiq:</span>
+                        <span className={`font-semibold ${product.stock_left && product.stock_left > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {product.stock_left && product.stock_left > 0 ? 'Mavjud' : 'Mavjud emas'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300 font-medium">O'ng qoldiq:</span>
+                        <span className={`font-semibold ${product.stock_right && product.stock_right > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {product.stock_right && product.stock_right > 0 ? 'Mavjud' : 'Mavjud emas'}
+                        </span>
+                      </div>
+                    </div>
                 </div>
               </div>
 

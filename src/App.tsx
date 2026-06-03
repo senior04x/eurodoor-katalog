@@ -317,6 +317,7 @@ function App() {
                   onClose={() => setShowAuthModal(false)}
                   mode={authMode}
                   onModeChange={setAuthMode}
+                  onNavigate={handleNavigate}
                 />
                 
                 {/* Notification Gate Modal */}

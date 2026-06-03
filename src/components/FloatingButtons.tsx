@@ -134,7 +134,10 @@ const FloatingButtons = memo<FloatingButtonsProps>(({ currentPage, onNavigate, o
       />
       
       {/* Cart Sidebar */}
-      <CartSidebar onNavigate={onNavigate} />
+      <CartSidebar 
+        onNavigate={onNavigate} 
+        onShowAuthModal={handleShowAuthModal}
+      />
       
       {/* Notification Center */}
       <NotificationCenter 

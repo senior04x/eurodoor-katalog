@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Eye, ShoppingCart, Search, Package, Ruler } from 'lucide-react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCart } from '../contexts/CartContext';
 import { useToast } from '../contexts/ToastContext';
@@ -24,46 +24,21 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   const [selectedDimensions, setSelectedDimensions] = useState<string>('all');
   const [selectedMaterial, setSelectedMaterial] = useState<string>('all');
 
-  // Load products function
-  const loadProducts = async () => {
+  // Load products function (optimized - no testConnection)
+  const loadProducts = async (silent: boolean = false, forceRefresh: boolean = false) => {
     try {
-      console.log('🔄 CatalogPage: Starting to load products...');
-      setLoading(true);
+      if (!silent) setLoading(true);
       
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout')), 15000)
-      );
-      
-      // Test database connection first
-      console.log('🔍 CatalogPage: Testing database connection...');
-      const connectionTest = await Promise.race([
-        productsApi.testConnection(),
-        timeoutPromise
-      ]) as { success: boolean; error?: string };
-      
-      if (!connectionTest.success) {
-        console.error('❌ CatalogPage: Database connection failed:', connectionTest.error);
-        throw new Error(`Database connection failed: ${connectionTest.error}`);
-      }
-      
-      console.log('✅ CatalogPage: Database connection OK, fetching products...');
-      const fetchedProducts = await Promise.race([
-        productsApi.getAllProducts(),
-        timeoutPromise
-      ]) as Product[];
-      
-      console.log('✅ CatalogPage: Products loaded successfully:', fetchedProducts.length);
+      const fetchedProducts = await productsApi.getAllProducts(forceRefresh);
       setProducts(fetchedProducts);
       
     } catch (error) {
       console.error('❌ CatalogPage: Error loading products:', error);
-      setProducts([]);
-      // Show error message to user
-      alert('Mahsulotlar yuklanmadi. Iltimos, qaytadan urinib ko\'ring.');
+      if (products.length === 0) {
+        setProducts([]);
+      }
     } finally {
-      console.log('✅ CatalogPage: Setting loading to false');
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -81,10 +56,8 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
           { event: '*', schema: 'public', table: 'products' },
           (payload) => {
             console.log('🔄 Products updated:', payload);
-            // Only reload if we're not already loading
-            if (!loading) {
-              loadProducts();
-            }
+            // Always reload silently and force refresh cache
+            loadProducts(true, true);
           }
         )
         .subscribe((status) => {
@@ -182,7 +155,8 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
       transition: prefersReduced
         ? { duration: 0 }
         : { type: 'spring', stiffness: 300, damping: 20 }
-    }
+    },
+    exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } }
   };
 
   if (loading) {
@@ -310,16 +284,25 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 grid-flow-row-dense"
         >
-            {filteredProducts.map((product) => (
-            <motion.div
+          <AnimatePresence mode="popLayout">
+            {filteredProducts.map((product, index) => {
+              // Instagram Explore style pattern
+              const isTall = index % 10 === 2 || index % 10 === 5;
+
+              return (
+              <motion.div
                 key={product.id}
+                layout
                 variants={cardVariants}
-                className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl shadow-xl overflow-hidden border border-white/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-105 group"
+                initial="hidden"
+                animate="show"
+                exit="exit"
+                className={`bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl shadow-xl overflow-hidden border border-white/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-105 group flex flex-col ${isTall ? 'md:row-span-2' : ''}`}
               >
                 {/* Product Image */}
-                <div className="relative aspect-square overflow-hidden">
+                <div className={`relative overflow-hidden w-full ${isTall ? 'flex-1 min-h-[300px]' : 'aspect-square shrink-0'}`}>
                   <img
                     src={product.image_url || 'https://picsum.photos/400/300?random=1'}
                     alt={product.model_name || product.name || 'Product'}
@@ -327,7 +310,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
+                </div>
 
                 {/* Product Info */}
                 <div className="p-6">
@@ -339,7 +322,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                     <div className="flex items-center text-sm text-gray-300">
                       <span className="font-medium">Material:</span>
                       <span className="ml-2">{product.material}</span>
-                </div>
+                    </div>
                     <div className="flex items-center text-sm text-gray-300">
                       <span className="font-medium">Xavfsizlik:</span>
                       <span className="ml-2">{product.security_class || product.security || 'N/A'}</span>
@@ -356,13 +339,20 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                     </p>
                   )}
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mt-4">
                     <div>
-                      <div className="text-2xl font-bold text-white">
-                        {product.price.toLocaleString()} {product.currency || 'UZS'}
+                      <div className="text-2xl font-bold text-white mb-2">
+                        {!product.price || product.price === 0 ? '-' : `${Number(product.price).toLocaleString()} ${product.currency || 'UZS'}`}
                       </div>
-                      <div className="text-sm text-gray-300">
-                        Mavjud
+                      <div className="flex gap-3 text-xs font-medium">
+                        <div className={`flex items-center gap-1 ${product.stock_left && product.stock_left > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          <span className="opacity-80">Chap:</span>
+                          <span>{product.stock_left && product.stock_left > 0 ? 'Mavjud' : 'Mavjud emas'}</span>
+                        </div>
+                        <div className={`flex items-center gap-1 ${product.stock_right && product.stock_right > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          <span className="opacity-80">O'ng:</span>
+                          <span>{product.stock_right && product.stock_right > 0 ? 'Mavjud' : 'Mavjud emas'}</span>
+                        </div>
                       </div>
                     </div>
                     
@@ -377,7 +367,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                       >
                         <Eye className="w-5 h-5 text-white" />
                       </button>
-                            <button
+                      <button
                         onClick={() => handleAddToCart(product)}
                         className="p-2 rounded-lg transition-colors bg-blue-500/20 hover:bg-blue-500/30"
                         title="Korzinkaga qo'shish"
@@ -387,10 +377,12 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                     </div>
                   </div>
                 </div>
-                        </motion.div>
-            ))}
-                  </motion.div>
-                )}
+              </motion.div>
+            );
+            })}
+          </AnimatePresence>
+        </motion.div>
+        )}
       </section>
     </div>
   );
