@@ -359,7 +359,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
         >
           <AnimatePresence>
             {filteredProducts.slice(0, displayLimit).map((product) => (
@@ -369,7 +369,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                 initial="hidden"
                 animate="show"
                 exit="exit"
-                className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden border border-white/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-[1.03] group flex flex-col mb-4 break-inside-avoid"
+                className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden border border-white/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-[1.03] group flex flex-col h-full"
               >
                 {/* Product Image */}
                 <div className="relative w-full overflow-hidden shrink-0">
