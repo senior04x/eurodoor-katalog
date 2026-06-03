@@ -23,6 +23,23 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDimensions, setSelectedDimensions] = useState<string>('all');
   const [selectedMaterial, setSelectedMaterial] = useState<string>('all');
+  const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 100000 });
+  const [maxPossiblePrice, setMaxPossiblePrice] = useState<number>(100000);
+  const [minPossiblePrice, setMinPossiblePrice] = useState<number>(0);
+
+  // Update min/max possible prices when products load
+  useEffect(() => {
+    if (products.length > 0) {
+      const prices = products.map(p => p.price).filter(p => typeof p === 'number' && !isNaN(p));
+      if (prices.length > 0) {
+        const min = Math.min(...prices);
+        const max = Math.max(...prices);
+        setMinPossiblePrice(min);
+        setMaxPossiblePrice(max);
+        setPriceRange({ min, max });
+      }
+    }
+  }, [products]);
 
   // Load products function (optimized - no testConnection)
   const loadProducts = async (silent: boolean = false, forceRefresh: boolean = false) => {
@@ -104,8 +121,14 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
       );
     }
 
+    // Price range filter
+    filtered = filtered.filter(product => {
+      const price = product.price || 0;
+      return price >= priceRange.min && price <= priceRange.max;
+    });
+
     return filtered;
-  }, [products, searchQuery, selectedDimensions, selectedMaterial]);
+  }, [products, searchQuery, selectedDimensions, selectedMaterial, priceRange]);
 
   // Get unique dimensions and materials
   const dimensions = useMemo(() => {
@@ -258,6 +281,52 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
               </select>
             </div>
 
+            {/* Price Range Slider */}
+            <div className="col-span-1 md:col-span-3 mt-2 pt-4 border-t border-white/10">
+              <label className="block text-white text-sm font-medium mb-4">
+                Narx oralig'i: <span className="font-bold text-blue-400 bg-blue-500/20 px-2 py-1 rounded-md ml-1">${priceRange.min.toLocaleString()}</span> - <span className="font-bold text-blue-400 bg-blue-500/20 px-2 py-1 rounded-md ml-1">${priceRange.max.toLocaleString()}</span>
+              </label>
+              
+              <div className="relative w-full h-8 flex items-center group">
+                <div className="absolute w-full h-2 bg-white/10 rounded-full overflow-hidden shadow-inner">
+                  <div 
+                    className="absolute h-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-75"
+                    style={{ 
+                      left: `${((priceRange.min - minPossiblePrice) / (maxPossiblePrice - minPossiblePrice || 1)) * 100}%`, 
+                      right: `${100 - ((priceRange.max - minPossiblePrice) / (maxPossiblePrice - minPossiblePrice || 1)) * 100}%` 
+                    }}
+                  />
+                </div>
+                
+                <input 
+                  type="range" 
+                  min={minPossiblePrice} 
+                  max={maxPossiblePrice} 
+                  value={priceRange.min}
+                  onChange={(e) => {
+                    const value = Math.min(Number(e.target.value), priceRange.max - 1);
+                    setPriceRange(prev => ({ ...prev, min: value }));
+                  }}
+                  className="absolute w-full h-2 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(59,130,246,0.5)] [&::-webkit-slider-thumb]:cursor-pointer z-10"
+                />
+                
+                <input 
+                  type="range" 
+                  min={minPossiblePrice} 
+                  max={maxPossiblePrice} 
+                  value={priceRange.max}
+                  onChange={(e) => {
+                    const value = Math.max(Number(e.target.value), priceRange.min + 1);
+                    setPriceRange(prev => ({ ...prev, max: value }));
+                  }}
+                  className="absolute w-full h-2 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(59,130,246,0.5)] [&::-webkit-slider-thumb]:cursor-pointer z-20"
+                />
+              </div>
+              <div className="flex justify-between text-white/40 text-[11px] font-medium mt-2 px-1">
+                <span>${minPossiblePrice.toLocaleString()}</span>
+                <span>${maxPossiblePrice.toLocaleString()}</span>
+              </div>
+            </div>
           </div>
 
           {/* Results count */}
@@ -284,14 +353,10 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 grid-flow-row-dense"
+          className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4"
         >
           <AnimatePresence mode="popLayout">
-            {filteredProducts.map((product, index) => {
-              // Instagram Explore style pattern
-              const isTall = index % 10 === 2 || index % 10 === 5;
-
-              return (
+            {filteredProducts.map((product) => (
               <motion.div
                 key={product.id}
                 layout
@@ -299,87 +364,63 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                 initial="hidden"
                 animate="show"
                 exit="exit"
-                className={`bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl shadow-xl overflow-hidden border border-white/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-105 group flex flex-col ${isTall ? 'md:row-span-2' : ''}`}
+                className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden border border-white/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-[1.03] group flex flex-col mb-4 break-inside-avoid"
               >
                 {/* Product Image */}
-                <div className={`relative overflow-hidden w-full ${isTall ? 'flex-1 min-h-[300px]' : 'aspect-square shrink-0'}`}>
+                <div className="relative w-full overflow-hidden shrink-0">
                   <img
                     src={product.image_url || 'https://picsum.photos/400/300?random=1'}
                     alt={product.model_name || product.name || 'Product'}
                     loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
 
                 {/* Product Info */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">
+                <div className="p-4">
+                  <h3 className="text-lg font-bold text-white mb-1 group-hover:text-blue-300 transition-colors truncate">
                     {product.model_name || product.name || 'Product'}
                   </h3>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-sm text-gray-300">
-                      <span className="font-medium">Material:</span>
-                      <span className="ml-2">{product.material}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-300">
-                      <span className="font-medium">Xavfsizlik:</span>
-                      <span className="ml-2">{product.security_class || product.security || 'N/A'}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-300">
-                      <span className="font-medium">O'lcham:</span>
-                      <span className="ml-2">{product.dimensions}</span>
-                    </div>
-                  </div>
+                  <p className="text-xs text-gray-400 mb-3">{product.dimensions}</p>
 
-                  {product.description && (
-                    <p className="text-gray-300 text-sm mb-4 line-clamp-2">
-                      {product.description}
-                    </p>
-                  )}
-
-                  <div className="flex items-center justify-between mt-4">
+                  <div className="flex items-end justify-between">
                     <div>
-                      <div className="text-2xl font-bold text-white mb-2">
-                        {!product.price || product.price === 0 ? '-' : `${Number(product.price).toLocaleString()} ${product.currency || 'UZS'}`}
+                      <div className="text-xl font-bold text-white">
+                        {!product.price || product.price === 0 ? '-' : `$${Number(product.price).toLocaleString()}`}
                       </div>
-                      <div className="flex gap-3 text-xs font-medium">
-                        <div className={`flex items-center gap-1 ${product.stock_left && product.stock_left > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          <span className="opacity-80">Chap:</span>
-                          <span>{product.stock_left && product.stock_left > 0 ? 'Mavjud' : 'Mavjud emas'}</span>
-                        </div>
-                        <div className={`flex items-center gap-1 ${product.stock_right && product.stock_right > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          <span className="opacity-80">O'ng:</span>
-                          <span>{product.stock_right && product.stock_right > 0 ? 'Mavjud' : 'Mavjud emas'}</span>
-                        </div>
+                      <div className="flex gap-2 mt-1 text-[10px] font-medium">
+                        <span className={product.stock_left && product.stock_left > 0 ? 'text-green-400' : 'text-red-400/60'}>
+                          L: {product.stock_left && product.stock_left > 0 ? '✓' : '✗'}
+                        </span>
+                        <span className={product.stock_right && product.stock_right > 0 ? 'text-green-400' : 'text-red-400/60'}>
+                          R: {product.stock_right && product.stock_right > 0 ? '✓' : '✗'}
+                        </span>
                       </div>
                     </div>
                     
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-1.5">
                       <button
                         onClick={() => {
-                          console.log('🔍 CatalogPage: Navigating to product detail:', product.id);
                           onNavigate('product-detail', product.id);
                         }}
                         className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
                         title="Batafsil ko'rish"
                       >
-                        <Eye className="w-5 h-5 text-white" />
+                        <Eye className="w-4 h-4 text-white" />
                       </button>
                       <button
                         onClick={() => handleAddToCart(product)}
                         className="p-2 rounded-lg transition-colors bg-blue-500/20 hover:bg-blue-500/30"
                         title="Korzinkaga qo'shish"
                       >
-                        <ShoppingCart className="w-5 h-5 text-white" />
+                        <ShoppingCart className="w-4 h-4 text-white" />
                       </button>
                     </div>
                   </div>
                 </div>
               </motion.div>
-            );
-            })}
+            ))}
           </AnimatePresence>
         </motion.div>
         )}

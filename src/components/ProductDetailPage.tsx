@@ -193,10 +193,10 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                 </div>
                 <div className="mb-2">
                   <p className="text-3xl font-bold text-green-300">
-                    {product.price.toLocaleString()} {product.currency}
+                    ${product.price.toLocaleString()}
                   </p>
                   <p className="text-gray-300 text-sm">
-                    {product.currency === 'USD' ? 'Dollar' : 'Sum'}
+                    Dollar
                   </p>
                 </div>
                 <p className="text-gray-300 text-sm">Batafsil ma'lumot uchun biz bilan bog'laning</p>
@@ -266,16 +266,56 @@ export default function ProductDetailPage({ productId, onNavigate }: ProductDeta
                     <span className="text-gray-300 font-medium">O'lcham:</span>
                     <span className="text-white font-semibold">{product.dimensions}</span>
                   </div>
-                  {product.thickness && (
-                    <div className="flex justify-between items-center py-2 border-b border-white/10">
-                      <span className="text-gray-300 font-medium">Qalinlik:</span>
-                      <span className="text-white font-semibold">{product.thickness}mm</span>
-                    </div>
-                  )}
+                  {product.thickness && (() => {
+                    const raw = product.thickness;
+                    if (raw.includes('/')) {
+                      const parts: Record<string, string> = {};
+                      raw.split('/').forEach((p: string) => {
+                        const [k, v] = p.split(':');
+                        if (k && v) parts[k] = v;
+                      });
+                      return (
+                        <>
+                          {parts['Y'] && (
+                            <div className="flex justify-between items-center py-2 border-b border-white/10">
+                              <span className="text-gray-300 font-medium">Yuza metal:</span>
+                              <span className="text-white font-semibold">{parts['Y']} mm</span>
+                            </div>
+                          )}
+                          {parts['R'] && (
+                            <div className="flex justify-between items-center py-2 border-b border-white/10">
+                              <span className="text-gray-300 font-medium">Ramka metal:</span>
+                              <span className="text-white font-semibold">{parts['R']} mm</span>
+                            </div>
+                          )}
+                          {parts['MDF'] && (
+                            <div className="flex justify-between items-center py-2 border-b border-white/10">
+                              <span className="text-gray-300 font-medium">MDF qalinlik:</span>
+                              <span className="text-white font-semibold">{parts['MDF']} sm</span>
+                            </div>
+                          )}
+                        </>
+                      );
+                    }
+                    return (
+                      <div className="flex justify-between items-center py-2 border-b border-white/10">
+                        <span className="text-gray-300 font-medium">Qalinlik:</span>
+                        <span className="text-white font-semibold">{raw}</span>
+                      </div>
+                    );
+                  })()}
                   {product.lock_stages && (
                     <div className="flex justify-between items-center py-2 border-b border-white/10">
                       <span className="text-gray-300 font-medium">Qulf:</span>
-                      <span className="text-white font-semibold">{product.lock_stages}</span>
+                      <span className={`font-semibold text-right ${product.lock_stages.startsWith('SMART LOCK') ? 'text-red-400' : 'text-white'}`}>
+                        {product.lock_stages.startsWith('SMART LOCK: ') 
+                          ? 'SMART LOCK: ' + ({
+                              '5_IN_1': '5 in 1: Face ID, Barmoq izi, Parol, Karta, Mexanik kalit',
+                              '4_IN_1': '4 in 1: Barmoq izi, Parol, Karta, Mexanik kalit',
+                              '3_IN_1': '3 in 1: Parol, Karta, Mexanik kalit'
+                            }[product.lock_stages.replace('SMART LOCK: ', '')] || product.lock_stages.replace('SMART LOCK: ', ''))
+                          : product.lock_stages}
+                      </span>
                     </div>
                   )}
                     <div className="flex flex-col gap-2 py-2">

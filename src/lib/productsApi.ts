@@ -37,7 +37,7 @@ export const productsApi = {
 
   // Optimized: parallel fetching with separate ombor cache
   async getAllProducts(forceRefresh: boolean = false): Promise<Product[]> {
-    // Check cache first
+    // Check cache first (HMR forced reload)
     if (!forceRefresh && productsCache && (Date.now() - cacheTimestamp) < CACHE_DURATION) {
       return productsCache;
     }
