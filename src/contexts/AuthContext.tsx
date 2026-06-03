@@ -482,14 +482,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true)
       console.log('🚪 Signing out user...')
       await supabase.auth.signOut()
-      setUser(null) // User state'ni tozalash
-      // Clear user ID for notifications
-      setCurrentUserId('');
-      console.log('✅ User signed out successfully')
     } catch (error) {
       console.error('❌ Chiqishda xatolik:', error)
     } finally {
+      setUser(null) // ALWAYS clear user state
+      setCurrentUserId('');
       setLoading(false)
+      console.log('✅ User signed out successfully locally')
     }
   }
 

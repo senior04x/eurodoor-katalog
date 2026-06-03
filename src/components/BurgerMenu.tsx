@@ -56,10 +56,10 @@ export default function BurgerMenu({ open, onClose, currentPage, onNavigate, onS
   };
 
   const handleSignOut = async () => {
+    onClose(); // Menuni darhol yopish
     try {
       await signOut();
-      showSuccess(t('auth.logout_success'));
-      onClose();
+      showSuccess(t('auth.logout_success') || 'Muvaffaqiyatli chiqdingiz');
     } catch (error) {
       console.error('Logout error:', error);
     }
