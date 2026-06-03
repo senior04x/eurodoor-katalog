@@ -31,7 +31,7 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange, onNavig
   const { showSuccess, showError } = useToast()
 
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     let processedValue = value
     
@@ -56,7 +56,7 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange, onNavig
     setError('')
   }
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
@@ -168,7 +168,7 @@ export default function AuthModal({ isOpen, onClose, mode, onModeChange, onNavig
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg shadow-xl w-full max-w-md"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-white/20">

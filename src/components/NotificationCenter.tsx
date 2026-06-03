@@ -74,7 +74,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
 
       console.log('✅ Loaded notifications:', data)
       setNotifications(data || [])
-      const unreadCount = data?.filter(n => !n.is_read).length || 0
+      const unreadCount = data?.filter((n: any) => !n.is_read).length || 0
       setUnreadCount(unreadCount)
       console.log('✅ Unread count:', unreadCount)
       
