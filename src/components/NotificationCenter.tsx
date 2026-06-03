@@ -51,7 +51,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
         .from('customers')
         .select('id')
         .eq('email', user.email)
-        .single()
+        .maybeSingle()
 
       if (customerError || !customerData) {
         console.log('❌ Customer not found for email:', user.email)
@@ -148,7 +148,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
         .from('customers')
         .select('id')
         .eq('email', user.email)
-        .single()
+        .maybeSingle()
 
       if (customerError || !customerData) {
         console.log('❌ Customer not found for email:', user.email)
@@ -240,7 +240,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isMobile = fals
           .from('customers')
           .select('id')
           .eq('email', user.email)
-          .single()
+          .maybeSingle()
 
         if (customerError || !customerData) {
           console.log('❌ Customer not found for real-time subscription:', user.email)
