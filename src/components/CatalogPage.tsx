@@ -26,6 +26,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
   const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 100000 });
   const [maxPossiblePrice, setMaxPossiblePrice] = useState<number>(100000);
   const [minPossiblePrice, setMinPossiblePrice] = useState<number>(0);
+  const [displayLimit, setDisplayLimit] = useState<number>(20);
 
   // Update min/max possible prices when products load
   useEffect(() => {
@@ -129,6 +130,11 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
 
     return filtered;
   }, [products, searchQuery, selectedDimensions, selectedMaterial, priceRange]);
+
+  // Reset display limit when filters change
+  useEffect(() => {
+    setDisplayLimit(20);
+  }, [searchQuery, selectedDimensions, selectedMaterial, priceRange]);
 
   // Get unique dimensions and materials
   const dimensions = useMemo(() => {
@@ -356,7 +362,7 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
           className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4"
         >
           <AnimatePresence mode="popLayout">
-            {filteredProducts.map((product) => (
+            {filteredProducts.slice(0, displayLimit).map((product) => (
               <motion.div
                 key={product.id}
                 layout
@@ -423,6 +429,17 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
             ))}
           </AnimatePresence>
         </motion.div>
+        )}
+
+        {filteredProducts.length > displayLimit && (
+          <div className="mt-12 flex justify-center">
+            <button
+              onClick={() => setDisplayLimit(prev => prev + 20)}
+              className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-1"
+            >
+              Yana ko'rsatish
+            </button>
+          </div>
         )}
       </section>
     </div>
