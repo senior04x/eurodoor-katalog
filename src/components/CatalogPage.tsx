@@ -372,12 +372,12 @@ export default function CatalogPage({ onNavigate }: CatalogPageProps) {
                 className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden border border-white/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-[1.03] group flex flex-col h-full"
               >
                 {/* Product Image */}
-                <div className="relative w-full overflow-hidden shrink-0">
+                <div className="relative w-full overflow-hidden shrink-0 aspect-[3/4]">
                   <img
                     src={product.image_url || 'https://picsum.photos/400/300?random=1'}
                     alt={product.model_name || product.name || 'Product'}
                     loading="lazy"
-                    className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
