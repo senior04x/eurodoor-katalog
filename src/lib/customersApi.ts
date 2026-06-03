@@ -40,7 +40,7 @@ export const customersApi = {
         .from('customers')
         .select('*')
         .eq('phone', phone)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== 'PGRST116') {
         console.error('❌ Supabase error fetching customer:', error);
