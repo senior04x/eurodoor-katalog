@@ -5,12 +5,12 @@ import { fetchOmborProducts, fetchOmborEntries, calculateStock } from './omborAp
 // Enhanced cache for products with better performance
 let productsCache: Product[] | null = null;
 let cacheTimestamp: number = 0;
-const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes cache
+const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes cache (tezroq yangilanish uchun)
 
 // Separate ombor cache to avoid refetching heavy stock data
 let omborCache: { products: any[]; stockMap: Record<string, { left: number; right: number }> } | null = null;
 let omborCacheTimestamp: number = 0;
-const OMBOR_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const OMBOR_CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
 
 export const productsApi = {
   // Test database connection
@@ -46,12 +46,12 @@ export const productsApi = {
       const now = Date.now();
       const needsOmborRefresh = forceRefresh || !omborCache || (now - omborCacheTimestamp) > OMBOR_CACHE_DURATION;
       
-      // Build parallel promises
+      // Build parallel promises — LIMIT 1000 (eski: 100, ko'p mahsulotlar o'qilmay qolardi!)
       const catalogPromise = supabase
         .from('products')
         .select('id, model_name, price, image_url, dimensions, material, security_class, thickness, lock_stages, stock_quantity, description, is_active, created_at, updated_at')
         .order('created_at', { ascending: false })
-        .limit(100);
+        .limit(1000);
 
       let omborProducts: any[];
       let stockMap: Record<string, { left: number; right: number }>;
@@ -73,6 +73,8 @@ export const productsApi = {
         
         const catalogProducts = (catalogResult.data as Product[]) || [];
         if (catalogResult.error) console.error('❌ Supabase error:', catalogResult.error);
+        
+        console.log(`📊 Catalog DB: ${catalogProducts.length} yozuv, Ombor: ${omborProducts.length} mahsulot`);
         
         // Merge
         productsCache = this._mergeProducts(omborProducts, catalogProducts, stockMap);
@@ -100,13 +102,47 @@ export const productsApi = {
     }
   },
 
-  // Internal merge helper
+  // Internal merge helper — MUSTAHKAMLANGAN MATCHING LOGIKASI
   _mergeProducts(omborProducts: any[], catalogProducts: Product[], stockMap: Record<string, { left: number; right: number }>): Product[] {
+    // 1) Katalog mahsulotlari uchun lookup maplar yaratish (O(1) tezlikda matching)
+    //    Composite key: "model 050 | 2400*2200*90mm" (lowercase)
+    //    Model+Dim key: "model 050::2400*2200*90mm" (lowercase)
+    const catalogByComposite = new Map<string, Product>();
+    const catalogByModelDim = new Map<string, Product>();
+    
+    catalogProducts.forEach((cp: any) => {
+      // Composite key matching: "Model 050 | 2400*2200*90mm"
+      if (cp.model_name && cp.model_name.includes(' | ')) {
+        catalogByComposite.set(cp.model_name.toLowerCase().trim(), cp);
+      }
+      // Model + dimensions matching: separate fields
+      if (cp.model_name && cp.dimensions) {
+        const key = `${cp.model_name.toLowerCase().trim()}::${cp.dimensions.toLowerCase().trim()}`;
+        catalogByModelDim.set(key, cp);
+      }
+    });
+
+    let matchCount = 0;
+    let noMatchCount = 0;
+
     const mergedProducts: Product[] = omborProducts.map(op => {
-      const extraInfo = catalogProducts.find((cp: any) => 
-        (cp.model_name === op.model && cp.dimensions === op.razmer) || 
-        cp.model_name === `${op.model} | ${op.razmer}`
-      ) || {} as Partial<Product>;
+      // Ombor mahsulotini katalog bazasida qidirish (3 xil usulda)
+      const compositeKey = `${op.model} | ${op.razmer}`.toLowerCase().trim();
+      const modelDimKey = `${op.model}::${op.razmer}`.toLowerCase().trim();
+      
+      const extraInfo: any = 
+        // 1-usul: Composite key bo'yicha (admin panel yangi yozuv yaratganda shu formatda saqlaydi)
+        catalogByComposite.get(compositeKey) ||
+        // 2-usul: model_name + dimensions alohida maydonlar bo'yicha
+        catalogByModelDim.get(modelDimKey) ||
+        // 3-usul: bo'sh object (hech narsa topilmasa)
+        {};
+      
+      if (extraInfo.id) {
+        matchCount++;
+      } else {
+        noMatchCount++;
+      }
       
       const stockKey = `${op.model}-${op.razmer}`;
       const stockInfo = stockMap[stockKey] || { left: 0, right: 0 };
@@ -125,13 +161,19 @@ export const productsApi = {
         thickness: extraInfo.thickness || '-',
         lock_stages: extraInfo.lock_stages || '-',
         description: extraInfo.description || '',
-        is_active: extraInfo.is_active !== false,
+        is_active: extraInfo.is_active !== undefined ? extraInfo.is_active : true,
         created_at: op.created_at,
         updated_at: extraInfo.updated_at || op.created_at
       } as Product & { stock_left: number, stock_right: number };
     });
     
-    return mergedProducts.filter(p => p.is_active !== false);
+    console.log(`🔗 Merge natijasi: ${matchCount} mos topildi, ${noMatchCount} mos topilmadi (jami: ${mergedProducts.length})`);
+    
+    // is_active === false bo'lgan mahsulotlarni filtrlab tashlash
+    const activeProducts = mergedProducts.filter(p => p.is_active !== false);
+    console.log(`👁️ Ko'rinadigan: ${activeProducts.length}, Yashirilgan: ${mergedProducts.length - activeProducts.length}`);
+    
+    return activeProducts;
   },
 
 
@@ -166,5 +208,7 @@ export const productsApi = {
   clearCache() {
     productsCache = null;
     cacheTimestamp = 0;
+    omborCache = null;
+    omborCacheTimestamp = 0;
   }
 };
